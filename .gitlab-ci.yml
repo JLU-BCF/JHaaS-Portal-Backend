@@ -1,0 +1,56 @@
+variables:
+  NODE_CACHE_DIR: node_modules/
+
+stages:
+  - dependencies
+  - codequality
+  - containerize
+
+node_modules:
+  stage: dependencies
+  tags:
+    - nodejs
+  image: node:16
+  cache:
+    key:
+      files:
+        - package-lock.json
+    paths:
+      - $NODE_CACHE_DIR
+  artifacts:
+    paths:
+      - $NODE_CACHE_DIR
+  script:
+    - '[ -d $NODE_CACHE_DIR ] && [ ! -z "$(ls -A $NODE_CACHE_DIR)" ] || npm ci'
+
+eslint:
+  stage: codequality
+  tags:
+    - nodejs
+  image: node:16
+  dependencies:
+    - node_modules
+  script:
+    - npm run lint
+
+build_image:
+  stage: containerize
+  tags:
+    - kaniko
+  image:
+    name: gcr.io/kaniko-project/executor:debug
+    entrypoint: [""]
+  rules:
+    - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
+    - when: manual
+  dependencies:
+    - node_modules
+  script:
+    - mkdir -p /kaniko/.docker
+    - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
+    - sed -i '/^node_modules\/$/d' .dockerignore
+    - /kaniko/executor
+      --context     "$CI_PROJECT_DIR"
+      --dockerfile  "$CI_PROJECT_DIR/Dockerfile.kaniko"
+      --destination "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"
+      --target      "production"

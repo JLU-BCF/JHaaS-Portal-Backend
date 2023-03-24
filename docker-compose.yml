@@ -1,0 +1,39 @@
+# This is a compose file for development! Do not use in prod!
+version: '3'
+
+services:
+  jhaas-portal-backend:
+    image: jhaas-portal-backend
+    container_name: jhaas-portal-backend
+    hostname: jhaas-portal-backend
+    build:
+      context: .
+      target: develop
+    depends_on:
+      - jhaas-portal-db
+    networks:
+      - jhaas-portal-priv
+    env_file:
+      - ./environments/app.env
+      - ./environments/db.env
+    volumes:
+      - cache:${CACHEDIR:-/jhaas-cache}
+      - ./:${APPDIR:-/jhaas-app}
+
+  jhaas-portal-db:
+    image: postgres:15
+    container_name: jhaas-portal-db
+    hostname: jhaas-portal-db
+    networks:
+      - jhaas-portal-priv
+    env_file:
+      - ./environments/db.env
+
+networks:
+  jhaas-portal-priv:
+    external: false
+    name: jhaas-portal-priv
+
+volumes:
+  cache:
+    name: jhaas-portal-cache
