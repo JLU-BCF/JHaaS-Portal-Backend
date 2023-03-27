@@ -7,12 +7,23 @@ import UserRepository from '../repositories/UserRepository';
 import Credentials, { AuthProvider } from '../models/Credentials';
 import CredentialsRepository from '../repositories/CredentialsRepository';
 import { compareSync } from 'bcrypt';
+import jwt from 'jsonwebtoken';
 
 class UserController {
 
   /**************************
   Methods for REST Requests
   **************************/
+
+  // TODO: Just for testing purposes
+  public echoJwt(req: Request, res: Response): void {
+    const { username, password } = req.body;
+    var token = jwt.sign({
+      username,
+      password
+    }, 'shhhhh', { expiresIn: '1h' });
+    res.status(200).json({'jwt': token});
+  }
 
   public readAll(req: Request, res: Response): void {
     UserRepository.findAll()

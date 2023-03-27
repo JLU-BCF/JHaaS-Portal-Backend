@@ -11,6 +11,12 @@ const updateValidation = {
 
 const router: Router = Router();
 
+// TODO: just for testing
+router.post(
+  '/api/auth',
+  UserController.echoJwt
+);
+
 router.post(
   '/auth/local/signup',
   UserController.createLocalUser
