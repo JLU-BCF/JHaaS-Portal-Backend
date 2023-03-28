@@ -5,6 +5,8 @@ import createError, { HttpError } from 'http-errors';
 import express, { Application, NextFunction, Request, Response } from 'express';
 import morgan from 'morgan';
 import router from './routes/router';
+import passport from 'passport';
+import AuthService from './auth/authService';
 
 const app: Application = express();
 
@@ -12,6 +14,7 @@ app.disable('x-powered-by');
 app.use(express.json());
 app.use(morgan('tiny'));
 app.use(router);
+app.use('/auth', AuthService);
 
 // catch 404 and forward to error handler
 app.use((req: Request, res: Response, next: NextFunction) => {

@@ -13,7 +13,7 @@ const router: Router = Router();
 
 // TODO: just for testing
 router.post(
-  '/api/auth',
+  '/auth',
   UserController.echoJwt
 );
 

@@ -19,8 +19,13 @@ class UserController {
   public echoJwt(req: Request, res: Response): void {
     const { username, password } = req.body;
     var token = jwt.sign({
-      username,
-      password
+      user: {
+        id: 'abcd1234',
+        firstName: 'Nils',
+        lastName: 'Mittler',
+        email: 'nils.mittler@test.local',
+        createdAt: '2023-01-01T12:00:00'
+      }
     }, 'shhhhh', { expiresIn: '1h' });
     res.status(200).json({'jwt': token});
   }
