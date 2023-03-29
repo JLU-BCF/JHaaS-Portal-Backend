@@ -1,9 +1,15 @@
 import { Router } from 'express';
 import passport from 'passport';
 import { Strategy as LocalStrategy } from 'passport-local';
+import { compareSync } from 'bcrypt';
+import jwt from 'jsonwebtoken';
+
+import bodyParserHelper from '../../helpers/BodyParserHelper';
 import CredentialsRepository from '../../repositories/CredentialsRepository';
 import Credentials, { AuthProvider } from '../../models/Credentials';
-import { compareSync } from 'bcrypt';
+import UserRepository from '../../repositories/UserRepository';
+import User from '../../models/User';
+import { JWT_SECRET } from '../../config/Config';
 
 /* Configure password authentication strategy.
  *
@@ -56,10 +62,21 @@ const localStrategy = Router();
  * When authentication fails, the user will be re-prompted to login and shown
  * a message informing them of what went wrong.
  */
-localStrategy.post('/login',
-  passport.authenticate('local'), (req, res) => {
-    res.json(req.user);
-  });
+localStrategy.post('/login', (req, res, next) => {
+  passport.authenticate('local', { session: false }, (err: any, user: User) => {
+    if (err || !user) {
+      return res.json({msg: 'nope', err, user});
+    }
+
+    req.login(user, {session: false}, (err) => {
+      if (err) {
+        return res.json({msg: 'nope', err});
+      }
+      const token = jwt.sign({user: user}, JWT_SECRET);
+      return res.json({ 'jwt': token });
+    });
+  })(req, res);
+});
 
 /* POST /signup
  *
@@ -70,10 +87,30 @@ localStrategy.post('/login',
  * then a new user record is inserted into the database.  If the record is
  * successfully created, the user is logged in.
  */
-localStrategy.post('/signup', function(req, res, next) {
+localStrategy.post('/signup', (req, res, next) => {
 
-  const { firstName, lastName, email, password } = req.body;
+  const user = bodyParserHelper.parseUser(req);
+  const { password } = req.body;
 
+  const credentials = new Credentials(
+    user,
+    AuthProvider.LOCAL,
+    user.email,
+    password
+  );
+
+  UserRepository.createOne(user).then((userInstance) => {
+    CredentialsRepository.createOne(credentials).then(() => {
+      return res.json(userInstance);
+    }).catch((err) => {
+      console.log(err);
+      UserRepository.deleteById(userInstance.id);
+      return res.status(500).json(err);
+    });
+  }).catch((err) => {
+    console.log(err);
+    return res.status(500).json(err);
+  });
 
 });
 

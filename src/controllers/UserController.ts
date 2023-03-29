@@ -15,72 +15,12 @@ class UserController {
   Methods for REST Requests
   **************************/
 
-  // TODO: Just for testing purposes
-  public echoJwt(req: Request, res: Response): void {
-    const { username, password } = req.body;
-    var token = jwt.sign({
-      user: {
-        id: 'abcd1234',
-        firstName: 'Nils',
-        lastName: 'Mittler',
-        email: 'nils.mittler@test.local',
-        createdAt: '2023-01-01T12:00:00'
-      }
-    }, 'shhhhh', { expiresIn: '1h' });
-    res.status(200).json({'jwt': token});
-  }
-
   public readAll(req: Request, res: Response): void {
     UserRepository.findAll()
       .then((users: User[]) => {
         return res.json(users);
       })
       .catch((err: unknown) => {
-        return res.status(500).json(err);
-      });
-  }
-
-  public createLocalUser(req: Request, res: Response): void {
-    const user = bodyParserHelper.parseUser(req);
-    const { password } = req.body;
-
-    const credentials = new Credentials(
-      user,
-      AuthProvider.LOCAL,
-      user.email,
-      password
-    );
-
-    UserRepository.createOne(user).then((userInstance) => {
-      CredentialsRepository.createOne(credentials).then(() => {
-        return res.json(userInstance);
-      }).catch((err) => {
-        console.log(err);
-        UserRepository.deleteById(userInstance.id);
-        return res.status(500).json(err);
-      });
-    }).catch((err) => {
-      console.log(err);
-      return res.status(500).json(err);
-    });
-  }
-
-  public authorizeLocalUser(req: Request, res: Response) {
-    const { email, password } = req.body;
-
-    CredentialsRepository.findByProvider(AuthProvider.LOCAL, email)
-      .then((credentialsInstance) => {
-        if (!credentialsInstance) {
-          return res.status(404).json('No match.');
-        }
-
-        if (compareSync(password, credentialsInstance.password)) {
-          return res.json(credentialsInstance.user);
-        }
-
-        return res.status(404).json('No match.');
-      }).catch((err) => {
-        console.log(err);
         return res.status(500).json(err);
       });
   }

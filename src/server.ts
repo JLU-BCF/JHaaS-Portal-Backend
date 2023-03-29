@@ -1,20 +1,20 @@
 // imports
-import 'reflect-metadata';
 import { APP_PORT, DB_CONN } from './config/Config';
+import 'reflect-metadata';
 import createError, { HttpError } from 'http-errors';
 import express, { Application, NextFunction, Request, Response } from 'express';
 import morgan from 'morgan';
-import router from './routes/router';
 import passport from 'passport';
 import AuthService from './auth/authService';
+import UserService from './routes/user';
 
 const app: Application = express();
 
 app.disable('x-powered-by');
 app.use(express.json());
 app.use(morgan('tiny'));
-app.use(router);
 app.use('/auth', AuthService);
+app.use('/user', passport.authenticate('jwt', {session: false}),  UserService);
 
 // catch 404 and forward to error handler
 app.use((req: Request, res: Response, next: NextFunction) => {
