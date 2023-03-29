@@ -1,0 +1,43 @@
+# This file is for use with Podman!
+# This is a compose file for development! Do not use in prod!
+version: '3'
+
+services:
+  jhaas-portal-backend:
+    image: node:16
+    container_name: jhaas-portal-backend
+    hostname: jhaas-portal-backend
+    restart: unless-stopped
+    depends_on:
+      - jhaas-portal-db
+    networks:
+      - jhaas-portal-priv
+    env_file:
+      - ./environments/app.env
+      - ./environments/db.env
+    volumes:
+      - cache:/root
+      - ./:/jhaas-app
+      - ./docker-entrypoint-dev.sh:/docker-entrypoint-dev.sh:ro
+    user: root
+    working_dir: /jhaas-app
+    entrypoint: [ "/docker-entrypoint-dev.sh" ]
+
+  jhaas-portal-db:
+    image: postgres:15
+    container_name: jhaas-portal-db
+    hostname: jhaas-portal-db
+    restart: unless-stopped
+    networks:
+      - jhaas-portal-priv
+    env_file:
+      - ./environments/db.env
+
+networks:
+  jhaas-portal-priv:
+    external: false
+    name: jhaas-portal-priv
+
+volumes:
+  cache:
+    name: jhaas-portal-cache
