@@ -3,12 +3,18 @@ import passport from 'passport';
 import { Strategy as LocalStrategy } from 'passport-local';
 import { compareSync } from 'bcrypt';
 
-import { parseUser } from '../../helpers/BodyParserHelper';
+import { parseUser, validationErrors } from '../../helpers/BodyParserHelper';
 import CredentialsRepository from '../../repositories/CredentialsRepository';
 import Credentials, { AuthProvider } from '../../models/Credentials';
 import UserRepository from '../../repositories/UserRepository';
 import User from '../../models/User';
 import { respondTokens } from '../../helpers/AuthHelper';
+import {
+  localLoginValidation,
+  localSignupValidation,
+  localUpdateEmailValidation,
+  localUpdatePasswordValidation
+} from '../authValidationRules';
 
 /* Configure password authentication strategy.
  *
@@ -30,18 +36,18 @@ passport.use(
       CredentialsRepository.findByProvider(AuthProvider.LOCAL, email)
         .then((credentialsInstance) => {
           if (!credentialsInstance) {
-            return cb(null, false, { message: 'Incorrect email or password.' });
+            return cb('Incorrect email or password.', false);
           }
 
           if (compareSync(password, credentialsInstance.password)) {
             return cb(null, credentialsInstance.user, { message: 'Logged In Successfully' });
           }
 
-          return cb(null, false, { message: 'Incorrect email or password.' });
+          return cb('Incorrect email or password.', false);
         })
         .catch((err) => {
           console.log(err);
-          return cb(err);
+          return cb('Oops - Something went wrong.', false);
         });
     }
   )
@@ -65,15 +71,18 @@ const localStrategy = Router();
  * When authentication fails, the user will be re-prompted to login and shown
  * a message informing them of what went wrong.
  */
-localStrategy.post('/login', (req, res, next) => {
+localStrategy.post('/login', localLoginValidation, (req, res, next) => {
+  if (validationErrors(req, res)) return;
+
   passport.authenticate('local', { session: false }, (err, user: User) => {
     if (err || !user) {
-      return res.json({ msg: 'nope', err, user });
+      return res.json(err);
     }
 
     req.login(user, { session: false }, (err) => {
       if (err) {
-        return res.json({ msg: 'nope', err });
+        console.log(err);
+        return res.json('Oops - Something went wrong.');
       }
       respondTokens(user, res);
     });
@@ -89,28 +98,54 @@ localStrategy.post('/login', (req, res, next) => {
  * then a new user record is inserted into the database.  If the record is
  * successfully created, the user is logged in.
  */
-localStrategy.post('/signup', (req, res, next) => {
+localStrategy.post('/signup', localSignupValidation, async (req, res, next) => {
+  if (validationErrors(req, res)) return;
+
   const user = parseUser(req);
   const { password } = req.body;
 
   const credentials = new Credentials(user, AuthProvider.LOCAL, user.email, password);
 
-  UserRepository.createOne(user)
-    .then((userInstance) => {
-      CredentialsRepository.createOne(credentials)
-        .then(() => {
+  try {
+    if (await CredentialsRepository.findByProvider(AuthProvider.LOCAL, user.email)) {
+      return res.status(422).json('Email address is already taken.');
+    }
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json('Oops - Something went wrong.');
+  }
+
+  CredentialsRepository.createOne(credentials)
+    .then((credentialsInstance) => {
+      UserRepository.createOne(user)
+        .then((userInstance) => {
           return res.json(userInstance);
         })
         .catch((err) => {
+          CredentialsRepository.deleteByUserId(credentialsInstance.userId);
           console.log(err);
-          UserRepository.deleteById(userInstance.id);
-          return res.status(500).json(err);
+          return res.status(500).json('Oops - Something went wrong.');
         });
     })
     .catch((err) => {
       console.log(err);
-      return res.status(500).json(err);
+      return res.status(500).json('Oops - Something went wrong.');
     });
+});
+
+localStrategy.patch('/password', localUpdatePasswordValidation, (req, res, next) => {
+  if (validationErrors(req, res)) return;
+  // get credentials from db
+  // check password
+  // set new password
+});
+
+localStrategy.patch('/email', localUpdateEmailValidation, (req, res, next) => {
+  if (validationErrors(req, res)) return;
+  // get credentials from db
+  // check if requested email is not taken
+  // check if password matches
+  // set new email
 });
 
 export default localStrategy;

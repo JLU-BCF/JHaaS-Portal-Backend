@@ -15,7 +15,7 @@ class UserRepository {
 
   // find user by id
   findById(id: string): Promise<User> {
-    return DB_CONN.getRepository(User).findOneByOrFail({ id: id });
+    return DB_CONN.getRepository(User).findOneBy({ id: id });
   }
 
   // update a single user

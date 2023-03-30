@@ -11,7 +11,7 @@ class CredentialsRepository {
 
   // find credentials by provider and id
   findByProvider(authProvider: AuthProvider, authProviderId: string): Promise<Credentials> {
-    return DB_CONN.getRepository(Credentials).findOneByOrFail({
+    return DB_CONN.getRepository(Credentials).findOneBy({
       authProvider: authProvider,
       authProviderId: authProviderId
     });
@@ -19,7 +19,7 @@ class CredentialsRepository {
 
   // find credentials by user
   findByUser(user: User): Promise<Credentials> {
-    return DB_CONN.getRepository(Credentials).findOneByOrFail({
+    return DB_CONN.getRepository(Credentials).findOneBy({
       user: user
     });
   }
@@ -30,8 +30,8 @@ class CredentialsRepository {
   }
 
   // delete credentials
-  deleteById(id: string): Promise<DeleteResult> {
-    return DB_CONN.getRepository(Credentials).delete(id);
+  deleteByUserId(userId: string): Promise<DeleteResult> {
+    return DB_CONN.getRepository(Credentials).delete(userId);
   }
 }
 

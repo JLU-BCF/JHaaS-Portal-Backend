@@ -1,17 +1,9 @@
 import { Request, Response } from 'express';
-import { EntityNotFoundError } from 'typeorm';
 import { parseUser } from '../helpers/BodyParserHelper';
 import { checkUserId } from '../helpers/AuthHelper';
 import User from '../models/User';
 import UserRepository from '../repositories/UserRepository';
-
-function respondErrorWithStatusCode(err: unknown, res: Response) {
-  if (err instanceof EntityNotFoundError) {
-    return res.status(404).json(err);
-  } else {
-    return res.status(500).json(err);
-  }
-}
+import { validationResult } from 'express-validator';
 
 class UserController {
   /**************************
@@ -31,21 +23,36 @@ class UserController {
   public read(req: Request, res: Response): void {
     UserRepository.findById(String(req.params.id))
       .then((user: User) => {
+        if (!user) {
+          return res.status(404).json('Not Found.');
+        }
         return res.json(user);
       })
-      .catch((err) => respondErrorWithStatusCode(err, res));
+      .catch((err) => {
+        console.log(err);
+        return res.status(500).json('Oops - Something went wrong.');
+      });
   }
 
   public update(req: Request, res: Response): void {
-    const userId = String(req.params.userId);
+    const userId = String(req.params.id);
 
     if (!checkUserId(req, userId)) {
       res.status(403).end();
       return;
     }
 
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      res.status(422).json(errors.array());
+      return;
+    }
+
     UserRepository.findById(userId)
       .then((user: User) => {
+        if (!user) {
+          return res.status(404).json('Not Found.');
+        }
         const updateUser: User = parseUser(req);
 
         Object.assign(
@@ -63,7 +70,10 @@ class UserController {
             return res.status(500).json(err);
           });
       })
-      .catch((err: unknown) => respondErrorWithStatusCode(err, res));
+      .catch((err) => {
+        console.log(err);
+        return res.status(500).json('Oops - Something went wrong.');
+      });
   }
 
   public delete(req: Request, res: Response) {

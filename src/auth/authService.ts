@@ -30,10 +30,10 @@ authService.use('/local', LocalStrategy);
 authService.post('/refresh', function (req, res, next) {
   // prepare auth header and cookie parsing for refresh token check
   const authHeader = req.headers['authorization'];
-  const cookies = req.headers.cookie?.split(";")?.reduce((obj, c) => {
-    var n = c.split("=");
+  const cookies = req.headers.cookie?.split(';')?.reduce((obj, c) => {
+    const n = c.split('=');
     obj[n[0].trim()] = n[1].trim();
-    return obj
+    return obj;
   }, {});
 
   if (!authHeader || !cookies || !cookies['token']) {
