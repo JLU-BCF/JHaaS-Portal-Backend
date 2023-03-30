@@ -8,7 +8,7 @@ import {
   Index,
   OneToOne,
   JoinColumn,
-  PrimaryColumn,
+  PrimaryColumn
 } from 'typeorm';
 import { hashSync } from 'bcrypt';
 import User from './User';
@@ -21,29 +21,29 @@ export enum AuthProvider {
 @Index('authProviderIndex', ['authProvider', 'authProviderId'], { unique: true })
 export default class Credentials {
   @PrimaryColumn()
-    userId!: string;
+  userId!: string;
 
   @Column()
-    authProvider: AuthProvider;
+  authProvider: AuthProvider;
 
   @Column()
-    authProviderId: string;
+  authProviderId: string;
 
   @Column({ nullable: true })
-    password: string | null;
+  password: string | null;
 
   @OneToOne(() => User, {
     cascade: true,
     eager: true
   })
   @JoinColumn({ name: 'userId' })
-    user: User;
+  user: User;
 
   @CreateDateColumn()
-    createdAt!: Date;
+  createdAt!: Date;
 
   @UpdateDateColumn()
-    updatedAt!: Date;
+  updatedAt!: Date;
 
   @BeforeInsert()
   @BeforeUpdate()
@@ -53,16 +53,10 @@ export default class Credentials {
     }
   }
 
-  constructor(
-    user: User,
-    authProvider: AuthProvider,
-    authProviderId: string,
-    password?: string
-  ) {
+  constructor(user: User, authProvider: AuthProvider, authProviderId: string, password?: string) {
     this.user = user;
     this.authProvider = authProvider;
     this.authProviderId = authProviderId;
     this.password = password ?? null;
   }
-
 }

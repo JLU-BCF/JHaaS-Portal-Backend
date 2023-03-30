@@ -4,7 +4,6 @@ import { DeleteResult } from 'typeorm';
 import User from '../models/User';
 
 class CredentialsRepository {
-
   // create new credentials
   createOne(credentials: Credentials): Promise<Credentials> {
     return DB_CONN.getRepository(Credentials).save(credentials);
@@ -34,7 +33,6 @@ class CredentialsRepository {
   deleteById(id: string): Promise<DeleteResult> {
     return DB_CONN.getRepository(Credentials).delete(id);
   }
-
 }
 
 export default new CredentialsRepository();

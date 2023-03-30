@@ -22,27 +22,31 @@ import { JWT_SECRET } from '../../config/Config';
  * the hashed password stored in the database.  If the comparison succeeds, the
  * user is authenticated; otherwise, not.
  */
-passport.use(new LocalStrategy({
-  usernameField: 'email'
-}, (email: string, password: string, cb) => {
-  
-  CredentialsRepository.findByProvider(AuthProvider.LOCAL, email)
-    .then((credentialsInstance) => {
-      if (!credentialsInstance) {
-        return cb(null, false, {message: 'Incorrect email or password.'});
-      }
+passport.use(
+  new LocalStrategy(
+    {
+      usernameField: 'email'
+    },
+    (email: string, password: string, cb) => {
+      CredentialsRepository.findByProvider(AuthProvider.LOCAL, email)
+        .then((credentialsInstance) => {
+          if (!credentialsInstance) {
+            return cb(null, false, { message: 'Incorrect email or password.' });
+          }
 
-      if (compareSync(password, credentialsInstance.password)) {
-        return cb(null, credentialsInstance.user, {message: 'Logged In Successfully'});
-      }
+          if (compareSync(password, credentialsInstance.password)) {
+            return cb(null, credentialsInstance.user, { message: 'Logged In Successfully' });
+          }
 
-      return cb(null, false, {message: 'Incorrect email or password.'});
-    }).catch((err) => {
-      console.log(err);
-      return cb(err);
-    });
-
-}));
+          return cb(null, false, { message: 'Incorrect email or password.' });
+        })
+        .catch((err) => {
+          console.log(err);
+          return cb(err);
+        });
+    }
+  )
+);
 
 const localStrategy = Router();
 
@@ -63,17 +67,17 @@ const localStrategy = Router();
  * a message informing them of what went wrong.
  */
 localStrategy.post('/login', (req, res, next) => {
-  passport.authenticate('local', { session: false }, (err: any, user: User) => {
+  passport.authenticate('local', { session: false }, (err, user: User) => {
     if (err || !user) {
-      return res.json({msg: 'nope', err, user});
+      return res.json({ msg: 'nope', err, user });
     }
 
-    req.login(user, {session: false}, (err) => {
+    req.login(user, { session: false }, (err) => {
       if (err) {
-        return res.json({msg: 'nope', err});
+        return res.json({ msg: 'nope', err });
       }
-      const token = jwt.sign({user: user}, JWT_SECRET);
-      return res.json({ 'jwt': token });
+      const token = jwt.sign({ user: user }, JWT_SECRET);
+      return res.json({ jwt: token });
     });
   })(req, res);
 });
@@ -88,30 +92,27 @@ localStrategy.post('/login', (req, res, next) => {
  * successfully created, the user is logged in.
  */
 localStrategy.post('/signup', (req, res, next) => {
-
   const user = bodyParserHelper.parseUser(req);
   const { password } = req.body;
 
-  const credentials = new Credentials(
-    user,
-    AuthProvider.LOCAL,
-    user.email,
-    password
-  );
+  const credentials = new Credentials(user, AuthProvider.LOCAL, user.email, password);
 
-  UserRepository.createOne(user).then((userInstance) => {
-    CredentialsRepository.createOne(credentials).then(() => {
-      return res.json(userInstance);
-    }).catch((err) => {
+  UserRepository.createOne(user)
+    .then((userInstance) => {
+      CredentialsRepository.createOne(credentials)
+        .then(() => {
+          return res.json(userInstance);
+        })
+        .catch((err) => {
+          console.log(err);
+          UserRepository.deleteById(userInstance.id);
+          return res.status(500).json(err);
+        });
+    })
+    .catch((err) => {
       console.log(err);
-      UserRepository.deleteById(userInstance.id);
       return res.status(500).json(err);
     });
-  }).catch((err) => {
-    console.log(err);
-    return res.status(500).json(err);
-  });
-
 });
 
 export default localStrategy;

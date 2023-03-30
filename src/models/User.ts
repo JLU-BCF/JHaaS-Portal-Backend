@@ -3,34 +3,30 @@ import {
   PrimaryGeneratedColumn,
   Column,
   CreateDateColumn,
-  UpdateDateColumn,
+  UpdateDateColumn
 } from 'typeorm';
 
 @Entity()
 export default class User {
   @PrimaryGeneratedColumn('uuid')
-    id!: string;
+  id!: string;
 
   @Column()
-    firstName!: string;
+  firstName!: string;
 
   @Column()
-    lastName!: string;
+  lastName!: string;
 
   @Column()
-    email!: string;
+  email!: string;
 
   @CreateDateColumn()
-    createdAt!: Date;
+  createdAt!: Date;
 
   @UpdateDateColumn()
-    updatedAt!: Date;
+  updatedAt!: Date;
 
-  constructor(
-    firstName?: string,
-    lastName?: string,
-    email?: string
-  ) {
+  constructor(firstName?: string, lastName?: string, email?: string) {
     this.firstName = firstName;
     this.lastName = lastName;
     this.email = email;

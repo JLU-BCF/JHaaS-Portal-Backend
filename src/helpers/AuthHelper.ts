@@ -1,7 +1,6 @@
 import { Request } from 'express';
 
 class AuthHelper {
-
   public isAdmin(req: Request): boolean {
     return this.getRawAccount(req)['isAdmin'];
   }
@@ -22,7 +21,6 @@ class AuthHelper {
     const rawPayload = JSON.parse(req.headers['jwt_payload'].toString());
     return rawPayload.data.account;
   }
-
 }
 
 export default new AuthHelper();

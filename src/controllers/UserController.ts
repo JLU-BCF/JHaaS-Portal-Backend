@@ -4,13 +4,8 @@ import bodyParserHelper from '../helpers/BodyParserHelper';
 import authHelper from '../helpers/AuthHelper';
 import User from '../models/User';
 import UserRepository from '../repositories/UserRepository';
-import Credentials, { AuthProvider } from '../models/Credentials';
-import CredentialsRepository from '../repositories/CredentialsRepository';
-import { compareSync } from 'bcrypt';
-import jwt from 'jsonwebtoken';
 
 class UserController {
-
   /**************************
   Methods for REST Requests
   **************************/
@@ -45,9 +40,11 @@ class UserController {
       .then((user: User) => {
         const updateUser: User = bodyParserHelper.parseUser(req);
 
-        Object.assign(user, Object.keys(updateUser)
-          .filter((k) => updateUser[k] != null)
-          .reduce((a, k) => ({ ...a, [k]: updateUser[k] }), {})
+        Object.assign(
+          user,
+          Object.keys(updateUser)
+            .filter((k) => updateUser[k] != null)
+            .reduce((a, k) => ({ ...a, [k]: updateUser[k] }), {})
         );
 
         UserRepository.updateOne(user)
@@ -57,7 +54,6 @@ class UserController {
           .catch((err: unknown) => {
             return res.status(500).json(err);
           });
-
       })
       .catch((err: unknown) => this.respondErrorWithStatusCode(err, res));
   }
@@ -73,7 +69,6 @@ class UserController {
       return res.status(500).json(err);
     }
   }
-
 }
 
 export default new UserController();

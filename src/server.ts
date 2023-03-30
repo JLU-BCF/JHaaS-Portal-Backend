@@ -14,7 +14,7 @@ app.disable('x-powered-by');
 app.use(express.json());
 app.use(morgan('tiny'));
 app.use('/auth', AuthService);
-app.use('/user', passport.authenticate('jwt', {session: false}),  UserService);
+app.use('/user', passport.authenticate('jwt', { session: false }), UserService);
 
 // catch 404 and forward to error handler
 app.use((req: Request, res: Response, next: NextFunction) => {

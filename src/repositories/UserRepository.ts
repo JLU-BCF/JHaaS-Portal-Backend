@@ -3,7 +3,6 @@ import { DB_CONN } from '../config/Config';
 import { DeleteResult } from 'typeorm';
 
 class UserRepository {
-
   // return all users
   findAll(): Promise<User[]> {
     return DB_CONN.getRepository(User).find();
@@ -28,7 +27,6 @@ class UserRepository {
   deleteById(id: string): Promise<DeleteResult> {
     return DB_CONN.getRepository(User).delete(id);
   }
-
 }
 
 export default new UserRepository();

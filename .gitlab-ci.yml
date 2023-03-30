@@ -6,27 +6,19 @@ stages:
   - codequality
   - containerize
 
+# As the k8s runner does not support cache yet, we need to use artifacts :(
 node_modules:
   stage: dependencies
-  tags:
-    - nodejs
   image: node:16
-  cache:
-    key:
-      files:
-        - package-lock.json
-    paths:
-      - $NODE_CACHE_DIR
   artifacts:
     paths:
       - $NODE_CACHE_DIR
+  expire_in: 30 minutes
   script:
     - '[ -d $NODE_CACHE_DIR ] && [ ! -z "$(ls -A $NODE_CACHE_DIR)" ] || npm ci'
 
 eslint:
   stage: codequality
-  tags:
-    - nodejs
   image: node:16
   dependencies:
     - node_modules
@@ -35,8 +27,6 @@ eslint:
 
 build_image:
   stage: containerize
-  tags:
-    - kaniko
   image:
     name: gcr.io/kaniko-project/executor:debug
     entrypoint: [""]
