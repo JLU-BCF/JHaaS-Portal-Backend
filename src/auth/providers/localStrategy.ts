@@ -2,14 +2,13 @@ import { Router } from 'express';
 import passport from 'passport';
 import { Strategy as LocalStrategy } from 'passport-local';
 import { compareSync } from 'bcrypt';
-import jwt from 'jsonwebtoken';
 
-import bodyParserHelper from '../../helpers/BodyParserHelper';
+import { parseUser } from '../../helpers/BodyParserHelper';
 import CredentialsRepository from '../../repositories/CredentialsRepository';
 import Credentials, { AuthProvider } from '../../models/Credentials';
 import UserRepository from '../../repositories/UserRepository';
 import User from '../../models/User';
-import { JWT_SECRET } from '../../config/Config';
+import { respondTokens } from '../../helpers/AuthHelper';
 
 /* Configure password authentication strategy.
  *
@@ -76,8 +75,7 @@ localStrategy.post('/login', (req, res, next) => {
       if (err) {
         return res.json({ msg: 'nope', err });
       }
-      const token = jwt.sign({ user: user }, JWT_SECRET);
-      return res.json({ jwt: token });
+      respondTokens(user, res);
     });
   })(req, res);
 });
@@ -92,7 +90,7 @@ localStrategy.post('/login', (req, res, next) => {
  * successfully created, the user is logged in.
  */
 localStrategy.post('/signup', (req, res, next) => {
-  const user = bodyParserHelper.parseUser(req);
+  const user = parseUser(req);
   const { password } = req.body;
 
   const credentials = new Credentials(user, AuthProvider.LOCAL, user.email, password);

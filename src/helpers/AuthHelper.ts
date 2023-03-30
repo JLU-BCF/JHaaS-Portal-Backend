@@ -1,26 +1,64 @@
 import { Request } from 'express';
+import User from '../models/User';
+import jwt from 'jsonwebtoken';
+import {
+  JWT_SECRET_A,
+  JWT_SECRET_B,
+  JWT_ACTIVE_SECRET,
+  JWT_EXPIRY,
+  JWT_REFRESH_EXPIRY
+} from '../config/Config';
+import { Response } from 'express';
 
-class AuthHelper {
-  public isAdmin(req: Request): boolean {
-    return this.getRawAccount(req)['isAdmin'];
-  }
+export function getUserId(req: Request): string {
+  const user = req.user as User;
+  return user.id;
+}
 
-  public getAccountId(req: Request): string {
-    return String(this.getRawAccount(req)['id']);
-  }
+export function checkUserId(req: Request, userId: string): boolean {
+  return getUserId(req) == userId;
+}
 
-  public getUserId(req: Request): string {
-    return String(this.getRawAccount(req)['userId']);
-  }
+export function getLatestSignatureKey() {
+  return JWT_ACTIVE_SECRET == 'A' ? JWT_SECRET_A : JWT_SECRET_B;
+}
 
-  public checkUserId(req: Request, userId: string): boolean {
-    return this.getUserId(req) == userId;
-  }
+export function secretOrKeyProvider(req, rawJwtToken, done) {
+  const secret = getValidSignatureKey(rawJwtToken);
 
-  private getRawAccount(req: Request): unknown {
-    const rawPayload = JSON.parse(req.headers['jwt_payload'].toString());
-    return rawPayload.data.account;
+  if (secret) {
+    done(null, secret);
+  } else {
+    done('JWT invalid');
   }
 }
 
-export default new AuthHelper();
+export function getValidSignatureKey(rawJwtToken: string) {
+  for (const secret of [JWT_SECRET_A, JWT_SECRET_B]) {
+    if (checkJwtSignatureValid(rawJwtToken, secret)) {
+      return secret;
+    }
+  }
+  return false;
+}
+
+export function checkJwtSignatureValid(rawJwtToken: string, secret: string) {
+  try {
+    jwt.verify(rawJwtToken, secret, {
+      ignoreExpiration: true
+    });
+  } catch {
+    return false;
+  }
+  return true;
+}
+
+export function respondTokens(user: User, res: Response) {
+  const token = jwt.sign({ user: user }, getLatestSignatureKey(), {
+    expiresIn: JWT_EXPIRY
+  });
+  const refreshToken = jwt.sign({ id: user.id }, getLatestSignatureKey(), {
+    expiresIn: JWT_REFRESH_EXPIRY
+  });
+  return res.cookie('token', refreshToken, { httpOnly: true }).json({ jwt: token });
+}

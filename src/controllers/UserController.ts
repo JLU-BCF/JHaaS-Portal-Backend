@@ -1,9 +1,17 @@
 import { Request, Response } from 'express';
 import { EntityNotFoundError } from 'typeorm';
-import bodyParserHelper from '../helpers/BodyParserHelper';
-import authHelper from '../helpers/AuthHelper';
+import { parseUser } from '../helpers/BodyParserHelper';
+import { checkUserId } from '../helpers/AuthHelper';
 import User from '../models/User';
 import UserRepository from '../repositories/UserRepository';
+
+function respondErrorWithStatusCode(err: unknown, res: Response) {
+  if (err instanceof EntityNotFoundError) {
+    return res.status(404).json(err);
+  } else {
+    return res.status(500).json(err);
+  }
+}
 
 class UserController {
   /**************************
@@ -25,20 +33,20 @@ class UserController {
       .then((user: User) => {
         return res.json(user);
       })
-      .catch((err: unknown) => this.respondErrorWithStatusCode(err, res));
+      .catch((err) => respondErrorWithStatusCode(err, res));
   }
 
   public update(req: Request, res: Response): void {
     const userId = String(req.params.userId);
 
-    if (!authHelper.isAdmin(req) && !authHelper.checkUserId(req, userId)) {
+    if (!checkUserId(req, userId)) {
       res.status(403).end();
       return;
     }
 
     UserRepository.findById(userId)
       .then((user: User) => {
-        const updateUser: User = bodyParserHelper.parseUser(req);
+        const updateUser: User = parseUser(req);
 
         Object.assign(
           user,
@@ -55,19 +63,11 @@ class UserController {
             return res.status(500).json(err);
           });
       })
-      .catch((err: unknown) => this.respondErrorWithStatusCode(err, res));
+      .catch((err: unknown) => respondErrorWithStatusCode(err, res));
   }
 
   public delete(req: Request, res: Response) {
     throw new Error('Method not implemented.');
-  }
-
-  private respondErrorWithStatusCode(err: unknown, res: Response) {
-    if (err instanceof EntityNotFoundError) {
-      return res.status(404).json(err);
-    } else {
-      return res.status(500).json(err);
-    }
   }
 }
 

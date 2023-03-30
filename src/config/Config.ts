@@ -3,7 +3,19 @@ import { DataSource } from 'typeorm';
 import User from '../models/User';
 import Credentials from '../models/Credentials';
 
-export const JWT_SECRET: string = getDockerSecret('JWT_SECRET_FILE', 'JWT_SECRET', 'change-me');
+export const JWT_SECRET_A: string = getDockerSecret(
+  'JWT_SECRET_A_FILE',
+  'JWT_SECRET_A',
+  'secret-slot-a'
+);
+export const JWT_SECRET_B: string = getDockerSecret(
+  'JWT_SECRET_B_FILE',
+  'JWT_SECRET_B',
+  'secret-slot-b'
+);
+export const JWT_ACTIVE_SECRET: string = process.env.JWT_ACTIVE_SECRET || 'A';
+export const JWT_EXPIRY: string = process.env.JWT_EXPIRY || '1d';
+export const JWT_REFRESH_EXPIRY: string = process.env.JWT_REFRESH_EXPIRY || '7d';
 
 export const NODE_ENV: string = process.env.NODE_ENV || '';
 
