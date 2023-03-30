@@ -13,7 +13,7 @@ node_modules:
   artifacts:
     paths:
       - $NODE_CACHE_DIR
-  expire_in: 30 minutes
+    expire_in: 30 minutes
   script:
     - '[ -d $NODE_CACHE_DIR ] && [ ! -z "$(ls -A $NODE_CACHE_DIR)" ] || npm ci'
 
