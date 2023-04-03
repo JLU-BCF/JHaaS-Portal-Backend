@@ -10,9 +10,16 @@ import {
 } from '../config/Config';
 import { Response } from 'express';
 
+export function isUserAdminOrSelf(req: Request, userId: string) {
+  return getUser(req).isAdmin || checkUserId(req, userId);
+}
+
+export function getUser(req: Request): User {
+  return req.user as User;
+}
+
 export function getUserId(req: Request): string {
-  const user = req.user as User;
-  return user.id;
+  return getUser(req).id;
 }
 
 export function checkUserId(req: Request, userId: string): boolean {

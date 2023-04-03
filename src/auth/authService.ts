@@ -2,6 +2,7 @@ import passport from 'passport';
 import express, { Router } from 'express';
 import LocalStrategy from './providers/localStrategy';
 import { Strategy as JwtStrategy, ExtractJwt } from 'passport-jwt';
+import UserRepository from '../repositories/UserRepository';
 import User from '../models/User';
 import { secretOrKeyProvider, getValidSignatureKey, respondTokens } from '../helpers/AuthHelper';
 import jwt from 'jsonwebtoken';
@@ -13,8 +14,21 @@ passport.use(
       secretOrKeyProvider: secretOrKeyProvider
     },
     (payload, cb) => {
-      const user: User = payload.user;
-      return cb(null, user);
+      const jwtUser: User = payload.user;
+
+      // jwtUser could be outdated!
+      UserRepository.findById(jwtUser.id)
+        .then((userInstance: User) => {
+          if (userInstance) {
+            cb(null, userInstance);
+          } else {
+            cb('Unknown user.', false);
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+          cb('Authentication Error.', false);
+        });
     }
   )
 );

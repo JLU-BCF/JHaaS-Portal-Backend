@@ -2,6 +2,7 @@ import fs from 'fs';
 import { DataSource } from 'typeorm';
 import User from '../models/User';
 import Credentials from '../models/Credentials';
+import { JupyterHubRequest, JupyterHubChangeRequest } from '../models/JupyterHubRequest';
 
 export const JWT_SECRET_A: string = getDockerSecret(
   'JWT_SECRET_A_FILE',
@@ -26,7 +27,7 @@ export const DB_CONN: DataSource = new DataSource({
   username: process.env.POSTGRES_USER || 'postgres',
   database: process.env.POSTGRES_DB || 'postgres',
   password: getDockerSecret('POSTGRES_PASSWORD_FILE', 'POSTGRES_PASSWORD', 'postgres'),
-  entities: [User, Credentials],
+  entities: [User, Credentials, JupyterHubRequest, JupyterHubChangeRequest],
   synchronize: true,
   logging: true
 });

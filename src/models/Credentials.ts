@@ -20,8 +20,16 @@ export enum AuthProvider {
 @Entity()
 @Index('authProviderIndex', ['authProvider', 'authProviderId'], { unique: true })
 export default class Credentials {
-  @PrimaryColumn()
+  @PrimaryColumn('uuid')
   userId!: string;
+
+  @OneToOne(() => User, {
+    cascade: ['insert', 'update', 'remove'],
+    onDelete: 'CASCADE',
+    eager: true
+  })
+  @JoinColumn({ name: 'userId' })
+  user: User;
 
   @Column()
   authProvider: AuthProvider;
@@ -29,21 +37,15 @@ export default class Credentials {
   @Column()
   authProviderId: string;
 
+  // only for local authentication
   @Column({ nullable: true })
-  password: string | null;
-
-  @OneToOne(() => User, {
-    cascade: true,
-    eager: true
-  })
-  @JoinColumn({ name: 'userId' })
-  user: User;
+  password?: string | null;
 
   @CreateDateColumn()
-  createdAt!: Date;
+  createdAt: Date;
 
   @UpdateDateColumn()
-  updatedAt!: Date;
+  updatedAt: Date;
 
   @BeforeInsert()
   @BeforeUpdate()

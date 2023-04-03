@@ -3,11 +3,9 @@ import passport from 'passport';
 import { Strategy as LocalStrategy } from 'passport-local';
 import { compareSync } from 'bcrypt';
 
-import { parseUser, validationErrors } from '../../helpers/BodyParserHelper';
 import CredentialsRepository from '../../repositories/CredentialsRepository';
 import Credentials, { AuthProvider } from '../../models/Credentials';
-import UserRepository from '../../repositories/UserRepository';
-import User from '../../models/User';
+import { parseUser, validationErrors } from '../../helpers/BodyParserHelper';
 import { respondTokens } from '../../helpers/AuthHelper';
 import {
   localLoginValidation,
@@ -74,7 +72,7 @@ const localStrategy = Router();
 localStrategy.post('/login', localLoginValidation, (req, res, next) => {
   if (validationErrors(req, res)) return;
 
-  passport.authenticate('local', { session: false }, (err, user: User) => {
+  passport.authenticate('local', { session: false }, (err, user) => {
     if (err || !user) {
       return res.json(err);
     }
@@ -115,17 +113,10 @@ localStrategy.post('/signup', localSignupValidation, async (req, res, next) => {
     return res.status(500).json('Oops - Something went wrong.');
   }
 
+  // This will automatically create the user too
   CredentialsRepository.createOne(credentials)
     .then((credentialsInstance) => {
-      UserRepository.createOne(user)
-        .then((userInstance) => {
-          return res.json(userInstance);
-        })
-        .catch((err) => {
-          CredentialsRepository.deleteByUserId(credentialsInstance.userId);
-          console.log(err);
-          return res.status(500).json('Oops - Something went wrong.');
-        });
+      return res.json(credentialsInstance.user);
     })
     .catch((err) => {
       console.log(err);

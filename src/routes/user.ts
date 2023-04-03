@@ -13,6 +13,6 @@ router.get('/:id([0-9a-f-]+)', UserController.read);
 router.patch('/:id([0-9a-f-]+)', UserController.update);
 
 // delete account
-router.delete('/account/:id([0-9a-f-]+)', UserController.delete);
+router.delete('/:id([0-9a-f-]+)', UserController.delete);
 
 export default router;
