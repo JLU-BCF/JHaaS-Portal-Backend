@@ -6,7 +6,9 @@ import {
   JWT_SECRET_B,
   JWT_ACTIVE_SECRET,
   JWT_EXPIRY,
-  JWT_REFRESH_EXPIRY
+  JWT_REFRESH_EXPIRY,
+  APP_PATH,
+  JWT_REFRESH_COOKIE_SECURE
 } from '../config/Config';
 import { Response } from 'express';
 
@@ -67,5 +69,11 @@ export function respondTokens(user: User, res: Response) {
   const refreshToken = jwt.sign({ id: user.id }, getLatestSignatureKey(), {
     expiresIn: JWT_REFRESH_EXPIRY
   });
-  return res.cookie('token', refreshToken, { httpOnly: true }).json({ jwt: token });
+  const refreshTokenCookieOptions = {
+    httpOnly: true,
+    maxAge: JWT_REFRESH_EXPIRY * 1000,
+    path: APP_PATH,
+    secure: JWT_REFRESH_COOKIE_SECURE
+  };
+  return res.cookie('token', refreshToken, refreshTokenCookieOptions).json({ jwt: token });
 }

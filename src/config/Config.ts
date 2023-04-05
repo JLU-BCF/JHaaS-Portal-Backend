@@ -4,6 +4,10 @@ import User from '../models/User';
 import Credentials from '../models/Credentials';
 import { JupyterHubRequest, JupyterHubChangeRequest } from '../models/JupyterHubRequest';
 
+export const NODE_ENV: string = process.env.NODE_ENV || '';
+export const APP_PORT: number = Number(process.env.APP_PORT) || 8000;
+export const APP_PATH: string = process.env.APP_PATH || '/api';
+
 export const JWT_SECRET_A: string = getDockerSecret(
   'JWT_SECRET_A_FILE',
   'JWT_SECRET_A',
@@ -15,10 +19,10 @@ export const JWT_SECRET_B: string = getDockerSecret(
   'secret-slot-b'
 );
 export const JWT_ACTIVE_SECRET: string = process.env.JWT_ACTIVE_SECRET || 'A';
-export const JWT_EXPIRY: string = process.env.JWT_EXPIRY || '15m';
-export const JWT_REFRESH_EXPIRY: string = process.env.JWT_REFRESH_EXPIRY || '7d';
-
-export const NODE_ENV: string = process.env.NODE_ENV || '';
+export const JWT_EXPIRY: number = Number(process.env.JWT_EXPIRY) || 900;
+export const JWT_REFRESH_EXPIRY: number = Number(process.env.JWT_REFRESH_EXPIRY) || 604800;
+export const JWT_REFRESH_COOKIE_SECURE: boolean =
+  [true, 'true', 1].includes(process.env.JWT_REFRESH_COOKIE_SECURE) || false;
 
 export const DB_CONN: DataSource = new DataSource({
   type: 'postgres',
@@ -52,5 +56,3 @@ function getDockerSecret(
   // can only be undefined if no default is given!
   return secret;
 }
-
-export const APP_PORT: number = Number(process.env.APP_PORT) || 8000;
