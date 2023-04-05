@@ -15,7 +15,7 @@ export const JWT_SECRET_B: string = getDockerSecret(
   'secret-slot-b'
 );
 export const JWT_ACTIVE_SECRET: string = process.env.JWT_ACTIVE_SECRET || 'A';
-export const JWT_EXPIRY: string = process.env.JWT_EXPIRY || '1d';
+export const JWT_EXPIRY: string = process.env.JWT_EXPIRY || '15m';
 export const JWT_REFRESH_EXPIRY: string = process.env.JWT_REFRESH_EXPIRY || '7d';
 
 export const NODE_ENV: string = process.env.NODE_ENV || '';

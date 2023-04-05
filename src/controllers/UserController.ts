@@ -3,7 +3,7 @@ import { parseUser, validationErrors } from '../helpers/BodyParserHelper';
 import { getUser, isUserAdminOrSelf } from '../helpers/AuthHelper';
 import User from '../models/User';
 import UserRepository from '../repositories/UserRepository';
-import { generic403Error, generic404Error, generic500Error } from '../helpers/ErrorHelper';
+import { genericError } from '../helpers/ErrorHelper';
 import { DeleteResult } from 'typeorm';
 
 class UserController {
@@ -13,7 +13,7 @@ class UserController {
 
   public readAll(req: Request, res: Response): void {
     if (!getUser(req).isAdmin) {
-      return generic403Error(res);
+      return genericError.forbidden(res);
     }
 
     UserRepository.findAll()
@@ -22,7 +22,7 @@ class UserController {
       })
       .catch((err: unknown) => {
         console.log(err);
-        return generic500Error(res);
+        return genericError.internalServerError(res);
       });
   }
 
@@ -39,14 +39,14 @@ class UserController {
           if (userInstance) {
             return res.json(userInstance);
           }
-          return generic404Error(res);
+          return genericError.notFound(res);
         })
         .catch((err) => {
           console.log(err);
-          return generic500Error(res);
+          return genericError.internalServerError(res);
         });
     } else {
-      return generic403Error(res);
+      return genericError.forbidden(res);
     }
   }
 
@@ -55,13 +55,13 @@ class UserController {
     const userId = req.params.id;
 
     if (!isUserAdminOrSelf(req, userId)) {
-      return generic403Error(res);
+      return genericError.forbidden(res);
     }
 
     UserRepository.findById(userId)
       .then((user: User) => {
         if (!user) {
-          return generic404Error(res);
+          return genericError.notFound(res);
         }
         const updateUser: User = parseUser(req);
 
@@ -78,12 +78,12 @@ class UserController {
           })
           .catch((err: unknown) => {
             console.log(err);
-            return generic500Error(res);
+            return genericError.internalServerError(res);
           });
       })
       .catch((err) => {
         console.log(err);
-        return generic500Error(res);
+        return genericError.internalServerError(res);
       });
   }
 
@@ -91,7 +91,7 @@ class UserController {
     const userId = req.params.id;
 
     if (!isUserAdminOrSelf(req, userId)) {
-      return generic403Error(res);
+      return genericError.forbidden(res);
     }
 
     UserRepository.deleteById(userId)
@@ -99,11 +99,11 @@ class UserController {
         if (deleteResult.affected) {
           return res.json('Deleted.');
         }
-        return generic404Error(res);
+        return genericError.notFound(res);
       })
       .catch((err) => {
         console.log(err);
-        return generic500Error(res);
+        return genericError.internalServerError(res);
       });
   }
 }

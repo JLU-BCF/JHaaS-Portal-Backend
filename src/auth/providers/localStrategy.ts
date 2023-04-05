@@ -13,6 +13,7 @@ import {
   localUpdateEmailValidation,
   localUpdatePasswordValidation
 } from '../authValidationRules';
+import { genericError } from '../../helpers/ErrorHelper';
 
 /* Configure password authentication strategy.
  *
@@ -74,7 +75,7 @@ localStrategy.post('/login', localLoginValidation, (req, res, next) => {
 
   passport.authenticate('local', { session: false }, (err, user) => {
     if (err || !user) {
-      return res.json(err);
+      return genericError.unprocessableEntity(res, err);
     }
 
     req.login(user, { session: false }, (err) => {
