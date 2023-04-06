@@ -7,8 +7,7 @@ import {
 } from '@kubernetes/client-node';
 import { getTerraformWorkerJob } from '../k8s-templates/TerraformWorkerJob';
 import { JupyterHubRequest } from '../../models/JupyterHubRequest';
-import { K8S_KC_NS, K8S_TF_NS } from '../../config/K8s';
-import { getRealmImportOperatorJob } from '../k8s-templates/RealmOperatorJob';
+import { K8S_TF_NS } from '../../config/K8s';
 
 class K8sHelper {
   private kc: KubeConfig;
@@ -30,25 +29,6 @@ class K8sHelper {
     const jobDefinition = getTerraformWorkerJob(jh);
     this.batchK8sApi
       .createNamespacedJob(K8S_TF_NS, jobDefinition)
-      .then((response) => {
-        return response;
-      })
-      .catch((err) => {
-        console.log(err);
-        throw err;
-      });
-  }
-
-  public deployRealmImportOperatorJob(jh: JupyterHubRequest) {
-    const jobDefinition = getRealmImportOperatorJob(jh);
-    this.customK8sApi
-      .createNamespacedCustomObject(
-        'k8s.keycloak.org',
-        'v2alpha1',
-        K8S_KC_NS,
-        'keycloakrealmimports',
-        jobDefinition
-      )
       .then((response) => {
         return response;
       })
