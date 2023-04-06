@@ -2,6 +2,7 @@ import k8s from '@kubernetes/client-node';
 import { JupyterHubRequest } from '../../models/JupyterHubRequest';
 import * as k8sConf from '../../config/K8s';
 
+// TODO: use S3 instead of volume
 export function getTerraformWorkerJob(jh: JupyterHubRequest): k8s.V1Job {
   return {
     kind: 'Job',
@@ -41,13 +42,20 @@ export function getTerraformWorkerJob(jh: JupyterHubRequest): k8s.V1Job {
                   value: jh.containerImage
                 },
                 {
-                  name: 'KEYCLOAK_CONF',
-                  valueFrom: {
-                    secretKeyRef: {
-                      name: `jh-sec-${jh.id}`,
-                      key: 'KEYCLOAK_CONF'
-                    }
-                  }
+                  name: 'JH_INSTANCE_FLAVOUR',
+                  value: jh.instanceFlavour
+                },
+                {
+                  name: 'JH_INSTANCE_COUNT',
+                  value: `${jh.instanceCount}`
+                },
+                {
+                  name: 'JH_DESC',
+                  value: jh.description
+                },
+                {
+                  name: 'JH_CONTACT',
+                  value: jh.creator.email
                 }
               ],
               volumeMounts: [
@@ -68,9 +76,7 @@ export function getTerraformWorkerJob(jh: JupyterHubRequest): k8s.V1Job {
             }
           ]
         }
-      },
-      backoffLimit: 4
-    },
-    status: {}
+      }
+    }
   };
 }
