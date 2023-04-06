@@ -13,7 +13,12 @@ import User from './User';
 export enum JupyterHubRequestStatus {
   PENDING,
   ACCEPTED,
-  REJECTED
+  REJECTED,
+  DEPLOYING,
+  DEPLOYED,
+  DEGRADING,
+  DEGRATED,
+  FAILED
 }
 
 @Entity()
@@ -43,7 +48,16 @@ class JupyterHubBase {
   instanceCount: number;
 
   @Column()
+  containerImage: string;
+
+  @Column()
   status: JupyterHubRequestStatus;
+
+  @Column()
+  startDate: Date;
+
+  @Column()
+  endDate: Date;
 
   @CreateDateColumn()
   createdAt: Date;

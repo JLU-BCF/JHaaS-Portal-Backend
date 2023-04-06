@@ -7,6 +7,7 @@ import { JupyterHubRequest, JupyterHubChangeRequest } from '../models/JupyterHub
 export const NODE_ENV: string = process.env.NODE_ENV || '';
 export const APP_PORT: number = Number(process.env.APP_PORT) || 8000;
 export const APP_PATH: string = process.env.APP_PATH || '/api';
+export const JH_DOMAIN: string = process.env.JH_DOMAIN || 'jhaas.local';
 
 export const JWT_SECRET_A: string = getDockerSecret(
   'JWT_SECRET_A_FILE',
@@ -32,7 +33,7 @@ export const DB_CONN: DataSource = new DataSource({
   database: process.env.POSTGRES_DB || 'postgres',
   password: getDockerSecret('POSTGRES_PASSWORD_FILE', 'POSTGRES_PASSWORD', 'postgres'),
   entities: [User, Credentials, JupyterHubRequest, JupyterHubChangeRequest],
-  synchronize: true,
+  synchronize: false,
   logging: true
 });
 
