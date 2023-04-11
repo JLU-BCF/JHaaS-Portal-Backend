@@ -21,6 +21,28 @@ export enum JupyterHubRequestStatus {
   FAILED
 }
 
+export type JupyterHubRequestUserConf = {
+  storagePerUser: number;
+  cpusPerUser: number;
+  ramPerUser: number;
+  userCount: number;
+};
+
+// types will be validated by middleware!
+interface JupyterHubBaseRequestObj {
+  creator;
+  name;
+  description?;
+  userConf;
+  containerImage;
+  startDate;
+  endDate;
+}
+
+interface JupyterHubRequestObj extends JupyterHubBaseRequestObj {
+  slug;
+}
+
 @Entity()
 class JupyterHubBase {
   @PrimaryGeneratedColumn('uuid')
@@ -32,20 +54,11 @@ class JupyterHubBase {
   @Column()
   name: string;
 
-  @Column({ unique: true })
-  slug: string;
-
   @Column({ nullable: true })
   description?: string;
 
   @Column('jsonb')
-  userConf: JSON;
-
-  @Column()
-  instanceFlavour: string;
-
-  @Column()
-  instanceCount: number;
+  userConf: JupyterHubRequestUserConf;
 
   @Column()
   containerImage: string;
@@ -64,15 +77,53 @@ class JupyterHubBase {
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  constructor(data?: JupyterHubBaseRequestObj) {
+    if (data) {
+      this.creator = data.creator;
+      this.name = data.name;
+      this.description = data.description;
+      this.userConf = data.userConf;
+      this.containerImage = data.containerImage;
+      this.startDate = data.startDate;
+      this.endDate = data.endDate;
+    }
+
+    this.status = JupyterHubRequestStatus.PENDING;
+  }
+
+  public changesAllowed() {
+    const changesAllowedStates = [
+      JupyterHubRequestStatus.PENDING,
+      JupyterHubRequestStatus.ACCEPTED,
+      JupyterHubRequestStatus.REJECTED
+    ];
+    return changesAllowedStates.includes(this.status);
+  }
 }
 
 @Entity()
 export class JupyterHubRequest extends JupyterHubBase {
-  @OneToMany(() => JupyterHubChangeRequest, (jhcr) => jhcr.origRequest)
+  @Column({ unique: true })
+  slug: string;
+
+  @Column()
+  instanceFlavour: string;
+
+  @Column()
+  instanceCount: number;
+
+  @OneToMany(() => JupyterHubChangeRequest, (jhcr) => jhcr.origRequest, { eager: true })
   changeRequests: JupyterHubChangeRequest[];
 
-  constructor() {
-    super();
+  constructor(data?: JupyterHubRequestObj) {
+    super(data);
+    if (data) {
+      this.slug = data.slug;
+      const { instanceFlavour, instanceCount } = userConf2instanceConf(this.userConf);
+      this.instanceFlavour = instanceFlavour;
+      this.instanceCount = instanceCount;
+    }
   }
 }
 
@@ -82,7 +133,18 @@ export class JupyterHubChangeRequest extends JupyterHubBase {
   @JoinColumn()
   origRequest: JupyterHubRequest;
 
-  constructor() {
-    super();
+  constructor(data?: JupyterHubBaseRequestObj) {
+    super(data);
   }
+}
+
+function userConf2instanceConf(userConf: JupyterHubRequestUserConf): {
+  instanceFlavour: string;
+  instanceCount: number;
+} {
+  // TODO calc proper instance configuration
+  return {
+    instanceFlavour: 'default',
+    instanceCount: 1
+  };
 }

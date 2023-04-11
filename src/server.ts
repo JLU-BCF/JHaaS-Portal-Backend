@@ -6,7 +6,8 @@ import express, { Application, NextFunction, Request, Response } from 'express';
 import morgan from 'morgan';
 import passport from 'passport';
 import AuthService from './auth/authService';
-import UserService from './routes/user';
+import UserService from './routes/user.routes';
+import JupyterHubRequestService from './routes/jupytherHubRequest.routes';
 
 const app: Application = express();
 
@@ -15,6 +16,7 @@ app.use(express.json());
 app.use(morgan('tiny'));
 app.use('/auth', AuthService);
 app.use('/user', passport.authenticate('jwt', { session: false }), UserService);
+app.use('/jupyter', passport.authenticate('jwt', { session: false }), JupyterHubRequestService);
 
 // catch 404 and forward to error handler
 app.use((req: Request, res: Response, next: NextFunction) => {
