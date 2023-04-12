@@ -29,7 +29,7 @@ export type JupyterHubRequestUserConf = {
 };
 
 // types will be validated by middleware!
-interface JupyterHubBaseRequestObj {
+type JupyterHubBaseRequestObj = {
   creator;
   name;
   description?;
@@ -37,11 +37,9 @@ interface JupyterHubBaseRequestObj {
   containerImage;
   startDate;
   endDate;
-}
+};
 
-interface JupyterHubRequestObj extends JupyterHubBaseRequestObj {
-  slug;
-}
+type JupyterHubRequestObj = JupyterHubBaseRequestObj & { slug };
 
 @Entity()
 class JupyterHubBase {
@@ -138,11 +136,9 @@ export class JupyterHubChangeRequest extends JupyterHubBase {
   }
 }
 
-function userConf2instanceConf(userConf: JupyterHubRequestUserConf): {
-  instanceFlavour: string;
-  instanceCount: number;
-} {
+function userConf2instanceConf(userConf: JupyterHubRequestUserConf) {
   // TODO calc proper instance configuration
+  console.log(userConf);
   return {
     instanceFlavour: 'default',
     instanceCount: 1

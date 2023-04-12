@@ -1,11 +1,8 @@
 import { Request, Response } from 'express';
-import { parseJupyterHubRequest, parseUser, validationErrors } from '../helpers/BodyParserHelper';
-import { getUser, isUserAdminOrSelf } from '../helpers/AuthHelper';
-import { JupyterHubRequest, JupyterHubChangeRequest } from '../models/JupyterHubRequest';
+import { parseJupyterHubRequest, validationErrors } from '../helpers/BodyParserHelper';
+import { getUser } from '../helpers/AuthHelper';
+import { JupyterHubRequest } from '../models/JupyterHubRequest';
 import JupyterHubRequestRepository from '../repositories/JupyterHubRequestRepository';
-import JupyterHubChangeRequestRepository from '../repositories/JupyterHubChangeRequestRepository';
-import User from '../models/User';
-import UserRepository from '../repositories/UserRepository';
 import { genericError } from '../helpers/ErrorHelper';
 import { DeleteResult } from 'typeorm';
 
@@ -70,7 +67,11 @@ class JupyterHubRequestController {
     // TODO: lock database row to prevent parallelism
     JupyterHubRequestRepository.findById(jhRequestId)
       .then((jhRequest: JupyterHubRequest) => {
-        if (jhRequest && jhRequest.changesAllowed && (jhRequest.creator.id == user.id || user.isAdmin)) {
+        if (
+          jhRequest &&
+          jhRequest.changesAllowed &&
+          (jhRequest.creator.id == user.id || user.isAdmin)
+        ) {
           if (jhRequest.changesAllowed) {
             return JupyterHubRequestRepository.deleteById(jhRequest.id)
               .then((deleteResult: DeleteResult) => {
