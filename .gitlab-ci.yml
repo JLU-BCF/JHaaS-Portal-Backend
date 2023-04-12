@@ -37,10 +37,11 @@ build_image:
     - node_modules
   script:
     - mkdir -p /kaniko/.docker
-    - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
+    - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"},\"$HARBOR_HOST\":{\"username\":\"$HARBOR_USERNAME\",\"password\":\"$HARBOR_PASSWORD\"}}}" > /kaniko/.docker/config.json
     - sed -i '/^node_modules\/$/d' .dockerignore
     - /kaniko/executor
       --context     "$CI_PROJECT_DIR"
       --dockerfile  "$CI_PROJECT_DIR/Dockerfile.kaniko"
       --destination "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"
+      --destination "$HARBOR_HOST/$HARBOR_PROJECT/$CI_PROJECT_NAME:$CI_COMMIT_REF_SLUG"
       --target      "production"
