@@ -14,7 +14,8 @@ export function readAll(): void {
 }
 
 export function testS3(): void {
-  minioClient.putObject('terraform-states', 'demo.json', JSON.stringify({hello: 'world'}))
+  minioClient
+    .putObject('terraform-states', 'demo.json', JSON.stringify({ hello: 'world' }))
     .then(() => console.log('yeah'))
     .catch((err) => console.log(err));
 }
