@@ -27,5 +27,5 @@ export const DB_CONN: DataSource = new DataSource({
   entities: [User, Credentials, JupyterHubRequest, JupyterHubChangeRequest],
   synchronize: false,
   logging: true,
-  migrations: ['database-migrations/*.ts']
+  migrations: ['src/database-migrations/*.ts']
 });
