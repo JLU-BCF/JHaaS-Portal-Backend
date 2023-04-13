@@ -42,10 +42,13 @@ services:
     restart: unless-stopped
     networks:
       - jhaas-portal-priv
+    ports:
+      - 127.0.0.1:9001:9001
     volumes:
       - 'minio-data:/data'
     env_file:
       - ./environments/minio.env
+    command: server --console-address ":9001" /data
 
 networks:
   jhaas-portal-priv:

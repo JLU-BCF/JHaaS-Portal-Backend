@@ -26,5 +26,6 @@ export const DB_CONN: DataSource = new DataSource({
   password: getSecret('POSTGRES_PASSWORD_FILE', 'POSTGRES_PASSWORD', 'postgres'),
   entities: [User, Credentials, JupyterHubRequest, JupyterHubChangeRequest],
   synchronize: false,
-  logging: true
+  logging: true,
+  migrations: ['database-migrations/*.ts']
 });

@@ -7,6 +7,12 @@ const router: Router = Router();
 // get all jupyter hub requests
 router.get('/', jhRequestController.readAll);
 
+// get a specific jupyter hub object
+router.get('/:id([0-9a-f-]+)', jhRequestController.read);
+
+// create update request
+router.post('/:id([0-9a-f-]+)', jhRequestController.update);
+
 // create new jupyter hub request
 router.post('/', jupyterHubRequestCreateValidation, jhRequestController.create);
 

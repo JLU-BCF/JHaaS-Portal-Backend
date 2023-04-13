@@ -1,5 +1,5 @@
 import { getSecret } from '../helpers/SecretHelper';
-import Minio from 'minio';
+import * as Minio from 'minio';
 
 export const minioClient = new Minio.Client({
   endPoint: process.env.S3_ENDPOINT || 'minio',
