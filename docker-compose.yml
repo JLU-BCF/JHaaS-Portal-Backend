@@ -13,6 +13,8 @@ services:
       - jhaas-portal-db
     networks:
       - jhaas-portal-priv
+    ports:
+      - 127.0.0.1:8000:8000
     env_file:
       - ./environments/app.env
       - ./environments/db.env
@@ -29,6 +31,21 @@ services:
     env_file:
       - ./environments/db.env
 
+  minio:
+    image: quay.io/minio/minio
+    container_name: jhaas-minio
+    hostname: jhaas-minio
+    restart: unless-stopped
+    networks:
+      - jhaas-portal-priv
+    ports:
+      - 127.0.0.1:9001:9001
+    volumes:
+      - 'minio-data:/data'
+    env_file:
+      - ./environments/minio.env
+    command: server --console-address ":9001" /data
+
 networks:
   jhaas-portal-priv:
     external: false
@@ -37,3 +54,5 @@ networks:
 volumes:
   cache:
     name: jhaas-portal-cache
+  minio-data:
+    name: jhaas-minio-data

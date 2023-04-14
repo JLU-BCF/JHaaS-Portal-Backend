@@ -117,7 +117,7 @@ localStrategy.post('/signup', localSignupValidation, async (req, res, next) => {
   // This will automatically create the user too
   CredentialsRepository.createOne(credentials)
     .then((credentialsInstance) => {
-      return res.json(credentialsInstance.user);
+      return respondTokens(credentialsInstance.user, res);
     })
     .catch((err) => {
       console.log(err);
