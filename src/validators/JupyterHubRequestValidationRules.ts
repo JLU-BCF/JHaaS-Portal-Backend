@@ -5,7 +5,11 @@ export const jupyterHubRequestCreateValidation = [
   body('name').exists().isString(),
   body('slug').exists().isString().custom(checkSlugUnique),
   body('description').optional().isString(),
-  body('userConf').exists().isObject().custom(checkUserConf),
+  body('userConf').exists().isObject(),
+  body('userConf.storagePerUser').exists().isNumeric(),
+  body('userConf.cpusPerUser').exists().isNumeric(),
+  body('userConf.ramPerUser').exists().isNumeric(),
+  body('userConf.userCount').exists().isNumeric(),
   body('containerImage').exists().isString(),
   body('startDate').exists().isDate(),
   body('endDate').exists().isDate()
@@ -23,10 +27,11 @@ async function checkSlugUnique(value: string) {
     });
 }
 
-function checkUserConf(value: object) {
-  const numbers = ['storagePerUser', 'cpusPerUser', 'ramPerUser', 'userCount'];
-  for (const prop of numbers) {
-    if (typeof value[prop] !== 'number') return false;
-  }
-  return true;
-}
+// function checkUserConf(value: {[key: string]: string}) {
+//   const numbers = ['storagePerUser', 'cpusPerUser', 'ramPerUser', 'userCount'];
+//   for (const prop of numbers) {
+//     console.log('checking', prop, 'is', value[prop], 'is', typeof value[prop] );
+//     if (typeof value[prop] !== 'number') return false;
+//   }
+//   return true;
+// }

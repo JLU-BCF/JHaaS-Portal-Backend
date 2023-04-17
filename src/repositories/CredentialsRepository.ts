@@ -18,11 +18,11 @@ class CredentialsRepository {
   }
 
   // find credentials by user
-  findByUser(user: User): Promise<Credentials> {
-    return DB_CONN.getRepository(Credentials).findOneBy({
-      user: user
-    });
-  }
+  // findByUser(user: User): Promise<Credentials> {
+  //   return DB_CONN.getRepository(Credentials).findOneBy({
+  //     user: user
+  //   });
+  // }
 
   // update credentials
   updateOne(credentials: Credentials): Promise<Credentials> {

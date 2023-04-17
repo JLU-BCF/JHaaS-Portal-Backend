@@ -3,13 +3,18 @@ import {
   PrimaryGeneratedColumn,
   Column,
   CreateDateColumn,
-  UpdateDateColumn
+  UpdateDateColumn,
+  OneToMany
 } from 'typeorm';
+import { JupyterHubRequest } from './JupyterHubRequest';
 
 @Entity()
 export default class User {
   @PrimaryGeneratedColumn('uuid')
   id: string;
+
+  @OneToMany(() => JupyterHubRequest, (jhr) => jhr.creator)
+  jupyterHubRequests: Promise<JupyterHubRequest[]>;
 
   @Column()
   firstName: string;

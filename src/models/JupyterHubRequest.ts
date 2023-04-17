@@ -11,14 +11,14 @@ import {
 import User from './User';
 
 export enum JupyterHubRequestStatus {
-  PENDING,
-  ACCEPTED,
-  REJECTED,
-  DEPLOYING,
-  DEPLOYED,
-  DEGRADING,
-  DEGRATED,
-  FAILED
+  PENDING   = 'PENDING',
+  ACCEPTED  = 'ACCEPTED',
+  REJECTED  = 'REJECTED',
+  DEPLOYING = 'DEPLOYING',
+  DEPLOYED  = 'DEPLOYED',
+  DEGRADING = 'DEGRADING',
+  DEGRATED  = 'DEGRATED',
+  FAILED    = 'FAILED'
 }
 
 export type JupyterHubRequestUserConf = {
@@ -61,7 +61,7 @@ class JupyterHubBase {
   @Column()
   containerImage: string;
 
-  @Column()
+  @Column({ default: JupyterHubRequestStatus.PENDING })
   status: JupyterHubRequestStatus;
 
   @Column()

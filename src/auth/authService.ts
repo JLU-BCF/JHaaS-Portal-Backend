@@ -22,7 +22,7 @@ passport.use(
           if (userInstance) {
             cb(null, userInstance);
           } else {
-            cb('Unknown user.', false);
+            cb(null, false);
           }
         })
         .catch((err) => {
@@ -74,7 +74,17 @@ authService.post('/refresh', function (req, res, next) {
     const refreshTokenPayload = jwt.verify(refreshToken, refreshTokenSecret);
 
     if (refreshTokenPayload['id'] == tokenPayload['user']['id']) {
-      return respondTokens(tokenPayload['user'] as User, res);
+      // Get actual user from Database
+      return UserRepository.findById(refreshTokenPayload['id'])
+        .then((userInstance: User) => {
+          if (userInstance) {
+            return respondTokens(userInstance, res);
+          }
+          return res.status(422).json('Unknown User.');
+        })
+        .catch((err) => {
+          return res.status(500).json('Authentication Error.');
+        });
     } else {
       return res.status(401).json('Invalid token.');
     }
