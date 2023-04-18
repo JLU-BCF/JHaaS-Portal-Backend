@@ -47,7 +47,7 @@ class JupyterHubBase {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @ManyToOne(() => User)
+  @ManyToOne(() => User, { eager: true })
   creator: User;
 
   @Column()

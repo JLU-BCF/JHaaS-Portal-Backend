@@ -64,6 +64,24 @@ class JupyterHubRequestController {
       });
   }
 
+  public readBySlug(req: Request, res: Response): void {
+    const jhRequestSlug = req.params.slug;
+    const user = getUser(req);
+
+    JupyterHubRequestRepository.findBySlug(jhRequestSlug)
+      .then((jhRequest: JupyterHubRequest) => {
+        console.log(jhRequest);
+        if (jhRequest && (jhRequest.creator.id == user.id || user.isAdmin)) {
+          return res.json(jhRequest);
+        }
+        return genericError.notFound(res);
+      })
+      .catch((err) => {
+        console.log(err);
+        return genericError.internalServerError(res);
+      });
+  }
+
   public create(req: Request, res: Response): void {
     if (validationErrors(req, res)) return;
     const jhRequest = parseJupyterHubRequest(req);
