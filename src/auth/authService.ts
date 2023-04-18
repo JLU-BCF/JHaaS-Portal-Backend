@@ -83,6 +83,7 @@ authService.post('/refresh', function (req, res, next) {
           return res.status(422).json('Unknown User.');
         })
         .catch((err) => {
+          console.log(err);
           return res.status(500).json('Authentication Error.');
         });
     } else {

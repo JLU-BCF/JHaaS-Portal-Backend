@@ -28,13 +28,14 @@ class JupyterHubRequestController {
 
   public list(req: Request, res: Response): void {
     const user = getUser(req);
-    user.jupyterHubRequests.then((jhRequests) => {
-      res.json(jhRequests);
-    })
-    .catch((err) => {
-      console.log(err);
-      return genericError.internalServerError(res);
-    });
+    user.jupyterHubRequests
+      .then((jhRequests) => {
+        res.json(jhRequests);
+      })
+      .catch((err) => {
+        console.log(err);
+        return genericError.internalServerError(res);
+      });
 
     // JupyterHubRequestRepository.findByCreator(user)
     //   .then((jhRequests: JupyterHubRequest[]) => {

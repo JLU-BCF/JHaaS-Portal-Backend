@@ -11,14 +11,15 @@ import {
 import User from './User';
 
 export enum JupyterHubRequestStatus {
-  PENDING   = 'PENDING',
-  ACCEPTED  = 'ACCEPTED',
-  REJECTED  = 'REJECTED',
+  PENDING = 'PENDING',
+  ACCEPTED = 'ACCEPTED',
+  REJECTED = 'REJECTED',
   DEPLOYING = 'DEPLOYING',
-  DEPLOYED  = 'DEPLOYED',
+  DEPLOYED = 'DEPLOYED',
   DEGRADING = 'DEGRADING',
-  DEGRATED  = 'DEGRATED',
-  FAILED    = 'FAILED'
+  DEGRATED = 'DEGRATED',
+  FAILED = 'FAILED',
+  CANCELED = 'CANCELED'
 }
 
 export type JupyterHubRequestUserConf = {

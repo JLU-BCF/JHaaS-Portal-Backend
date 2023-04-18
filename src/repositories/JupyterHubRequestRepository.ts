@@ -1,7 +1,6 @@
 import { JupyterHubRequest, JupyterHubRequestStatus } from '../models/JupyterHubRequest';
 import { DB_CONN } from '../config/Config';
 import { DeleteResult, MoreThan } from 'typeorm';
-import User from '../models/User';
 
 class JupyterHubRequestRepository {
   // return all jupyterHubRequests
@@ -23,11 +22,6 @@ class JupyterHubRequestRepository {
   findBySlug(slug: string): Promise<JupyterHubRequest> {
     return DB_CONN.getRepository(JupyterHubRequest).findOneBy({ slug });
   }
-
-  // find jupyterHubRequest by creatorId
-  // findByCreator(creator: User): Promise<JupyterHubRequest[]> {
-  //   return DB_CONN.getRepository(JupyterHubRequest).findBy({ creator });
-  // }
 
   // update a single jupyterHubRequest
   updateOne(jupyterHubRequest: JupyterHubRequest): Promise<JupyterHubRequest> {
