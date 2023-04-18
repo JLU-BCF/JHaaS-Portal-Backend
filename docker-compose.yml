@@ -30,6 +30,8 @@ services:
       - jhaas-portal-priv
     env_file:
       - ./environments/db.env
+    volumes:
+      - 'postgres-data:/var/lib/postgresql/data'
 
   minio:
     image: quay.io/minio/minio
@@ -46,6 +48,23 @@ services:
       - ./environments/minio.env
     command: server --console-address ":9001" /data
 
+  mailhog:
+    image: mailhog/mailhog
+    container_name: mailhog
+    hostname: mailhog
+    environment:
+      - MH_SMTP_BIND_ADDR=0.0.0.0:2525
+      - MH_STORAGE=maildir
+      - MH_MAILDIR_PATH=/maildir
+    volumes:
+      - 'mailhog-data:/maildir'
+    networks:
+      - jhaas-portal-priv
+    ports:
+      - 127.0.0.1:8025:8025
+    expose:
+      - 2525
+
 networks:
   jhaas-portal-priv:
     external: false
@@ -54,5 +73,9 @@ networks:
 volumes:
   cache:
     name: jhaas-portal-cache
+  mailhog-data:
+    name: jhaas-mailhog-data
   minio-data:
     name: jhaas-minio-data
+  postgres-data:
+    name: jhaas-postgres-data
