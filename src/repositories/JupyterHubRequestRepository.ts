@@ -4,8 +4,11 @@ import { DeleteResult, MoreThan } from 'typeorm';
 
 class JupyterHubRequestRepository {
   // return all jupyterHubRequests
-  findAll(): Promise<JupyterHubRequest[]> {
-    return DB_CONN.getRepository(JupyterHubRequest).find();
+  findAll(take?: number, skip?: number): Promise<JupyterHubRequest[]> {
+    return DB_CONN.getRepository(JupyterHubRequest).find({
+      take,
+      skip
+    });
   }
 
   // create a new jupyterHubRequest
@@ -33,13 +36,30 @@ class JupyterHubRequestRepository {
     return DB_CONN.getRepository(JupyterHubRequest).delete(id);
   }
 
-  // find jupyterHubRequest by id
-  findDeployableJupyterHubRequests(): Promise<JupyterHubRequest[]> {
+  // find all open jupyterHubRequests
+  findOpen(take?: number, skip?: number): Promise<JupyterHubRequest[]> {
+    return DB_CONN.getRepository(JupyterHubRequest).find({
+      relations: ['changeRequests'],
+      where: [
+        { status: JupyterHubRequestStatus.PENDING },
+        { changeRequests: { status: JupyterHubRequestStatus.PENDING } }
+      ],
+      take,
+      skip
+    });
+  }
+
+  // find deployable jupyterHubRequests
+  findDeployableJupyterHubRequests(take?: number, skip?: number): Promise<JupyterHubRequest[]> {
     const dueDate = new Date(new Date().getTime() - 60 * 60 * 24 * 7 * 1000);
 
-    return DB_CONN.getRepository(JupyterHubRequest).findBy({
-      status: JupyterHubRequestStatus.ACCEPTED,
-      startDate: MoreThan(dueDate)
+    return DB_CONN.getRepository(JupyterHubRequest).find({
+      where: {
+        status: JupyterHubRequestStatus.ACCEPTED,
+        startDate: MoreThan(dueDate)
+      },
+      take,
+      skip
     });
   }
 }

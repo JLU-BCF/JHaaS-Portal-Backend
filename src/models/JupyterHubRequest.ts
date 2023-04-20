@@ -112,7 +112,11 @@ export class JupyterHubRequest extends JupyterHubBase {
   @Column()
   instanceCount: number;
 
-  @OneToMany(() => JupyterHubChangeRequest, (jhcr) => jhcr.origRequest, { eager: true })
+  @OneToMany(() => JupyterHubChangeRequest, (jhcr) => jhcr.origRequest, {
+    cascade: ['insert', 'update', 'remove'],
+    onDelete: 'CASCADE',
+    eager: true
+  })
   changeRequests: JupyterHubChangeRequest[];
 
   constructor(data?: JupyterHubRequestObj) {
