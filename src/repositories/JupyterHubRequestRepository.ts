@@ -26,6 +26,14 @@ class JupyterHubRequestRepository {
     return DB_CONN.getRepository(JupyterHubRequest).findOneBy({ slug });
   }
 
+  // find jupyterHubRequest by change request
+  findByChangeRequest(changeRequestId: string): Promise<JupyterHubRequest> {
+    return DB_CONN.getRepository(JupyterHubRequest).findOne({
+      relations: ['changeRequests'],
+      where: [{ changeRequests: { id: changeRequestId } }]
+    });
+  }
+
   // update a single jupyterHubRequest
   updateOne(jupyterHubRequest: JupyterHubRequest): Promise<JupyterHubRequest> {
     return DB_CONN.getRepository(JupyterHubRequest).save(jupyterHubRequest);

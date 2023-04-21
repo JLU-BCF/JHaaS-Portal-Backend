@@ -40,7 +40,20 @@ type JupyterHubBaseRequestObj = {
   endDate;
 };
 
-type JupyterHubRequestObj = JupyterHubBaseRequestObj & { slug };
+type JupyterHubRequestObj = JupyterHubBaseRequestObj & {
+  slug;
+  instanceFlavour?;
+  instanceCount?;
+};
+
+const changeableProps = [
+  'name',
+  'description',
+  'userConf',
+  'containerImage',
+  'startDate',
+  'endDate'
+];
 
 @Entity()
 class JupyterHubBase {
@@ -99,6 +112,14 @@ class JupyterHubBase {
     ];
     return changesAllowedStates.includes(this.status);
   }
+
+  public userAllowed(user: User) {
+    return this.creator.id == user.id || user.isAdmin;
+  }
+
+  public userAndChangesAllowed(user: User) {
+    return this.userAllowed(user) && this.changesAllowed();
+  }
 }
 
 @Entity()
@@ -123,9 +144,46 @@ export class JupyterHubRequest extends JupyterHubBase {
     super(data);
     if (data) {
       this.slug = data.slug;
-      const { instanceFlavour, instanceCount } = userConf2instanceConf(this.userConf);
-      this.instanceFlavour = instanceFlavour;
-      this.instanceCount = instanceCount;
+      if (data.instanceFlavour && data.instanceCount) {
+        this.instanceFlavour = data.instanceFlavour;
+        this.instanceCount = data.instanceCount;
+      } else {
+        this.userConf2instanceConf();
+      }
+    }
+  }
+
+  private userConf2instanceConf() {
+    // TODO calc proper instance configuration
+    this.instanceFlavour = 'default';
+    this.instanceCount = 1;
+  }
+
+  public cancelPendingChangeRequests() {
+    for (const changeReq of this.changeRequests) {
+      if (changeReq.status == JupyterHubRequestStatus.PENDING) {
+        changeReq.status = JupyterHubRequestStatus.CANCELED;
+      }
+    }
+  }
+
+  public setChangeRequestStatus(changeRequestId: string, status: JupyterHubRequestStatus) {
+    for (const changeReq of this.changeRequests) {
+      if (changeReq.id == changeRequestId) {
+        changeReq.status = status;
+      }
+    }
+  }
+
+  public applyChangeRequest(changeRequestId: string) {
+    for (const changeReq of this.changeRequests) {
+      if (changeReq.id == changeRequestId) {
+        changeReq.status = JupyterHubRequestStatus.ACCEPTED;
+        for (const prop of changeableProps) {
+          this[prop] = changeReq[prop];
+        }
+        this.userConf2instanceConf();
+      }
     }
   }
 }
@@ -139,13 +197,4 @@ export class JupyterHubChangeRequest extends JupyterHubBase {
   constructor(data?: JupyterHubBaseRequestObj) {
     super(data);
   }
-}
-
-function userConf2instanceConf(userConf: JupyterHubRequestUserConf) {
-  // TODO calc proper instance configuration
-  console.log(userConf);
-  return {
-    instanceFlavour: 'default',
-    instanceCount: 1
-  };
 }
