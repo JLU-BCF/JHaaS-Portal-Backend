@@ -105,12 +105,11 @@ class JupyterHubBase {
   }
 
   public changesAllowed() {
-    const changesAllowedStates = [
+    return [
       JupyterHubRequestStatus.PENDING,
       JupyterHubRequestStatus.ACCEPTED,
       JupyterHubRequestStatus.REJECTED
-    ];
-    return changesAllowedStates.includes(this.status);
+    ].includes(this.status);
   }
 
   public userAllowed(user: User) {
@@ -183,6 +182,7 @@ export class JupyterHubRequest extends JupyterHubBase {
           this[prop] = changeReq[prop];
         }
         this.userConf2instanceConf();
+        this.status = JupyterHubRequestStatus.ACCEPTED;
       }
     }
   }
@@ -196,5 +196,14 @@ export class JupyterHubChangeRequest extends JupyterHubBase {
 
   constructor(data?: JupyterHubBaseRequestObj) {
     super(data);
+  }
+
+  // After Change Request is accepted,
+  // it is merged with Orig, so no
+  // un-accepting possible!
+  public changesAllowed() {
+    return [JupyterHubRequestStatus.PENDING, JupyterHubRequestStatus.REJECTED].includes(
+      this.status
+    );
   }
 }

@@ -8,6 +8,7 @@ import { getUser } from '../helpers/AuthHelper';
 import { JupyterHubRequest, JupyterHubRequestStatus } from '../models/JupyterHubRequest';
 import JupyterHubRequestRepository from '../repositories/JupyterHubRequestRepository';
 import { genericError } from '../helpers/ErrorHelper';
+import * as MailHelper from '../helpers/EmailHelper';
 import { DeleteResult } from 'typeorm';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -68,7 +69,10 @@ class JupyterHubRequestController {
     const jhRequest = parseJupyterHubRequest(req);
 
     JupyterHubRequestRepository.createOne(jhRequest)
-      .then((instance) => res.json(instance))
+      .then((instance) => {
+        res.json(instance);
+        MailHelper.sendJHRequestCreatedMail(instance);
+      })
       .catch((err) => logErrorAndReturnGeneric500(err, res));
   }
 
