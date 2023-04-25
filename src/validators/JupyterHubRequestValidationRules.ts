@@ -1,9 +1,8 @@
 import { body } from 'express-validator';
 import jhRequestRepository from '../repositories/JupyterHubRequestRepository';
 
-export const jupyterHubRequestCreateValidation = [
+const jupyterHubRequestBaseValidation = [
   body('name').exists().isString(),
-  body('slug').exists().isString().custom(checkSlugUnique),
   body('description').optional().isString(),
   body('userConf').exists().isObject(),
   body('userConf.storagePerUser').exists().isNumeric(),
@@ -12,7 +11,18 @@ export const jupyterHubRequestCreateValidation = [
   body('userConf.userCount').exists().isNumeric(),
   body('containerImage').exists().isString(),
   body('startDate').exists().isDate(),
-  body('endDate').exists().isDate()
+  body('endDate').exists().isDate(),
+  body('tosConfirmation').exists().isBoolean().contains(true)
+];
+
+export const jupyterHubRequestCreateValidation = [
+  body('slug').exists().isString().custom(checkSlugUnique),
+  ...jupyterHubRequestBaseValidation
+];
+
+export const jupyterHubRequestUpdateValidation = [
+  body('id').exists().isString().isUUID(),
+  ...jupyterHubRequestBaseValidation
 ];
 
 async function checkSlugUnique(value: string) {
@@ -26,12 +36,3 @@ async function checkSlugUnique(value: string) {
       return err == 'TAKEN' ? Promise.reject('Slug already taken.') : Promise.reject();
     });
 }
-
-// function checkUserConf(value: {[key: string]: string}) {
-//   const numbers = ['storagePerUser', 'cpusPerUser', 'ramPerUser', 'userCount'];
-//   for (const prop of numbers) {
-//     console.log('checking', prop, 'is', value[prop], 'is', typeof value[prop] );
-//     if (typeof value[prop] !== 'number') return false;
-//   }
-//   return true;
-// }

@@ -24,21 +24,25 @@ class JupyterHubRequestController {
 
   public readAll(req: Request, res: Response): void {
     JupyterHubRequestRepository.findAll()
-      .then((instances) => res.json(instances))
+      .then(([instances, count]) => res.json({ instances, count }))
       .catch((err) => logErrorAndReturnGeneric500(err, res));
   }
 
   public listOpen(req: Request, res: Response): void {
     JupyterHubRequestRepository.findOpen()
-      .then((instances) => res.json(instances))
+      .then(([instances, count]) => res.json({ instances, count }))
       .catch((err) => logErrorAndReturnGeneric500(err, res));
   }
 
   public list(req: Request, res: Response): void {
-    const user = getUser(req);
+    JupyterHubRequestRepository.findByCreator(getUser(req))
+      .then(([instances, count]) => res.json({ instances, count }))
+      .catch((err) => logErrorAndReturnGeneric500(err, res));
+  }
 
-    user.jupyterHubRequests
-      .then((instances) => res.json(instances))
+  public checkSlug(req: Request, res: Response): void {
+    JupyterHubRequestRepository.findBySlug(req.params.slug)
+      .then((jhRequest: JupyterHubRequest) => res.json(jhRequest ? false : true))
       .catch((err) => logErrorAndReturnGeneric500(err, res));
   }
 

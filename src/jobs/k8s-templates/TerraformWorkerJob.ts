@@ -57,24 +57,10 @@ export function getTerraformWorkerJob(jh: JupyterHubRequest): k8s.V1Job {
                   name: 'JH_CONTACT',
                   value: jh.creator.email
                 }
-              ],
-              volumeMounts: [
-                {
-                  mountPath: '/tf-state',
-                  name: 'tf-state'
-                }
               ]
             }
           ],
-          restartPolicy: 'Never',
-          volumes: [
-            {
-              name: 'tf-state',
-              persistentVolumeClaim: {
-                claimName: `jh-state-${jh.id}`
-              }
-            }
-          ]
+          restartPolicy: 'Never'
         }
       }
     }

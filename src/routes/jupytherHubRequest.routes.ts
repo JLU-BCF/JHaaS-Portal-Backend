@@ -17,6 +17,9 @@ router.get('/by-id/:id([0-9a-f-]+)', jhRequestController.read);
 // get a specific jupyter hub object by slug
 router.get('/by-slug/:slug([0-9a-z-]+)', jhRequestController.readBySlug);
 
+// check if slug is free
+router.get('/check-slug/:slug([0-9a-z-]+)', jhRequestController.checkSlug);
+
 // create jupyter hub change request
 router.put('/', jhRequestController.createChangeRequest);
 

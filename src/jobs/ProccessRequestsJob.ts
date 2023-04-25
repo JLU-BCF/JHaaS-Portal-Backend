@@ -5,7 +5,8 @@ import k8sHelper from './helpers/K8sHelper';
 
 export function processRequests(): void {
   JupyterHubRequestRepository.findDeployableJupyterHubRequests()
-    .then((requests: JupyterHubRequest[]) => {
+    .then(([requests, count]) => {
+      console.log(`Found ${count} processable requests`);
       for (const request of requests) {
         proccessOneRequest(request);
       }

@@ -1,11 +1,28 @@
 import { JupyterHubRequest, JupyterHubRequestStatus } from '../models/JupyterHubRequest';
 import { DB_CONN } from '../config/Config';
 import { DeleteResult, MoreThan } from 'typeorm';
+import User from '../models/User';
 
 class JupyterHubRequestRepository {
   // return all jupyterHubRequests
-  findAll(take?: number, skip?: number): Promise<JupyterHubRequest[]> {
-    return DB_CONN.getRepository(JupyterHubRequest).find({
+  findAll(take?: number, skip?: number): Promise<[JupyterHubRequest[], number]> {
+    return DB_CONN.getRepository(JupyterHubRequest).findAndCount({
+      take,
+      skip
+    });
+  }
+
+  // return all jupyterHubRequests
+  findByCreator(
+    creator: User,
+    take?: number,
+    skip?: number
+  ): Promise<[JupyterHubRequest[], number]> {
+    return DB_CONN.getRepository(JupyterHubRequest).findAndCount({
+      relations: ['creator'],
+      where: {
+        creator: { id: creator.id }
+      },
       take,
       skip
     });
@@ -45,8 +62,8 @@ class JupyterHubRequestRepository {
   }
 
   // find all open jupyterHubRequests
-  findOpen(take?: number, skip?: number): Promise<JupyterHubRequest[]> {
-    return DB_CONN.getRepository(JupyterHubRequest).find({
+  findOpen(take?: number, skip?: number): Promise<[JupyterHubRequest[], number]> {
+    return DB_CONN.getRepository(JupyterHubRequest).findAndCount({
       relations: ['changeRequests'],
       where: [
         { status: JupyterHubRequestStatus.PENDING },
@@ -58,10 +75,13 @@ class JupyterHubRequestRepository {
   }
 
   // find deployable jupyterHubRequests
-  findDeployableJupyterHubRequests(take?: number, skip?: number): Promise<JupyterHubRequest[]> {
+  findDeployableJupyterHubRequests(
+    take?: number,
+    skip?: number
+  ): Promise<[JupyterHubRequest[], number]> {
     const dueDate = new Date(new Date().getTime() - 60 * 60 * 24 * 7 * 1000);
 
-    return DB_CONN.getRepository(JupyterHubRequest).find({
+    return DB_CONN.getRepository(JupyterHubRequest).findAndCount({
       where: {
         status: JupyterHubRequestStatus.ACCEPTED,
         startDate: MoreThan(dueDate)

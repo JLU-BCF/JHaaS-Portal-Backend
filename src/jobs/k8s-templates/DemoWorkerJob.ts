@@ -38,7 +38,8 @@ export function getDemoWorkerJob(echo: string): k8s.V1Job {
           ],
           restartPolicy: 'Never'
         }
-      }
+      },
+      ttlSecondsAfterFinished: 0
     }
   };
 }
