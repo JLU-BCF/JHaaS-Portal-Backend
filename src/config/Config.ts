@@ -27,5 +27,7 @@ export const DB_CONN: DataSource = new DataSource({
   entities: [User, Credentials, JupyterHubRequest, JupyterHubChangeRequest],
   synchronize: NODE_ENV != 'production',
   logging: true,
-  migrations: ['src/database-migrations/*.ts']
+  migrations: [
+    NODE_ENV != 'production' ? 'src/database-migrations/*.ts' : 'dist/database-migrations/*.js'
+  ]
 });

@@ -3,7 +3,7 @@
 # This Dockerfile can only be used within the CI pipeline,
 # as it depends on artifacts from preceding jobs.
 ##########################################################
-FROM node:16 AS build
+FROM node:18 AS build
 
 ARG APPDIR=/jhaas-app
 WORKDIR ${APPDIR}
@@ -13,7 +13,7 @@ COPY . .
 # node_modules are coming from ci artifact
 RUN npm run build
 
-FROM node:16-alpine AS production
+FROM node:18-alpine AS production
 
 ARG APPDIR=/jhaas-app
 WORKDIR ${APPDIR}

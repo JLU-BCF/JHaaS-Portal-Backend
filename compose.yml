@@ -4,7 +4,7 @@ version: '3'
 
 services:
   jhaas-portal-backend:
-    image: node:16
+    image: node:18
     container_name: jhaas-portal-backend
     hostname: jhaas-portal-backend
     restart: unless-stopped
