@@ -17,6 +17,46 @@ function logErrorAndReturnGeneric500(err: any, res: Response) {
   return genericError.internalServerError(res);
 }
 
+function modifyJupyterStatus(
+  req: Request,
+  res: Response,
+  isChangeRequest: boolean,
+  status: JupyterHubRequestStatus,
+  cb?: (instance: JupyterHubRequest) => void
+) {
+  const entityId = req.params.id;
+  const user = getUser(req);
+  const findMeth = isChangeRequest ? 'findByChangeRequest' : 'findById';
+
+  JupyterHubRequestRepository[findMeth](entityId)
+    .then((jhRequest: JupyterHubRequest) => {
+      if (!jhRequest?.userAndChangesAllowed(user)) {
+        console.log('here:', jhRequest);
+        return genericError.unprocessableEntity(res);
+      }
+
+      if (isChangeRequest) {
+        jhRequest.setChangeRequestStatus(entityId, status);
+        if (status == JupyterHubRequestStatus.ACCEPTED) {
+          jhRequest.applyChangeRequest(entityId);
+        }
+      } else {
+        jhRequest.status = status;
+        if (status == JupyterHubRequestStatus.CANCELED) {
+          jhRequest.cancelPendingChangeRequests();
+        }
+      }
+
+      JupyterHubRequestRepository.updateOne(jhRequest)
+        .then((instance) => {
+          res.json(instance);
+          cb && cb(instance);
+        })
+        .catch((err) => logErrorAndReturnGeneric500(err, res));
+    })
+    .catch((err) => logErrorAndReturnGeneric500(err, res));
+}
+
 class JupyterHubRequestController {
   /**************************
   Methods for REST Requests
@@ -80,56 +120,6 @@ class JupyterHubRequestController {
       .catch((err) => logErrorAndReturnGeneric500(err, res));
   }
 
-  public accept(req: Request, res: Response): void {
-    const jhRequestId = req.params.id;
-
-    JupyterHubRequestRepository.findById(jhRequestId)
-      .then((jhRequest: JupyterHubRequest) => {
-        if (jhRequest?.changesAllowed()) {
-          jhRequest.status = JupyterHubRequestStatus.ACCEPTED;
-          return JupyterHubRequestRepository.updateOne(jhRequest)
-            .then((instance) => res.json(instance))
-            .catch((err) => logErrorAndReturnGeneric500(err, res));
-        }
-        return genericError.unprocessableEntity(res);
-      })
-      .catch((err) => logErrorAndReturnGeneric500(err, res));
-  }
-
-  public reject(req: Request, res: Response): void {
-    const jhRequestId = req.params.id;
-
-    JupyterHubRequestRepository.findById(jhRequestId)
-      .then((jhRequest: JupyterHubRequest) => {
-        if (jhRequest?.changesAllowed()) {
-          jhRequest.status = JupyterHubRequestStatus.REJECTED;
-          return JupyterHubRequestRepository.updateOne(jhRequest)
-            .then((instance) => res.json(instance))
-            .catch((err) => logErrorAndReturnGeneric500(err, res));
-        }
-        return genericError.unprocessableEntity(res);
-      })
-      .catch((err) => logErrorAndReturnGeneric500(err, res));
-  }
-
-  public cancel(req: Request, res: Response): void {
-    const jhRequestId = req.params.id;
-    const user = getUser(req);
-
-    JupyterHubRequestRepository.findById(jhRequestId)
-      .then((jhRequest: JupyterHubRequest) => {
-        if (jhRequest?.userAndChangesAllowed(user)) {
-          jhRequest.status = JupyterHubRequestStatus.CANCELED;
-          jhRequest.cancelPendingChangeRequests();
-          return JupyterHubRequestRepository.updateOne(jhRequest)
-            .then((instance) => res.json(instance))
-            .catch((err) => logErrorAndReturnGeneric500(err, res));
-        }
-        return genericError.unprocessableEntity(res);
-      })
-      .catch((err) => logErrorAndReturnGeneric500(err, res));
-  }
-
   public createChangeRequest(req: Request, res: Response): void {
     const jhRequestId = req.body.id;
     const user = getUser(req);
@@ -149,55 +139,40 @@ class JupyterHubRequestController {
       .catch((err) => logErrorAndReturnGeneric500(err, res));
   }
 
-  public acceptChangeRequest(req: Request, res: Response): void {
-    const changeRequestId = req.params.id;
-    const user = getUser(req);
+  public accept(req: Request, res: Response): void {
+    modifyJupyterStatus(req, res, false, JupyterHubRequestStatus.ACCEPTED, (instance) => {
+      MailHelper.sendJupyterAccepted(instance);
+    });
+  }
 
-    JupyterHubRequestRepository.findByChangeRequest(changeRequestId)
-      .then((jhRequest: JupyterHubRequest) => {
-        if (jhRequest?.userAndChangesAllowed(user)) {
-          jhRequest.applyChangeRequest(changeRequestId);
-          return JupyterHubRequestRepository.updateOne(jhRequest)
-            .then((instance) => res.json(instance))
-            .catch((err) => logErrorAndReturnGeneric500(err, res));
-        }
-        return genericError.unprocessableEntity(res);
-      })
-      .catch((err) => logErrorAndReturnGeneric500(err, res));
+  public reject(req: Request, res: Response): void {
+    modifyJupyterStatus(req, res, false, JupyterHubRequestStatus.REJECTED, (instance) => {
+      console.log('rejected', instance);
+    });
+  }
+
+  public cancel(req: Request, res: Response): void {
+    modifyJupyterStatus(req, res, false, JupyterHubRequestStatus.CANCELED, (instance) => {
+      console.log('canceled', instance);
+    });
+  }
+
+  public acceptChangeRequest(req: Request, res: Response): void {
+    modifyJupyterStatus(req, res, true, JupyterHubRequestStatus.ACCEPTED, (instance) => {
+      console.log('accepted', instance);
+    });
   }
 
   public rejectChangeRequest(req: Request, res: Response): void {
-    const changeRequestId = req.params.id;
-    const user = getUser(req);
-
-    JupyterHubRequestRepository.findByChangeRequest(changeRequestId)
-      .then((jhRequest: JupyterHubRequest) => {
-        if (jhRequest?.userAndChangesAllowed(user)) {
-          jhRequest.setChangeRequestStatus(changeRequestId, JupyterHubRequestStatus.REJECTED);
-          return JupyterHubRequestRepository.updateOne(jhRequest)
-            .then((instance) => res.json(instance))
-            .catch((err) => logErrorAndReturnGeneric500(err, res));
-        }
-        return genericError.unprocessableEntity(res);
-      })
-      .catch((err) => logErrorAndReturnGeneric500(err, res));
+    modifyJupyterStatus(req, res, true, JupyterHubRequestStatus.REJECTED, (instance) => {
+      console.log('rejected', instance);
+    });
   }
 
   public cancelChangeRequest(req: Request, res: Response): void {
-    const changeRequestId = req.params.id;
-    const user = getUser(req);
-
-    JupyterHubRequestRepository.findByChangeRequest(changeRequestId)
-      .then((jhRequest: JupyterHubRequest) => {
-        if (jhRequest?.userAndChangesAllowed(user)) {
-          jhRequest.setChangeRequestStatus(changeRequestId, JupyterHubRequestStatus.CANCELED);
-          return JupyterHubRequestRepository.updateOne(jhRequest)
-            .then((instance) => res.json(instance))
-            .catch((err) => logErrorAndReturnGeneric500(err, res));
-        }
-        return genericError.unprocessableEntity(res);
-      })
-      .catch((err) => logErrorAndReturnGeneric500(err, res));
+    modifyJupyterStatus(req, res, true, JupyterHubRequestStatus.CANCELED, (instance) => {
+      console.log('canceled', instance);
+    });
   }
 
   public delete(req: Request, res: Response) {
