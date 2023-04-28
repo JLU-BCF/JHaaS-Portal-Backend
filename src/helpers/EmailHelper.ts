@@ -1,37 +1,56 @@
-import { mailTransporter } from '../config/Mail';
+import { mailTransporter, MAIL_FROM, MAIL_COPY_ADDRESSES } from '../config/Mail';
 import { JupyterHubRequest } from '../models/JupyterHubRequest';
+import User from '../models/User';
 import MailTemplates from './mail-templates/MailTemplates';
 
-export function sendJHRequestCreatedMail(jupyterHubRequest: JupyterHubRequest) {
-  mailTransporter
-    .sendMail({
-      from: '"JHaaS Portal" <jhaas@test.local>',
-      to: jupyterHubRequest.creator.email,
-      subject: 'Jupyter Hub Request Created',
-      text: `Hey, this is you: ${JSON.stringify(jupyterHubRequest)}`,
-      html: require('./mail-templates/RequestCreatedMail.html')
-    })
-    .then(() => console.log('Mail sent.'))
-    .catch((err) => console.log(err));
+export const MailHelper = {
+  sendJupyterCreated: jupyterTemplate('JupyterCreated', true),
+  sendJupyterAccepted: jupyterTemplate('JupyterAccepted'),
+  sendJupyterRejected: jupyterTemplate('JupyterRejected'),
+  sendJupyterCanceled: jupyterTemplate('JupyterCanceled'),
+  sendJupyterChangeCreated: jupyterTemplate('JupyterChangeCreated', true),
+  sendJupyterChangeAccepted: jupyterTemplate('JupyterChangeAccepted'),
+  sendJupyterChangeRejected: jupyterTemplate('JupyterChangeRejected'),
+  sendJupyterChangeCanceled: jupyterTemplate('JupyterChangeCanceled'),
+  sendUserCreated: userTemplate('UserCreated', true)
+};
+
+const templateSubjects: { [key: string]: string } = {
+  JupyterCreated: 'Your Jupyter Hub Request has been Created',
+  JupyterAccepted: 'Your Jupyter Hub Request has been Accepted',
+  JupyterRejected: 'Your Jupyter Hub Request has been Rejected',
+  JupyterCanceled: 'Your Jupyter Hub Request has been Canceled',
+  JupyterChangeCreated: 'Your Change Request has been Created',
+  JupyterChangeAccepted: 'Your Change Request has been Accepted',
+  JupyterChangeRejected: 'Your Change Request has been Rejected',
+  JupyterChangeCanceled: 'Your Change Request has been Canceled',
+  UserCreated: 'Welcome to the JHaaS Portal'
+};
+
+function jupyterTemplate(template: string, copy?: boolean) {
+  return (jupyter: JupyterHubRequest, changeRequestId?: string) => {
+    const changeRequest = changeRequestId && jupyter.getChangeRequestById(changeRequestId);
+    const mailOpts = { user: jupyter.creator, jupyter, changeRequest };
+
+    sendMail(jupyter.creator.email, template, mailOpts, copy);
+  };
 }
 
-export function sendJupyterAccepted(jupyter: JupyterHubRequest) {
-  sendMail(
-    jupyter,
-    'Your Request has been accepted',
-    MailTemplates.JupyterAcceptedText({ jupyter, user: jupyter.creator }),
-    MailTemplates.JupyterAcceptedHtml({ jupyter, user: jupyter.creator })
-  );
+function userTemplate(template: string, copy?: boolean) {
+  return (user: User) => {
+    sendMail(user.email, template, { user }, copy);
+  };
 }
 
-function sendMail(jupyter: JupyterHubRequest, subject: string, text: string, html: string) {
+function sendMail(to: string, template: string, mailOpts: object, copy?: boolean) {
   mailTransporter
     .sendMail({
-      from: '"JHaaS Portal" <jhaas@test.local>',
-      to: jupyter.creator.email,
-      subject,
-      text,
-      html
+      from: MAIL_FROM,
+      to,
+      bcc: copy ? MAIL_COPY_ADDRESSES : undefined,
+      subject: templateSubjects[template],
+      text: MailTemplates[template]['text'](mailOpts),
+      html: MailTemplates[template]['html'](mailOpts)
     })
     .then(() => console.log('Mail sent.'))
     .catch((err) => console.log(err));

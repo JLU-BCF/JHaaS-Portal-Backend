@@ -186,6 +186,14 @@ export class JupyterHubRequest extends JupyterHubBase {
       }
     }
   }
+
+  public getChangeRequestById(changeRequestId: string) {
+    for (const changeRequest of this.changeRequests) {
+      if (changeRequest.id == changeRequestId) {
+        return changeRequest;
+      }
+    }
+  }
 }
 
 @Entity()

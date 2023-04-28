@@ -1,12 +1,25 @@
 import pug, { compileTemplate } from 'pug';
 
-const templates = ['JupyterAccepted'];
+const formats = ['text', 'html'];
+const templates = [
+  'JupyterCreated',
+  'JupyterAccepted',
+  'JupyterRejected',
+  'JupyterCanceled',
+  'JupyterChangeCreated',
+  'JupyterChangeAccepted',
+  'JupyterChangeRejected',
+  'JupyterChangeCanceled',
+  'UserCreated'
+];
 
-const methods: { [key: string]: compileTemplate } = {};
+const methods: { [key: string]: { [key: string]: compileTemplate } } = {};
 
 templates.forEach((template) => {
-  methods[`${template}Html`] = pug.compileFile(`${__dirname}/html/${template}.pug`);
-  methods[`${template}Text`] = pug.compileFile(`${__dirname}/text/${template}.pug`);
+  methods[template] = {};
+  formats.forEach((format) => {
+    methods[template][format] = pug.compileFile(`${__dirname}/${format}/${template}.pug`);
+  });
 });
 
 export default methods;

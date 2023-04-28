@@ -8,7 +8,7 @@ import { getUser } from '../helpers/AuthHelper';
 import { JupyterHubRequest, JupyterHubRequestStatus } from '../models/JupyterHubRequest';
 import JupyterHubRequestRepository from '../repositories/JupyterHubRequestRepository';
 import { genericError } from '../helpers/ErrorHelper';
-import * as MailHelper from '../helpers/EmailHelper';
+import { MailHelper } from '../helpers/EmailHelper';
 import { DeleteResult } from 'typeorm';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -115,9 +115,27 @@ class JupyterHubRequestController {
     JupyterHubRequestRepository.createOne(jhRequest)
       .then((instance) => {
         res.json(instance);
-        MailHelper.sendJHRequestCreatedMail(instance);
+        MailHelper.sendJupyterCreated(instance);
       })
       .catch((err) => logErrorAndReturnGeneric500(err, res));
+  }
+
+  public accept(req: Request, res: Response): void {
+    modifyJupyterStatus(req, res, false, JupyterHubRequestStatus.ACCEPTED, (instance) => {
+      MailHelper.sendJupyterAccepted(instance);
+    });
+  }
+
+  public reject(req: Request, res: Response): void {
+    modifyJupyterStatus(req, res, false, JupyterHubRequestStatus.REJECTED, (instance) => {
+      MailHelper.sendJupyterRejected(instance);
+    });
+  }
+
+  public cancel(req: Request, res: Response): void {
+    modifyJupyterStatus(req, res, false, JupyterHubRequestStatus.CANCELED, (instance) => {
+      MailHelper.sendJupyterCanceled(instance);
+    });
   }
 
   public createChangeRequest(req: Request, res: Response): void {
@@ -131,7 +149,10 @@ class JupyterHubRequestController {
           jhRequest.cancelPendingChangeRequests();
           jhRequest.changeRequests.push(jhChangeRequest);
           return JupyterHubRequestRepository.updateOne(jhRequest)
-            .then((instance) => res.json(instance))
+            .then((instance) => {
+              res.json(instance);
+              MailHelper.sendJupyterChangeCreated(instance, jhChangeRequest.id);
+            })
             .catch((err) => logErrorAndReturnGeneric500(err, res));
         }
         return genericError.unprocessableEntity(res);
@@ -139,39 +160,21 @@ class JupyterHubRequestController {
       .catch((err) => logErrorAndReturnGeneric500(err, res));
   }
 
-  public accept(req: Request, res: Response): void {
-    modifyJupyterStatus(req, res, false, JupyterHubRequestStatus.ACCEPTED, (instance) => {
-      MailHelper.sendJupyterAccepted(instance);
-    });
-  }
-
-  public reject(req: Request, res: Response): void {
-    modifyJupyterStatus(req, res, false, JupyterHubRequestStatus.REJECTED, (instance) => {
-      console.log('rejected', instance);
-    });
-  }
-
-  public cancel(req: Request, res: Response): void {
-    modifyJupyterStatus(req, res, false, JupyterHubRequestStatus.CANCELED, (instance) => {
-      console.log('canceled', instance);
-    });
-  }
-
   public acceptChangeRequest(req: Request, res: Response): void {
     modifyJupyterStatus(req, res, true, JupyterHubRequestStatus.ACCEPTED, (instance) => {
-      console.log('accepted', instance);
+      MailHelper.sendJupyterChangeAccepted(instance, req.params.id);
     });
   }
 
   public rejectChangeRequest(req: Request, res: Response): void {
     modifyJupyterStatus(req, res, true, JupyterHubRequestStatus.REJECTED, (instance) => {
-      console.log('rejected', instance);
+      MailHelper.sendJupyterChangeRejected(instance, req.params.id);
     });
   }
 
   public cancelChangeRequest(req: Request, res: Response): void {
     modifyJupyterStatus(req, res, true, JupyterHubRequestStatus.CANCELED, (instance) => {
-      console.log('canceled', instance);
+      MailHelper.sendJupyterChangeCanceled(instance, req.params.id);
     });
   }
 

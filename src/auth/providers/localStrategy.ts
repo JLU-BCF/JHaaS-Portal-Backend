@@ -14,6 +14,7 @@ import {
   localUpdatePasswordValidation
 } from '../authValidationRules';
 import { genericError } from '../../helpers/ErrorHelper';
+import { MailHelper } from '../../helpers/EmailHelper';
 
 /* Configure password authentication strategy.
  *
@@ -117,7 +118,8 @@ localStrategy.post('/signup', localSignupValidation, async (req, res, next) => {
   // This will automatically create the user too
   CredentialsRepository.createOne(credentials)
     .then((credentialsInstance) => {
-      return respondTokens(credentialsInstance.user, res);
+      respondTokens(credentialsInstance.user, res);
+      MailHelper.sendUserCreated(credentialsInstance.user);
     })
     .catch((err) => {
       console.log(err);
