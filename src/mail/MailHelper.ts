@@ -1,7 +1,7 @@
 import { mailTransporter, MAIL_FROM, MAIL_COPY_ADDRESSES } from '../config/Mail';
 import { JupyterHubRequest } from '../models/JupyterHubRequest';
 import User from '../models/User';
-import MailTemplates from './mail-templates/MailTemplates';
+import MailTemplates from './templates/MailTemplates';
 
 export const MailHelper = {
   sendJupyterCreated: jupyterTemplate('JupyterCreated', true),
@@ -47,7 +47,7 @@ function sendMail(to: string, template: string, mailOpts: object, copy?: boolean
     .sendMail({
       from: MAIL_FROM,
       to,
-      bcc: copy ? MAIL_COPY_ADDRESSES : undefined,
+      cc: copy ? MAIL_COPY_ADDRESSES : undefined,
       subject: templateSubjects[template],
       text: MailTemplates[template]['text'](mailOpts),
       html: MailTemplates[template]['html'](mailOpts)

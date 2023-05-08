@@ -14,7 +14,7 @@ import {
   localUpdatePasswordValidation
 } from '../authValidationRules';
 import { genericError } from '../../helpers/ErrorHelper';
-import { MailHelper } from '../../helpers/EmailHelper';
+import { MailHelper } from '../../mail/MailHelper';
 
 /* Configure password authentication strategy.
  *

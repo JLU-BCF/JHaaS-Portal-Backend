@@ -14,7 +14,7 @@ import { hashSync } from 'bcrypt';
 import User from './User';
 
 export enum AuthProvider {
-  LOCAL
+  LOCAL = 'LOCAL'
 }
 
 @Entity()
@@ -23,7 +23,7 @@ export default class Credentials {
   @PrimaryColumn('uuid')
   userId!: string;
 
-  @OneToOne(() => User, {
+  @OneToOne(() => User, (user) => user.credentials, {
     cascade: ['insert', 'update', 'remove'],
     onDelete: 'CASCADE',
     eager: true

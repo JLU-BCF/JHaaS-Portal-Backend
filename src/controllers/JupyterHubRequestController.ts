@@ -8,7 +8,7 @@ import { getUser } from '../helpers/AuthHelper';
 import { JupyterHubRequest, JupyterHubRequestStatus } from '../models/JupyterHubRequest';
 import JupyterHubRequestRepository from '../repositories/JupyterHubRequestRepository';
 import { genericError } from '../helpers/ErrorHelper';
-import { MailHelper } from '../helpers/EmailHelper';
+import { MailHelper } from '../mail/MailHelper';
 import { DeleteResult } from 'typeorm';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

@@ -4,14 +4,19 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
-  OneToMany
+  OneToMany,
+  OneToOne
 } from 'typeorm';
 import { JupyterHubRequest } from './JupyterHubRequest';
+import Credentials from './Credentials';
 
 @Entity()
 export default class User {
   @PrimaryGeneratedColumn('uuid')
   id: string;
+
+  @OneToOne(() => Credentials, (credentials) => credentials.user)
+  credentials: Promise<Credentials>;
 
   @OneToMany(() => JupyterHubRequest, (jhr) => jhr.creator)
   jupyterHubRequests: Promise<JupyterHubRequest[]>;
