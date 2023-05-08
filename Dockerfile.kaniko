@@ -16,7 +16,7 @@ RUN npm run build
 FROM node:18-alpine AS production
 
 # pull in latest security patches for base
-RUN apk upgrade --no-cache
+RUN apk upgrade --no-cache --purge
 
 ARG APPDIR=/jhaas-app
 WORKDIR ${APPDIR}

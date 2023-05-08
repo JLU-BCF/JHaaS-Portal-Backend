@@ -2,9 +2,17 @@ html(lang="en")
   head
     meta(charset="UTF-8")
     title Test
-  body
-    h1 Hello #{user.firstName} #{user.lastName},
-    block content
-    footer
-      hr
-      p BCF Team
+  body(style={"background": '#EEEEEE', "color": '#333333', "font-weight": '300', "font-size": '12pt', "font-family": 'Inter, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif'})
+    table(width="100%" border="0" cellspacing="0" cellpadding="0")
+      tr
+        td(align="center" width="100%" style={"padding-top": '25px'})
+          table(width="600px" cellspacing="0" cellpadding="0" border="0")
+            tr
+              td(width="100%" align="left" valign="top" style={"background": '#FFFFFF', "border-radius": '5px', "padding": '10px 25px'})
+                p(style={"text-align": 'center', "margin-bottom": '0'})
+                  include bcf-logo.html
+                h1(style={"font-weight": '400', "font-size": '18pt', "text-align": 'center', "margin-top": '0', "margin-bottom": '25px'}) JHaaS Portal
+                h2(style={"font-weight": '400', "font-size": '14pt', "margin-bottom": '-5px'}) Hello #{user.firstName} #{user.lastName},
+                block content
+                footer(style={"border-top": '1px solid #AAAAAA', "margin-top": '40px', "font-size": '10pt'})
+                  p BCF Team
