@@ -8,6 +8,7 @@ export const NODE_ENV: string = process.env.NODE_ENV || '';
 export const APP_PORT: number = Number(process.env.APP_PORT) || 8000;
 export const APP_PATH: string = process.env.APP_PATH || '/api';
 export const JH_DOMAIN: string = process.env.JH_DOMAIN || 'jhaas.local';
+export const RELEASE_NAME: string = process.env.RELEASE_NAME || 'jhaas-portal';
 
 export const JWT_SECRET_A: string = getSecret('JWT_SECRET_A_FILE', 'JWT_SECRET_A', 'secret-slot-a');
 export const JWT_SECRET_B: string = getSecret('JWT_SECRET_B_FILE', 'JWT_SECRET_B', 'secret-slot-b');

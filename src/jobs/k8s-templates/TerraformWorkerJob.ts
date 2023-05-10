@@ -1,6 +1,7 @@
 import k8s from '@kubernetes/client-node';
 import { JupyterHubRequest } from '../../models/JupyterHubRequest';
 import * as k8sConf from '../../config/K8s';
+import { RELEASE_NAME } from '../../config/Config';
 
 // TODO: use S3 instead of volume
 export function getTerraformWorkerJob(jh: JupyterHubRequest): k8s.V1Job {
@@ -9,7 +10,7 @@ export function getTerraformWorkerJob(jh: JupyterHubRequest): k8s.V1Job {
     apiVersion: 'batch/v1',
     metadata: {
       creationTimestamp: null,
-      name: `tf-worker-${jh.slug}`,
+      name: `tf-worker-${jh.id}`,
       namespace: k8sConf.K8S_TF_NS,
       labels: {
         'jupyter-hub-request': jh.id
@@ -28,10 +29,36 @@ export function getTerraformWorkerJob(jh: JupyterHubRequest): k8s.V1Job {
           }
         },
         spec: {
+          volumes: [
+            {
+              name: `vol-${RELEASE_NAME}-s3-conf`,
+              secret: {
+                secretName: `sec-${RELEASE_NAME}-s3-conf`
+              }
+            },
+            {
+              name: `vol-${RELEASE_NAME}-tf-conf`,
+              secret: {
+                secretName: `sec-${RELEASE_NAME}-tf-conf`
+              }
+            }
+          ],
           containers: [
             {
-              name: `tf-worker-${jh.slug}`,
+              name: `tf-worker-${jh.id}`,
               image: k8sConf.K8S_TF_IMAGE,
+              volumeMounts: [
+                {
+                  name: `vol-${RELEASE_NAME}-s3-conf`,
+                  mountPath: '/run/secrets/s3',
+                  readOnly: true
+                },
+                {
+                  name: `vol-${RELEASE_NAME}-tf-conf`,
+                  mountPath: '/run/secrets/tf',
+                  readOnly: true
+                }
+              ],
               env: [
                 {
                   name: 'JH_STATUS',
