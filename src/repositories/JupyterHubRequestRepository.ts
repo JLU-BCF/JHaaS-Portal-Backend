@@ -1,6 +1,6 @@
 import { JupyterHubRequest, JupyterHubRequestStatus } from '../models/JupyterHubRequest';
 import { DB_CONN } from '../config/Config';
-import { DeleteResult, MoreThan } from 'typeorm';
+import { DeleteResult, LessThan, MoreThan } from 'typeorm';
 import User from '../models/User';
 
 class JupyterHubRequestRepository {
@@ -80,11 +80,30 @@ class JupyterHubRequestRepository {
     skip?: number
   ): Promise<[JupyterHubRequest[], number]> {
     const dueDate = new Date(new Date().getTime() - 60 * 60 * 24 * 7 * 1000);
+    const today = new Date();
 
     return DB_CONN.getRepository(JupyterHubRequest).findAndCount({
       where: {
         status: JupyterHubRequestStatus.ACCEPTED,
-        startDate: MoreThan(dueDate)
+        startDate: MoreThan(dueDate),
+        endDate: MoreThan(today)
+      },
+      take,
+      skip
+    });
+  }
+
+  // find degradable jupyterHubRequests
+  findDegradableJupyterHubRequests(
+    take?: number,
+    skip?: number
+  ): Promise<[JupyterHubRequest[], number]> {
+    const today = new Date();
+
+    return DB_CONN.getRepository(JupyterHubRequest).findAndCount({
+      where: {
+        status: JupyterHubRequestStatus.DEPLOYED,
+        endDate: LessThan(today)
       },
       take,
       skip

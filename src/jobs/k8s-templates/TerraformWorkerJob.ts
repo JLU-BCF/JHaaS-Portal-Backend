@@ -34,6 +34,10 @@ export function getTerraformWorkerJob(jh: JupyterHubRequest): k8s.V1Job {
               image: k8sConf.K8S_TF_IMAGE,
               env: [
                 {
+                  name: 'JH_STATUS',
+                  value: jh.status
+                },
+                {
                   name: 'JH_SLUG',
                   value: jh.slug
                 },
