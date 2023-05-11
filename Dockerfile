@@ -32,12 +32,13 @@ RUN npm run build
 FROM node:18-alpine AS production
 
 ARG APPDIR=/jhaas-app
-
 WORKDIR ${APPDIR}
-COPY --from=build ${APPDIR}/package*.json ./
 
-RUN npm ci --production
+COPY --from=build ${APPDIR}/package*.json ./
+RUN npm ci --production && rm package*.json
+
 COPY --from=build ${APPDIR}/dist/ ./dist/
+COPY templates/ ./templates/
 
 EXPOSE 8000
 ENTRYPOINT ["/usr/local/bin/node"]

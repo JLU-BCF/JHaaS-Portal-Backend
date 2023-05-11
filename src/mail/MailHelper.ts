@@ -1,7 +1,7 @@
 import { mailTransporter, MAIL_FROM, MAIL_COPY_ADDRESSES } from '../config/Mail';
 import { JupyterHubRequest } from '../models/JupyterHubRequest';
 import User from '../models/User';
-import MailTemplates from './templates/MailTemplates';
+import MailTemplates from './MailTemplates';
 
 export const MailHelper = {
   sendJupyterCreated: jupyterTemplate('JupyterCreated', true),

@@ -1,4 +1,5 @@
 import pug, { compileTemplate } from 'pug';
+import { MAIL_TEMPLATE_DIR } from '../config/Mail';
 
 const formats = ['text', 'html'];
 const templates = [
@@ -18,7 +19,7 @@ const methods: { [key: string]: { [key: string]: compileTemplate } } = {};
 templates.forEach((template) => {
   methods[template] = {};
   formats.forEach((format) => {
-    methods[template][format] = pug.compileFile(`${__dirname}/${format}/${template}.pug`);
+    methods[template][format] = pug.compileFile(`${MAIL_TEMPLATE_DIR}/${format}/${template}.pug`);
   });
 });
 
