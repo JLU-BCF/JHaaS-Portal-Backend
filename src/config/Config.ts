@@ -27,8 +27,9 @@ export const DB_CONN: DataSource = new DataSource({
   password: getSecret('POSTGRES_PASSWORD_FILE', 'POSTGRES_PASSWORD', 'postgres'),
   entities: [User, Credentials, JupyterHubRequest, JupyterHubChangeRequest],
   synchronize: NODE_ENV != 'production',
-  logging: true,
+  logging: NODE_ENV != 'production',
   migrations: [
-    NODE_ENV != 'production' ? 'src/database-migrations/*.ts' : 'dist/database-migrations/*.js'
+    `${__dirname}/../database-migrations/*.ts`,
+    `${__dirname}/../database-migrations/*.js`
   ]
 });
