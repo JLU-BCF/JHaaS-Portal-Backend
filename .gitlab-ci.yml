@@ -10,6 +10,12 @@ stages:
 node_modules:
   stage: dependencies
   image: node:18
+  cache:
+    key:
+      files:
+        - package-lock.json
+    paths:
+      - $NODE_CACHE_DIR
   artifacts:
     paths:
       - $NODE_CACHE_DIR
@@ -29,7 +35,7 @@ build_image:
   stage: containerize
   image:
     name: gcr.io/kaniko-project/executor:debug
-    entrypoint: [""]
+    entrypoint: ['']
   rules:
     - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
     - when: manual
