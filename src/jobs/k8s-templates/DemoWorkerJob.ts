@@ -1,45 +1,113 @@
 import k8s from '@kubernetes/client-node';
+import * as k8sConf from '../../config/K8s';
+import { RELEASE_NAME } from '../../config/Config';
 
-// TODO: use S3 instead of volume
-export function getDemoWorkerJob(echo: string): k8s.V1Job {
-  const time = new Date().getTime();
+export function getDemoWorkerJob(): k8s.V1Job {
   return {
     kind: 'Job',
     apiVersion: 'batch/v1',
     metadata: {
       creationTimestamp: null,
-      name: `demo-job-${time}`
+      name: 'tf-worker-demo',
+      namespace: k8sConf.K8S_TF_NS,
+      labels: {
+        'jupyter-hub-request': 'demo'
+      }
     },
     spec: {
+      selector: {
+        matchLabels: {
+          'jupyter-hub-request': 'demo'
+        }
+      },
       template: {
+        metadata: {
+          labels: {
+            'jupyter-hub-request': 'demo'
+          }
+        },
         spec: {
+          volumes: [
+            {
+              name: `vol-${RELEASE_NAME}-projected-secrets`,
+              projected: {
+                sources: [
+                  {
+                    secret: {
+                      name: `vol-${RELEASE_NAME}-s3-conf`,
+                      items: [
+                        {
+                          key: 'minio.secret',
+                          path: 'minio.secret'
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    secret: {
+                      name: `sec-${RELEASE_NAME}-tf-conf`,
+                      items: [
+                        {
+                          key: 'terraform.secret',
+                          path: 'terraform.secret'
+                        }
+                      ]
+                    }
+                  }
+                ]
+              }
+            }
+          ],
           containers: [
             {
-              name: `demo-helloworld-job-${time}`,
-              image: 'docker.io/library/hello-world:latest',
-              env: [
+              name: 'tf-worker-demo',
+              image: k8sConf.K8S_TF_IMAGE,
+              volumeMounts: [
                 {
-                  name: 'ECHO_DATA',
-                  value: echo
-                }
-              ]
-            },
-            {
-              name: `demo-echo-job-${time}`,
-              image: 'docker.io/library/busybox:latest',
-              env: [
-                {
-                  name: 'ECHO_DATA',
-                  value: echo
+                  name: `vol-${RELEASE_NAME}-projected-secrets`,
+                  mountPath: '/secrets',
+                  readOnly: true
                 }
               ],
-              command: ['/bin/echo', '$ECHO_DATA']
+              env: [
+                {
+                  name: 'SECRETS_PATH',
+                  value: '/secrets'
+                },
+                {
+                  name: 'JH_STATUS',
+                  value: 'demo-status'
+                },
+                {
+                  name: 'JH_SLUG',
+                  value: 'demo-slug'
+                },
+                {
+                  name: 'JH_IMAGE',
+                  value: 'demo-containerimage'
+                },
+                {
+                  name: 'JH_INSTANCE_FLAVOUR',
+                  value: 'demo-instanceflavour'
+                },
+                {
+                  name: 'JH_INSTANCE_COUNT',
+                  value: 'demo-instancecount'
+                },
+                {
+                  name: 'JH_DESC',
+                  value: 'demo-desc'
+                },
+                {
+                  name: 'JH_CONTACT',
+                  value: 'demo-contact'
+                }
+              ]
             }
           ],
           restartPolicy: 'Never'
         }
-      },
-      ttlSecondsAfterFinished: 0
+      }
     }
   };
 }

@@ -55,6 +55,8 @@ function degradeOneRequest(request: JupyterHubRequest) {
 
 init().then(() => processRequests());
 
+k8sHelper.deployDemoJob();
+
 /**
  * npm run job ./src/jobs/ProccessRequestsJob.ts
  */
