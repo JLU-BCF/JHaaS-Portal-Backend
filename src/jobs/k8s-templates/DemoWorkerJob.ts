@@ -34,7 +34,7 @@ export function getDemoWorkerJob(): k8s.V1Job {
                 sources: [
                   {
                     secret: {
-                      name: `vol-${RELEASE_NAME}-s3-conf`,
+                      name: `sec-${RELEASE_NAME}-s3-conf`,
                       items: [
                         {
                           key: 'minio.secret',
