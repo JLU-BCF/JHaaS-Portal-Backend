@@ -15,6 +15,7 @@ export function getDemoWorkerJob(): k8s.V1Job {
       }
     },
     spec: {
+      ttlSecondsAfterFinished: 120,
       template: {
         metadata: {
           labels: {
@@ -22,6 +23,7 @@ export function getDemoWorkerJob(): k8s.V1Job {
           }
         },
         spec: {
+          restartPolicy: 'Never',
           imagePullSecrets: [
             {
               name: `sec-${RELEASE_NAME}-registry-credentials`
@@ -62,6 +64,7 @@ export function getDemoWorkerJob(): k8s.V1Job {
             {
               name: 'tf-worker-demo',
               image: k8sConf.K8S_TF_IMAGE,
+              imagePullPolicy: 'Always',
               volumeMounts: [
                 {
                   name: `vol-${RELEASE_NAME}-projected-secrets`,
@@ -104,8 +107,7 @@ export function getDemoWorkerJob(): k8s.V1Job {
                 }
               ]
             }
-          ],
-          restartPolicy: 'Never'
+          ]
         }
       }
     }
