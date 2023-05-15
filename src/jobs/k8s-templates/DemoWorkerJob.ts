@@ -15,11 +15,6 @@ export function getDemoWorkerJob(): k8s.V1Job {
       }
     },
     spec: {
-      selector: {
-        matchLabels: {
-          'jupyter-hub-request': 'demo'
-        }
-      },
       template: {
         metadata: {
           labels: {

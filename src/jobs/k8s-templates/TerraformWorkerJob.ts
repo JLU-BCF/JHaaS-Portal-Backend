@@ -17,11 +17,6 @@ export function getTerraformWorkerJob(jh: JupyterHubRequest): k8s.V1Job {
       }
     },
     spec: {
-      selector: {
-        matchLabels: {
-          'jupyter-hub-request': jh.id
-        }
-      },
       template: {
         metadata: {
           labels: {
