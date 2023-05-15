@@ -24,6 +24,11 @@ export function getTerraformWorkerJob(jh: JupyterHubRequest): k8s.V1Job {
           }
         },
         spec: {
+          imagePullSecrets: [
+            {
+              name: `sec-${RELEASE_NAME}-registry-credentials`
+            }
+          ],
           volumes: [
             {
               name: `vol-${RELEASE_NAME}-s3-conf`,

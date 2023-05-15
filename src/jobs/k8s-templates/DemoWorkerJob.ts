@@ -22,6 +22,11 @@ export function getDemoWorkerJob(): k8s.V1Job {
           }
         },
         spec: {
+          imagePullSecrets: [
+            {
+              name: `sec-${RELEASE_NAME}-registry-credentials`
+            }
+          ],
           volumes: [
             {
               name: `vol-${RELEASE_NAME}-projected-secrets`,
