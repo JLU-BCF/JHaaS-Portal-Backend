@@ -3,15 +3,16 @@ import * as k8sConf from '../../config/K8s';
 import { RELEASE_NAME } from '../../config/Config';
 
 export function getDemoWorkerJob(): k8s.V1Job {
+  const timestamp = new Date().getTime();
   return {
     kind: 'Job',
     apiVersion: 'batch/v1',
     metadata: {
       creationTimestamp: null,
-      name: 'tf-worker-demo',
+      name: `tf-worker-demo-${timestamp}`,
       namespace: k8sConf.K8S_TF_NS,
       labels: {
-        'jupyter-hub-request': 'demo'
+        'jupyter-hub-request': `demo-${timestamp}`
       }
     },
     spec: {
@@ -19,7 +20,7 @@ export function getDemoWorkerJob(): k8s.V1Job {
       template: {
         metadata: {
           labels: {
-            'jupyter-hub-request': 'demo'
+            'jupyter-hub-request': `demo-${timestamp}`
           }
         },
         spec: {
@@ -62,7 +63,7 @@ export function getDemoWorkerJob(): k8s.V1Job {
           ],
           containers: [
             {
-              name: 'tf-worker-demo',
+              name: `tf-worker-demo-${timestamp}`,
               image: k8sConf.K8S_TF_IMAGE,
               imagePullPolicy: 'Always',
               volumeMounts: [
