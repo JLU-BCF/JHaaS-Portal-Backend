@@ -69,6 +69,19 @@ services:
     expose:
       - 2525
 
+  keycloak:
+    image: quay.io/keycloak/keycloak:21.1
+    container_name: keycloak
+    hostname: keycloak
+    environment:
+      - KEYCLOAK_ADMIN=admin
+      - KEYCLOAK_ADMIN_PASSWORD=admin
+    networks:
+      - jhaas-portal-priv
+    ports:
+      - 127.0.0.1:8080:8080
+    command: start-dev
+
 networks:
   jhaas-portal-priv:
     external: false

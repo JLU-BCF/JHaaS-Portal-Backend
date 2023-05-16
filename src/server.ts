@@ -1,8 +1,15 @@
 // imports
 import { APP_PORT, DB_CONN } from './config/Config';
+import {
+  SESSION_COOKIE_MAX_AGE,
+  SESSION_COOKIE_NAME,
+  SESSION_COOKIE_SECRET,
+  SESSION_COOKIE_SECURE
+} from './config/Session';
 import 'reflect-metadata';
 import createError, { HttpError } from 'http-errors';
 import express, { Application, NextFunction, Request, Response } from 'express';
+import session from 'express-session';
 import morgan from 'morgan';
 import passport from 'passport';
 import AuthService from './auth/authService';
@@ -14,6 +21,22 @@ const app: Application = express();
 app.disable('x-powered-by');
 app.use(express.json());
 app.use(morgan('tiny'));
+
+app.use(
+  session({
+    name: SESSION_COOKIE_NAME,
+    secret: SESSION_COOKIE_SECRET,
+    saveUninitialized: false,
+    resave: false,
+    rolling: true,
+    cookie: {
+      maxAge: SESSION_COOKIE_MAX_AGE,
+      sameSite: 'strict',
+      secure: SESSION_COOKIE_SECURE
+    }
+  })
+);
+
 app.use('/auth', AuthService);
 app.use('/user', passport.authenticate('jwt', { session: false }), UserService);
 app.use('/jupyter', passport.authenticate('jwt', { session: false }), JupyterHubRequestService);

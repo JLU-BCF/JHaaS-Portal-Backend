@@ -1,6 +1,7 @@
 import passport from 'passport';
 import express, { Router } from 'express';
 import LocalStrategy from './providers/localStrategy';
+import OidcStrategy from './providers/oidcStrategy';
 import { Strategy as JwtStrategy, ExtractJwt } from 'passport-jwt';
 import UserRepository from '../repositories/UserRepository';
 import User from '../models/User';
@@ -33,9 +34,22 @@ passport.use(
   )
 );
 
+passport.serializeUser(function(user, cb) {
+  process.nextTick(function() {
+    cb(null, { user: user });
+  });
+});
+
+passport.deserializeUser(function(user, cb) {
+  process.nextTick(function() {
+    return cb(null, user);
+  });
+});
+
 const authService = Router();
 authService.use(express.json());
 authService.use('/local', LocalStrategy);
+authService.use('/oidc', OidcStrategy);
 
 /* POST /refresh
  *
