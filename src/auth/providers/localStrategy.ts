@@ -34,14 +34,14 @@ passport.use(
       CredentialsRepository.findByProvider(AuthProvider.LOCAL, email)
         .then((credentialsInstance) => {
           if (!credentialsInstance) {
-            return cb('Incorrect email or password.', false);
+            return cb(false, { message: 'Incorrect email or password.' });
           }
 
           if (compareSync(password, credentialsInstance.password)) {
             return cb(null, credentialsInstance.user, { message: 'Logged In Successfully' });
           }
 
-          return cb('Incorrect email or password.', false);
+          return cb(null, false, { message: 'Incorrect email or password.' });
         })
         .catch((err) => {
           console.log(err);

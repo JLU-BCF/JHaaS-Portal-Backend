@@ -57,6 +57,8 @@ passport.use(
 
 oidcStrategy.get('/login', passport.authenticate('openidconnect'));
 
-oidcStrategy.get('/cb', passport.authenticate('openidconnect'), (req, res) => res.redirect('/'));
+oidcStrategy.get('/cb', passport.authenticate('openidconnect'), (req, res) =>
+  res.redirect('/auth/verify')
+);
 
 export default oidcStrategy;
