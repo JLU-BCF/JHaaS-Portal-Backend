@@ -1,6 +1,8 @@
 import { Response } from 'express';
 
 export const genericError = {
+  unauthorized: (res: Response, msg?: string) =>
+    respondGenericError(res, 401, msg || 'Authentication required.'),
   forbidden: (res: Response, msg?: string) =>
     respondGenericError(res, 403, msg || 'Action not allowed.'),
   notFound: (res: Response, msg?: string) =>
