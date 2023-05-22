@@ -26,7 +26,7 @@ app.use('/auth', AuthService);
 app.use('/user', authGuard, UserService);
 app.use('/jupyter', authGuard, JupyterHubRequestService);
 
-app.use('/', authGuard, (req, res) => res.json(req.user));
+app.get('/', authGuard, (req, res) => res.json(req.user));
 
 // catch 404 and forward to error handler
 app.use((req: Request, res: Response, next: NextFunction) => {

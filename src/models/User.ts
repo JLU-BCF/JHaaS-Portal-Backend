@@ -44,4 +44,9 @@ export default class User {
     this.lastName = lastName;
     this.email = email;
   }
+
+  // This is not stored in DB and is only
+  // a temporary value for session serialization
+  // and deserialization
+  sessionLogout?: string;
 }

@@ -15,12 +15,14 @@ const SESSION_COOKIE_SECURE: boolean =
 const SESSION_CONFIG: SessionOptions = {
   name: SESSION_COOKIE_NAME,
   secret: SESSION_COOKIE_SECRET,
-  saveUninitialized: false,
+  saveUninitialized: true,
   resave: false,
   rolling: true,
   cookie: {
     maxAge: SESSION_COOKIE_MAX_AGE,
-    sameSite: 'strict',
+    // Use 'lax' sameSite attribute, as in strict mode
+    // cookie will not be sent if redirected from IDP
+    sameSite: 'lax',
     secure: SESSION_COOKIE_SECURE,
     path: SESSION_COOKIE_PATH
   }

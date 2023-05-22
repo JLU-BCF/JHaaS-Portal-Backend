@@ -5,6 +5,7 @@ import OidcStrategy from './providers/oidcStrategy';
 import UserRepository from '../repositories/UserRepository';
 import User from '../models/User';
 import { genericError } from '../helpers/ErrorHelper';
+import { FRONTEND_LOGOUT_URL } from '../config/Config';
 
 passport.serializeUser(function (user: User, cb) {
   process.nextTick(function () {
@@ -17,6 +18,7 @@ passport.deserializeUser(function (user: User, cb) {
     UserRepository.findById(user.id)
       .then((userInstance: User) => {
         if (userInstance) {
+          userInstance.sessionLogout = user.sessionLogout;
           cb(null, userInstance);
         } else {
           cb(null, false);
@@ -33,16 +35,29 @@ const authService = Router();
 authService.use('/local', LocalStrategy);
 authService.use('/oidc', OidcStrategy);
 
-authService.delete('/session', (req, res) => {
+authService.post('/logout', (req, res) => {
   if (req.user instanceof User) {
+    const logoutUrl = req.user.sessionLogout;
     return req.logout((err) => {
       if (err) {
+        console.log(err);
         return genericError.internalServerError(res);
       }
-      return res.json('Logged out successfully');
+      if (logoutUrl) {
+        return res.redirect(logoutUrl);
+      }
+      return res.redirect(FRONTEND_LOGOUT_URL);
     });
   }
-  return genericError.unprocessableEntity(res);
+
+  // somethings not quite right - destroy the session
+  return req.session.destroy((err) => {
+    if (err) {
+      console.log(err);
+      return genericError.internalServerError(res);
+    }
+    return res.redirect(FRONTEND_LOGOUT_URL);
+  });
 });
 
 export default authService;
