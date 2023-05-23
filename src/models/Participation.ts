@@ -33,11 +33,15 @@ export default class Participation {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @ManyToOne(() => JupyterHubRequest, (jhr) => jhr.participations)
+  @ManyToOne(() => JupyterHubRequest, (jhr) => jhr.participations, {
+    onDelete: 'CASCADE'
+  })
   @JoinColumn({ name: 'hubId' })
   hub: JupyterHubRequest;
 
-  @ManyToOne(() => Participant, (participant) => participant.participations)
+  @ManyToOne(() => Participant, (participant) => participant.participations, {
+    onDelete: 'CASCADE'
+  })
   @JoinColumn({ name: 'participantId' })
   participant: Participant;
 }

@@ -11,7 +11,7 @@
     "lint": "eslint src/ --ext .ts",
     "format": "prettier --write src/",
     "typeorm": "typeorm-ts-node-commonjs -d src/config/Config.ts",
-    "generate-migrations": "typeorm-ts-node-commonjs -d src/config/Config.ts migration:generate --pretty",
+    "generate-migration": "typeorm-ts-node-commonjs -d src/config/Config.ts migration:generate --pretty",
     "update": "ncu -u",
     "job": "ts-node"
   },
