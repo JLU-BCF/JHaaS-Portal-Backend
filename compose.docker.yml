@@ -6,6 +6,7 @@ services:
     image: jhaas-portal-backend
     container_name: jhaas-portal-backend
     hostname: jhaas-portal-backend
+    restart: unless-stopped
     build:
       context: .
       target: develop
@@ -26,6 +27,7 @@ services:
     image: postgres:15
     container_name: jhaas-portal-db
     hostname: jhaas-portal-db
+    restart: unless-stopped
     networks:
       - jhaas-portal-priv
     env_file:
@@ -52,6 +54,7 @@ services:
     image: mailhog/mailhog
     container_name: mailhog
     hostname: mailhog
+    restart: unless-stopped
     environment:
       - MH_SMTP_BIND_ADDR=0.0.0.0:2525
       - MH_STORAGE=maildir
@@ -64,6 +67,56 @@ services:
       - 127.0.0.1:8025:8025
     expose:
       - 2525
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:21.1
+    container_name: keycloak
+    hostname: keycloak
+    restart: unless-stopped
+    depends_on:
+      - keycloak-db
+    environment:
+      - KEYCLOAK_ADMIN=admin
+      - KEYCLOAK_ADMIN_PASSWORD=admin
+      - KC_DB=postgres
+      - KC_DB_URL_HOST=keycloak-db
+      - KC_DB_URL_PORT=5432
+      - KC_DB_URL_DATABASE=keycloak
+      - KC_DB_USERNAME=keycloak
+      - KC_DB_SCHEMA=public
+      - KC_DB_PASSWORD=password
+    networks:
+      - jhaas-portal-priv
+    ports:
+      - 127.0.0.1:8080:8080
+    command: start-dev
+
+  ## Eigene DB erstmal eigentlich unsinnig,
+  ## kann in die portal-db zum entwickeln.
+  keycloak-db:
+    image: postgres:15
+    container_name: keycloak-db
+    hostname: keycloak-db
+    restart: unless-stopped
+    environment:
+      - POSTGRES_DB=keycloak
+      - POSTGRES_USER=keycloak
+      - POSTGRES_PASSWORD=password
+    networks:
+      - jhaas-portal-priv
+    volumes:
+      - 'keycloak-db-data:/var/lib/postgresql/data'
+
+  # Langfristig nicht Teil des Deployments
+  redis:
+    image: redis:alpine
+    container_name: redis
+    hostname: redis
+    restart: unless-stopped
+    networks:
+      - jhaas-portal-priv
+    volumes:
+      - redis-data:/data
 
 networks:
   jhaas-portal-priv:
@@ -79,3 +132,7 @@ volumes:
     name: jhaas-minio-data
   postgres-data:
     name: jhaas-postgres-data
+  redis-data:
+    name: redis-data
+  keycloak-db-data:
+    name: keycloak-db-data

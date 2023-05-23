@@ -1,22 +1,32 @@
 // imports
 import { APP_PORT, DB_CONN } from './config/Config';
+import SESSION_CONFIG from './config/Session';
 import 'reflect-metadata';
 import createError, { HttpError } from 'http-errors';
 import express, { Application, NextFunction, Request, Response } from 'express';
+import session from 'express-session';
 import morgan from 'morgan';
 import passport from 'passport';
 import AuthService from './auth/authService';
 import UserService from './routes/user.routes';
 import JupyterHubRequestService from './routes/jupytherHubRequest.routes';
+import { authGuard } from './middlewares/AuthenticatedMiddleware';
 
 const app: Application = express();
 
 app.disable('x-powered-by');
 app.use(express.json());
 app.use(morgan('tiny'));
+
+app.use(session(SESSION_CONFIG));
+app.use(passport.initialize());
+app.use(passport.session());
+
 app.use('/auth', AuthService);
-app.use('/user', passport.authenticate('jwt', { session: false }), UserService);
-app.use('/jupyter', passport.authenticate('jwt', { session: false }), JupyterHubRequestService);
+app.use('/user', authGuard, UserService);
+app.use('/jupyter', authGuard, JupyterHubRequestService);
+
+app.get('/', authGuard, (req, res) => res.json(req.user));
 
 // catch 404 and forward to error handler
 app.use((req: Request, res: Response, next: NextFunction) => {

@@ -14,7 +14,8 @@ import { hashSync } from 'bcrypt';
 import User from './User';
 
 export enum AuthProvider {
-  LOCAL = 'LOCAL'
+  LOCAL = 'LOCAL',
+  OIDC = 'OIDC'
 }
 
 @Entity()

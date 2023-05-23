@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import { NextFunction, Request, Response, Router } from 'express';
 import passport from 'passport';
 import { Strategy as LocalStrategy } from 'passport-local';
 import { compareSync } from 'bcrypt';
@@ -6,14 +6,12 @@ import { compareSync } from 'bcrypt';
 import CredentialsRepository from '../../repositories/CredentialsRepository';
 import Credentials, { AuthProvider } from '../../models/Credentials';
 import { parseUser, validationErrors } from '../../helpers/BodyParserHelper';
-import { respondTokens } from '../../helpers/AuthHelper';
 import {
   localLoginValidation,
   localSignupValidation,
   localUpdateEmailValidation,
   localUpdatePasswordValidation
 } from '../authValidationRules';
-import { genericError } from '../../helpers/ErrorHelper';
 import { MailHelper } from '../../mail/MailHelper';
 
 /* Configure password authentication strategy.
@@ -36,14 +34,14 @@ passport.use(
       CredentialsRepository.findByProvider(AuthProvider.LOCAL, email)
         .then((credentialsInstance) => {
           if (!credentialsInstance) {
-            return cb('Incorrect email or password.', false);
+            return cb(false, { message: 'Incorrect email or password.' });
           }
 
           if (compareSync(password, credentialsInstance.password)) {
             return cb(null, credentialsInstance.user, { message: 'Logged In Successfully' });
           }
 
-          return cb('Incorrect email or password.', false);
+          return cb(null, false, { message: 'Incorrect email or password.' });
         })
         .catch((err) => {
           console.log(err);
@@ -71,23 +69,18 @@ const localStrategy = Router();
  * When authentication fails, the user will be re-prompted to login and shown
  * a message informing them of what went wrong.
  */
-localStrategy.post('/login', localLoginValidation, (req, res, next) => {
-  if (validationErrors(req, res)) return;
-
-  passport.authenticate('local', { session: false }, (err, user) => {
-    if (err || !user) {
-      return genericError.unprocessableEntity(res, err);
-    }
-
-    req.login(user, { session: false }, (err) => {
-      if (err) {
-        console.log(err);
-        return res.json('Oops - Something went wrong.');
-      }
-      respondTokens(user, res);
-    });
-  })(req, res);
-});
+localStrategy.post(
+  '/login',
+  localLoginValidation,
+  (req: Request, res: Response, next: NextFunction) => {
+    if (validationErrors(req, res)) return;
+    next();
+  },
+  passport.authenticate('local'),
+  (req: Request, res: Response) => {
+    res.json(req.user);
+  }
+);
 
 /* POST /signup
  *
@@ -98,34 +91,44 @@ localStrategy.post('/login', localLoginValidation, (req, res, next) => {
  * then a new user record is inserted into the database.  If the record is
  * successfully created, the user is logged in.
  */
-localStrategy.post('/signup', localSignupValidation, async (req, res, next) => {
-  if (validationErrors(req, res)) return;
+localStrategy.post(
+  '/signup',
+  localSignupValidation,
+  async (req: Request, res: Response, next: NextFunction) => {
+    if (validationErrors(req, res)) return;
 
-  const user = parseUser(req);
-  const { password } = req.body;
+    const user = parseUser(req);
+    const { password } = req.body;
 
-  const credentials = new Credentials(user, AuthProvider.LOCAL, user.email, password);
+    const credentials = new Credentials(user, AuthProvider.LOCAL, user.email, password);
 
-  try {
-    if (await CredentialsRepository.findByProvider(AuthProvider.LOCAL, user.email)) {
-      return res.status(422).json('Email address is already taken.');
-    }
-  } catch (err) {
-    console.log(err);
-    return res.status(500).json('Oops - Something went wrong.');
-  }
-
-  // This will automatically create the user too
-  CredentialsRepository.createOne(credentials)
-    .then((credentialsInstance) => {
-      respondTokens(credentialsInstance.user, res);
-      MailHelper.sendUserCreated(credentialsInstance.user);
-    })
-    .catch((err) => {
+    try {
+      if (await CredentialsRepository.findByProvider(AuthProvider.LOCAL, user.email)) {
+        return res.status(422).json('Email address is already taken.');
+      }
+    } catch (err) {
       console.log(err);
       return res.status(500).json('Oops - Something went wrong.');
-    });
-});
+    }
+
+    // This will automatically create the user too
+    CredentialsRepository.createOne(credentials)
+      .then((credentialsInstance) => {
+        MailHelper.sendUserCreated(credentialsInstance.user);
+        req.login(credentialsInstance.user, (err) => {
+          if (err) {
+            console.log(err);
+            return res.json('Oops - Something went wrong.');
+          }
+          return res.json(credentialsInstance.user);
+        });
+      })
+      .catch((err) => {
+        console.log(err);
+        return res.status(500).json('Oops - Something went wrong.');
+      });
+  }
+);
 
 localStrategy.patch('/password', localUpdatePasswordValidation, (req, res, next) => {
   if (validationErrors(req, res)) return;
