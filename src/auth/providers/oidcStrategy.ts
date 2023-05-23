@@ -20,12 +20,14 @@ type VerifyCallback = (err?: Error | null, user?: Express.User, info?: any) => v
 
 type passportProfile = {
   sub: string;
-  email_verified: boolean;
-  name: string;
-  preferred_username: string;
+  email: string;
   given_name: string;
   family_name: string;
-  email: string;
+  groups?: string[];
+
+  // allow any additional data
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  [key: string]: any;
 };
 
 const oidcStrategy = Router();

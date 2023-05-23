@@ -3,6 +3,8 @@ import User from '../models/User';
 import Credentials from '../models/Credentials';
 import { JupyterHubRequest, JupyterHubChangeRequest } from '../models/JupyterHubRequest';
 import { getSecret } from '../helpers/SecretHelper';
+import Participant from '../models/Participant';
+import Participation from '../models/Participation';
 
 export const NODE_ENV: string = process.env.NODE_ENV || '';
 export const APP_PORT: number = Number(process.env.APP_PORT) || 8000;
@@ -20,7 +22,14 @@ export const DB_CONN: DataSource = new DataSource({
   username: process.env.POSTGRES_USER || 'postgres',
   database: process.env.POSTGRES_DB || 'postgres',
   password: getSecret('POSTGRES_PASSWORD_FILE', 'POSTGRES_PASSWORD', 'postgres'),
-  entities: [User, Credentials, JupyterHubRequest, JupyterHubChangeRequest],
+  entities: [
+    User,
+    Credentials,
+    JupyterHubRequest,
+    JupyterHubChangeRequest,
+    Participant,
+    Participation
+  ],
   synchronize: NODE_ENV != 'production',
   logging: NODE_ENV != 'production',
   migrations: [

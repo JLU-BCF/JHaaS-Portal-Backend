@@ -9,6 +9,7 @@ import {
   JoinColumn
 } from 'typeorm';
 import User from './User';
+import Participation from './Participation';
 
 export enum JupyterHubRequestStatus {
   PENDING = 'PENDING',
@@ -60,7 +61,7 @@ class JupyterHubBase {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @ManyToOne(() => User, { eager: true })
+  @ManyToOne(() => User, { eager: false })
   creator: User;
 
   @Column()
@@ -123,6 +124,9 @@ class JupyterHubBase {
 
 @Entity()
 export class JupyterHubRequest extends JupyterHubBase {
+  @ManyToOne(() => User, { eager: true })
+  creator: User;
+
   @Column({ unique: true })
   slug: string;
 
@@ -138,6 +142,9 @@ export class JupyterHubRequest extends JupyterHubBase {
     eager: true
   })
   changeRequests: JupyterHubChangeRequest[];
+
+  @OneToMany(() => Participation, (participation) => participation.hub)
+  participations: Participation[];
 
   constructor(data?: JupyterHubRequestObj) {
     super(data);
