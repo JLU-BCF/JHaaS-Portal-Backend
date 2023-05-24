@@ -1,0 +1,353 @@
+context: {}
+entries:
+- attrs:
+    authentication: require_unauthenticated
+    compatibility_mode: true
+    denied_action: message_continue
+    designation: enrollment
+    layout: stacked
+    name: jhaas-self-enrollment
+    policy_engine_mode: any
+    title: Sign Up
+  conditions: []
+  id: null
+  identifiers:
+    pk: eb16718a-d355-4b6c-a0a6-18b3d63b30ad
+    slug: jhaas-self-enrollment
+  model: authentik_flows.flow
+  state: present
+- attrs:
+    field_key: familyname
+    label: Family Name
+    name: self-enrollment-family-name
+    order: 1
+    placeholder: Family Name
+    required: true
+    type: text
+  conditions: []
+  id: null
+  identifiers:
+    pk: 8307ec2f-6b60-48a1-ae61-41cffbddd25b
+  model: authentik_stages_prompt.prompt
+  state: present
+- attrs:
+    field_key: password
+    label: Password
+    name: self-enrollment-password
+    order: 4
+    placeholder: Password
+    required: true
+    type: password
+  conditions: []
+  id: null
+  identifiers:
+    pk: 63851e43-9456-49b5-94ff-dd82fd42387d
+  model: authentik_stages_prompt.prompt
+  state: present
+- attrs:
+    field_key: givenname
+    label: Given Name
+    name: self-enrollment-given-name
+    order: 0
+    placeholder: Given Name
+    required: true
+    type: text
+  conditions: []
+  id: null
+  identifiers:
+    pk: 6c0e1aaa-6628-45ac-951d-0bc8a2aebf4e
+  model: authentik_stages_prompt.prompt
+  state: present
+- attrs:
+    field_key: email
+    label: Email address
+    name: self-enrollment-email
+    order: 2
+    placeholder: Email address
+    required: true
+    type: email
+  conditions: []
+  id: null
+  identifiers:
+    pk: 77a93d08-7e80-4265-a120-98fd4e3e6e20
+  model: authentik_stages_prompt.prompt
+  state: present
+- attrs:
+    field_key: tos-text
+    label: TOS
+    name: self-enrollment-tos-text
+    order: 0
+    sub_text: Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy
+      eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.
+      At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren,
+      no sea takimata sanctus est <a href="#">Lorem ipsum dolor sit amet</a>. Lorem
+      ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor
+      invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero
+      eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren,
+      no sea takimata sanctus est Lorem ipsum dolor sit amet.
+    type: static
+  conditions: []
+  id: null
+  identifiers:
+    pk: 148f94c3-45b9-40c1-bd4e-48aa19cf0e11
+  model: authentik_stages_prompt.prompt
+  state: present
+- attrs:
+    field_key: tos-accept
+    label: I accept the terms of use
+    name: self-enrollment-tos-accept
+    order: 5
+    required: true
+    type: checkbox
+  conditions: []
+  id: null
+  identifiers:
+    pk: f18a03a1-e7cc-4c02-ba58-0f6e48ec1149
+  model: authentik_stages_prompt.prompt
+  state: present
+- attrs:
+    execution_logging: true
+    expression: 'context[''prompt_data''][''username''] = context[''prompt_data''][''email'']
+
+
+      context[''prompt_data''][''name''] = context[''prompt_data''][''givenname'']
+      + '' '' + context[''prompt_data''][''familyname'']
+
+
+      context[''prompt_data''][''attributes''] = {}
+
+      context[''prompt_data''][''attributes''][''given_name''] = context[''prompt_data''][''givenname'']
+
+      context[''prompt_data''][''attributes''][''family_name''] = context[''prompt_data''][''familyname'']
+
+
+
+      return True'
+    name: self-enrollment-map-attributes
+  conditions: []
+  id: null
+  identifiers:
+    pk: 6571b512-e430-43d6-86f8-dae0d5ac23cc
+  model: authentik_policies_expression.expressionpolicy
+  state: present
+- attrs:
+    execution_logging: true
+    expression: 'context[''flow_plan''].context[''redirect''] = "http://localhost:3000/api/auth/oidc/cb"
+
+      return True'
+    name: self-enrollment-login-redirect
+  conditions: []
+  id: null
+  identifiers:
+    pk: 1dc343d3-c79a-4b82-ad87-c7d5b94ed52a
+  model: authentik_policies_expression.expressionpolicy
+  state: present
+- attrs:
+    fields:
+    - 148f94c3-45b9-40c1-bd4e-48aa19cf0e11
+    - f18a03a1-e7cc-4c02-ba58-0f6e48ec1149
+  conditions: []
+  id: null
+  identifiers:
+    name: self-enrollment-tos
+    pk: 2e7c5000-e504-40af-b063-14fae38bcee1
+  model: authentik_stages_prompt.promptstage
+  state: present
+- attrs:
+    configuration_stages:
+    - 2cdd1f09-e4dd-4c29-b58f-8e4bc4fd810d
+    - b0178f55-4881-409c-b733-843540bf426d
+    device_classes:
+    - totp
+    - webauthn
+    last_auth_threshold: seconds=0
+    not_configured_action: configure
+    webauthn_user_verification: required
+  conditions: []
+  id: null
+  identifiers:
+    name: self-enrollment-mfa
+    pk: 856575d5-10af-4286-bde3-ad0d69c126c8
+  model: authentik_stages_authenticator_validate.authenticatorvalidatestage
+  state: present
+- attrs:
+    create_users_as_inactive: true
+    create_users_group: 9d9941eb-6e35-4010-8b8e-4609c966329c
+    user_creation_mode: always_create
+  conditions: []
+  id: null
+  identifiers:
+    name: self-enrollment-write
+    pk: 20d6ba43-f66f-4788-8886-62e39e5ff9ce
+  model: authentik_stages_user_write.userwritestage
+  state: present
+- attrs:
+    activate_user_on_success: true
+    from_address: system@authentik.local
+    host: localhost
+    port: 25
+    subject: authentik
+    template: email/account_confirmation.html
+    timeout: 10
+    token_expiry: 30
+    use_global_settings: true
+  conditions: []
+  id: null
+  identifiers:
+    name: self-enrollment-email
+    pk: 1aab54ee-abb7-47f1-9fb8-f1b0a660a411
+  model: authentik_stages_email.emailstage
+  state: present
+- attrs:
+    fields:
+    - 8307ec2f-6b60-48a1-ae61-41cffbddd25b
+    - 63851e43-9456-49b5-94ff-dd82fd42387d
+    - 6c0e1aaa-6628-45ac-951d-0bc8a2aebf4e
+    - 77a93d08-7e80-4265-a120-98fd4e3e6e20
+  conditions: []
+  id: null
+  identifiers:
+    name: self-enrollment-prompt
+    pk: 59518447-27cc-4d1b-8195-b8e67c57595a
+  model: authentik_stages_prompt.promptstage
+  state: present
+- attrs:
+    remember_me_offset: seconds=0
+    session_duration: seconds=0
+  conditions: []
+  id: null
+  identifiers:
+    name: self-enrollment-login
+    pk: e496cb61-2ebd-44d1-9c82-16e140c597e5
+  model: authentik_stages_user_login.userloginstage
+  state: present
+- attrs: {}
+  conditions: []
+  id: null
+  identifiers:
+    name: self-enrollment-cancel
+    pk: c1e38e4a-a15d-4597-a0a7-eb4a4034562b
+  model: authentik_stages_deny.denystage
+  state: present
+- attrs:
+    invalid_response_action: retry
+    policy_engine_mode: any
+    re_evaluate_policies: true
+  conditions: []
+  id: null
+  identifiers:
+    order: 10
+    pk: e16c5c3b-07e7-47e7-ae2c-cb8a5c82ca51
+    stage: 2e7c5000-e504-40af-b063-14fae38bcee1
+    target: eb16718a-d355-4b6c-a0a6-18b3d63b30ad
+  model: authentik_flows.flowstagebinding
+  state: present
+- attrs:
+    invalid_response_action: retry
+    policy_engine_mode: any
+    re_evaluate_policies: true
+  conditions: []
+  id: null
+  identifiers:
+    order: 20
+    pk: 5e609590-25b2-49a8-9811-5ca919771b63
+    stage: 59518447-27cc-4d1b-8195-b8e67c57595a
+    target: eb16718a-d355-4b6c-a0a6-18b3d63b30ad
+  model: authentik_flows.flowstagebinding
+  state: present
+- attrs:
+    invalid_response_action: retry
+    policy_engine_mode: any
+    re_evaluate_policies: true
+  conditions: []
+  id: null
+  identifiers:
+    order: 25
+    pk: b88f9b97-bb09-4cf9-8777-cfbede5cbb61
+    stage: c1e38e4a-a15d-4597-a0a7-eb4a4034562b
+    target: eb16718a-d355-4b6c-a0a6-18b3d63b30ad
+  model: authentik_flows.flowstagebinding
+  state: present
+- attrs:
+    invalid_response_action: retry
+    policy_engine_mode: any
+    re_evaluate_policies: true
+  conditions: []
+  id: null
+  identifiers:
+    order: 30
+    pk: 22d3677f-77a9-489e-8418-d20f3df694e0
+    stage: 20d6ba43-f66f-4788-8886-62e39e5ff9ce
+    target: eb16718a-d355-4b6c-a0a6-18b3d63b30ad
+  model: authentik_flows.flowstagebinding
+  state: present
+- attrs:
+    invalid_response_action: retry
+    policy_engine_mode: any
+    re_evaluate_policies: true
+  conditions: []
+  id: null
+  identifiers:
+    order: 40
+    pk: 0844ccd5-e074-4f8e-9561-ec0eaee244f3
+    stage: 1aab54ee-abb7-47f1-9fb8-f1b0a660a411
+    target: eb16718a-d355-4b6c-a0a6-18b3d63b30ad
+  model: authentik_flows.flowstagebinding
+  state: present
+- attrs:
+    invalid_response_action: retry
+    policy_engine_mode: any
+    re_evaluate_policies: true
+  conditions: []
+  id: null
+  identifiers:
+    order: 50
+    pk: 5dfc6783-7767-4479-8064-33e0aa1723fb
+    stage: 856575d5-10af-4286-bde3-ad0d69c126c8
+    target: eb16718a-d355-4b6c-a0a6-18b3d63b30ad
+  model: authentik_flows.flowstagebinding
+  state: present
+- attrs:
+    evaluate_on_plan: true
+    invalid_response_action: retry
+    policy_engine_mode: any
+    re_evaluate_policies: true
+  conditions: []
+  id: null
+  identifiers:
+    order: 60
+    pk: 93b38a67-d320-45a3-a7ee-caf2db2af0f2
+    stage: e496cb61-2ebd-44d1-9c82-16e140c597e5
+    target: eb16718a-d355-4b6c-a0a6-18b3d63b30ad
+  model: authentik_flows.flowstagebinding
+  state: present
+- attrs:
+    enabled: true
+    timeout: 30
+  conditions: []
+  id: null
+  identifiers:
+    order: 0
+    pk: 4f183e23-ea31-4ae6-a862-c63a0e6b33f6
+    policy: 1dc343d3-c79a-4b82-ad87-c7d5b94ed52a
+    target: 93b38a67-d320-45a3-a7ee-caf2db2af0f2
+  model: authentik_policies.policybinding
+  state: present
+- attrs:
+    enabled: true
+    negate: true
+    timeout: 30
+  conditions: []
+  id: null
+  identifiers:
+    order: 0
+    pk: efaba824-74b5-4c8f-a823-310785f053ef
+    policy: 6571b512-e430-43d6-86f8-dae0d5ac23cc
+    target: b88f9b97-bb09-4cf9-8777-cfbede5cbb61
+  model: authentik_policies.policybinding
+  state: present
+metadata:
+  labels:
+    blueprints.goauthentik.io/generated: 'true'
+  name: authentik Export - 2023-05-24 14:04:09.375276+00:00
+version: 1

@@ -16,7 +16,7 @@ services:
     networks:
       - jhaas-portal-priv
     volumes:
-      - database:/var/lib/postgresql/data
+      - authentik-database:/var/lib/postgresql/data
     environment:
       POSTGRES_PASSWORD: ${PG_PASS:?database password required}
       POSTGRES_USER: ${PG_USER:-authentik}
@@ -35,7 +35,7 @@ services:
       retries: 5
       timeout: 3s
     volumes:
-      - redis:/data
+      - authentik-redis:/data
 
   authentik:
     image: ${AUTHENTIK_IMAGE:-ghcr.io/goauthentik/server}:${AUTHENTIK_TAG:-2023.5.1}
@@ -68,9 +68,9 @@ services:
       - .env
 
 volumes:
-  database:
+  authentik-database:
     driver: local
-  redis:
+  authentik-redis:
     driver: local
 
 

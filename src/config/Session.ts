@@ -43,7 +43,16 @@ if (SESSION_STORAGE === 'redis') {
     password: SESSION_STORAGE_PASS
   });
 
-  redisClient.connect().catch(console.error);
+  // connect the client - this is totally fine, if asynchron
+  redisClient.connect()
+  .then(() => console.log('Redis: connected.'))
+  .catch((err) => {
+    console.log('Could not connect to Redis. Retry in 5 Seconds.');
+    console.log(err);
+    setTimeout(() => {
+      process.kill(9);
+    }, 5000);
+  });
 
   const redisStore = new RedisStore({
     client: redisClient,

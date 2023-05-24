@@ -61,7 +61,7 @@ class JupyterHubBase {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @ManyToOne(() => User, { eager: false })
+  @ManyToOne(() => User, { eager: true })
   creator: User;
 
   @Column()
@@ -124,9 +124,6 @@ class JupyterHubBase {
 
 @Entity()
 export class JupyterHubRequest extends JupyterHubBase {
-  @ManyToOne(() => User, { eager: true })
-  creator: User;
-
   @Column({ unique: true })
   slug: string;
 

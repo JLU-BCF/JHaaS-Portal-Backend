@@ -12,6 +12,8 @@ services:
       target: develop
     depends_on:
       - jhaas-portal-db
+      - redis
+      - mailhog
     networks:
       - jhaas-portal-priv
     ports:

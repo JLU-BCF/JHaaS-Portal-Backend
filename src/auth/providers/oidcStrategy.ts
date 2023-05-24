@@ -21,8 +21,9 @@ type VerifyCallback = (err?: Error | null, user?: Express.User, info?: any) => v
 type passportProfile = {
   sub: string;
   email: string;
-  given_name: string;
-  family_name: string;
+  name: string;
+  given_name?: string;
+  family_name?: string;
   groups?: string[];
 
   // allow any additional data
@@ -44,7 +45,7 @@ Issuer.discover(OIDC_ENDPOINT)
     const params = {
       client_id: CLIENT_ID,
       redirect_uri: CALLBACK_URL,
-      scope: 'openid email profile'
+      scope: 'openid email profile user-attributes'
     };
 
     function verify(tokenSet: TokenSet, profile: passportProfile, cb: VerifyCallback) {
@@ -58,7 +59,7 @@ Issuer.discover(OIDC_ENDPOINT)
             return cb(null, user, { message: 'Logged In Successfully' });
           }
 
-          const user = new User(profile.given_name, profile.family_name, profile.email);
+          const user = new User(profile.given_name || profile.name, profile.family_name || profile.name, profile.email);
           const credentials = new Credentials(user, AuthProvider.OIDC, profile.sub);
 
           return CredentialsRepository.createOne(credentials)
