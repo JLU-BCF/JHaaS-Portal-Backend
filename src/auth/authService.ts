@@ -44,7 +44,9 @@ authService.post('/logout', (req, res) => {
         return genericError.internalServerError(res);
       }
       if (logoutUrl) {
-        return res.redirect(logoutUrl);
+        // TODO: parameterize
+        return res.redirect('http://authentik:9000/if/flow/jhaas-logout');
+        // return res.redirect(logoutUrl);
       }
       return res.redirect(FRONTEND_LOGOUT_URL);
     });

@@ -9,6 +9,7 @@ import {
 } from 'typeorm';
 import { JupyterHubRequest } from './JupyterHubRequest';
 import Credentials from './Credentials';
+import Participation from './Participation';
 
 @Entity()
 export default class User {
@@ -21,6 +22,9 @@ export default class User {
   @OneToMany(() => JupyterHubRequest, (jhr) => jhr.creator)
   jupyterHubRequests: Promise<JupyterHubRequest[]>;
 
+  @OneToMany(() => Participation, (participation) => participation.participant)
+  participations: Participation[];
+
   @Column()
   firstName: string;
 
@@ -32,6 +36,9 @@ export default class User {
 
   @Column({ default: false })
   isAdmin: boolean;
+
+  @Column({ default: false })
+  isLead: boolean;
 
   @CreateDateColumn()
   createdAt: Date;

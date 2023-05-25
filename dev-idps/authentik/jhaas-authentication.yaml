@@ -29,9 +29,14 @@ entries:
     case_insensitive_matching: true
     enrollment_flow: eb16718a-d355-4b6c-a0a6-18b3d63b30ad
     password_stage: 662d6f80-354a-45e9-a9ea-865836c45bfb
+    recovery_flow: efd15420-84de-43d0-a356-b4c7408b430d
+    show_source_labels: true
     sources:
+    - a7ad4d35-d96d-45b5-8392-f92d9bbb2816
+    - 27dc5da9-c426-445c-bb20-fff8eb4bfde4
     - 496a6946-90a1-42a5-850c-4dbd11be79df
     user_fields:
+    - username
     - email
   conditions: []
   id: null
@@ -45,6 +50,7 @@ entries:
     - 2cdd1f09-e4dd-4c29-b58f-8e4bc4fd810d
     - b0178f55-4881-409c-b733-843540bf426d
     device_classes:
+    - static
     - totp
     - webauthn
     last_auth_threshold: seconds=0
@@ -99,5 +105,5 @@ entries:
 metadata:
   labels:
     blueprints.goauthentik.io/generated: 'true'
-  name: authentik Export - 2023-05-24 14:03:56.362271+00:00
+  name: authentik Export - 2023-05-25 14:37:38.339502+00:00
 version: 1

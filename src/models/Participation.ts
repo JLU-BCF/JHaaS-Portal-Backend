@@ -8,7 +8,7 @@ import {
   JoinColumn
 } from 'typeorm';
 import { JupyterHubRequest } from './JupyterHubRequest';
-import Participant from './Participant';
+import Participant from './User';
 
 export enum ParticipationStatus {
   PENDING = 'PENDING',

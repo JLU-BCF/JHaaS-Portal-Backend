@@ -16,14 +16,14 @@ entries:
   model: authentik_flows.flow
   state: present
 - attrs:
-    execution_logging: true
-    expression: "ak_logger.info(\"Passing structured data\", user=request.user)\n\n\
-      if request.user:\n  return True\nelse:\n  return False"
-    name: jhaas-user-authenticated
+    expression: "if request.user and request.user.is_authenticated:\n  return True\n\
+      \nplan = request.context.get(\"flow_plan\")\nif not plan:\n  return False\n\n\
+      plan.redirect(\"http://localhost:3000/user/logout\")\nreturn False"
+    name: jhaas-logout-redirect-if-unauthenticated
   conditions: []
   id: null
   identifiers:
-    pk: 29bb311e-10ec-4a3e-b8d2-2bf9db4418b9
+    pk: 56f26251-2ec8-42e9-958f-c8b009090169
   model: authentik_policies_expression.expressionpolicy
   state: present
 - attrs:
@@ -65,9 +65,9 @@ entries:
   conditions: []
   id: null
   identifiers:
-    order: 10
-    pk: 08330dbd-7be6-4a0e-9bdb-c3da12067b15
-    policy: 29bb311e-10ec-4a3e-b8d2-2bf9db4418b9
+    order: 0
+    pk: 22a3014f-79db-4f18-9fca-04fc6e01fadc
+    policy: 3f1d09a6-bd7b-4ff2-9bb5-8fac96338224
     target: a60d24bb-1eca-46d9-be6c-903e7db67053
   model: authentik_policies.policybinding
   state: present
@@ -77,14 +77,14 @@ entries:
   conditions: []
   id: null
   identifiers:
-    order: 0
-    pk: 22a3014f-79db-4f18-9fca-04fc6e01fadc
-    policy: 3f1d09a6-bd7b-4ff2-9bb5-8fac96338224
+    order: 10
+    pk: ff28e69c-e695-4935-9537-e2470c5a87e5
+    policy: 56f26251-2ec8-42e9-958f-c8b009090169
     target: a60d24bb-1eca-46d9-be6c-903e7db67053
   model: authentik_policies.policybinding
   state: present
 metadata:
   labels:
     blueprints.goauthentik.io/generated: 'true'
-  name: authentik Export - 2023-05-24 14:04:20.106487+00:00
+  name: authentik Export - 2023-05-25 14:37:58.142944+00:00
 version: 1

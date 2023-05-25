@@ -3,7 +3,6 @@ import User from '../models/User';
 import Credentials from '../models/Credentials';
 import { JupyterHubRequest, JupyterHubChangeRequest } from '../models/JupyterHubRequest';
 import { getSecret } from '../helpers/SecretHelper';
-import Participant from '../models/Participant';
 import Participation from '../models/Participation';
 
 export const NODE_ENV: string = process.env.NODE_ENV || '';
@@ -27,7 +26,6 @@ export const DB_CONN: DataSource = new DataSource({
     Credentials,
     JupyterHubRequest,
     JupyterHubChangeRequest,
-    Participant,
     Participation
   ],
   synchronize: NODE_ENV != 'production',

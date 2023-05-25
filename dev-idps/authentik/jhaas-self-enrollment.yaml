@@ -17,6 +17,39 @@ entries:
   model: authentik_flows.flow
   state: present
 - attrs:
+    field_key: tos-text
+    label: TOS
+    name: self-enrollment-tos-text
+    order: 0
+    sub_text: Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy
+      eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.
+      At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren,
+      no sea takimata sanctus est <a href="#">Lorem ipsum dolor sit amet</a>. Lorem
+      ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor
+      invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero
+      eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren,
+      no sea takimata sanctus est Lorem ipsum dolor sit amet.
+    type: static
+  conditions: []
+  id: null
+  identifiers:
+    pk: 148f94c3-45b9-40c1-bd4e-48aa19cf0e11
+  model: authentik_stages_prompt.prompt
+  state: present
+- attrs:
+    field_key: tos-accept
+    label: I accept the terms of use
+    name: self-enrollment-tos-accept
+    order: 5
+    required: true
+    type: checkbox
+  conditions: []
+  id: null
+  identifiers:
+    pk: f18a03a1-e7cc-4c02-ba58-0f6e48ec1149
+  model: authentik_stages_prompt.prompt
+  state: present
+- attrs:
     field_key: familyname
     label: Family Name
     name: self-enrollment-family-name
@@ -73,39 +106,6 @@ entries:
   model: authentik_stages_prompt.prompt
   state: present
 - attrs:
-    field_key: tos-text
-    label: TOS
-    name: self-enrollment-tos-text
-    order: 0
-    sub_text: Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy
-      eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.
-      At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren,
-      no sea takimata sanctus est <a href="#">Lorem ipsum dolor sit amet</a>. Lorem
-      ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor
-      invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero
-      eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren,
-      no sea takimata sanctus est Lorem ipsum dolor sit amet.
-    type: static
-  conditions: []
-  id: null
-  identifiers:
-    pk: 148f94c3-45b9-40c1-bd4e-48aa19cf0e11
-  model: authentik_stages_prompt.prompt
-  state: present
-- attrs:
-    field_key: tos-accept
-    label: I accept the terms of use
-    name: self-enrollment-tos-accept
-    order: 5
-    required: true
-    type: checkbox
-  conditions: []
-  id: null
-  identifiers:
-    pk: f18a03a1-e7cc-4c02-ba58-0f6e48ec1149
-  model: authentik_stages_prompt.prompt
-  state: present
-- attrs:
     execution_logging: true
     expression: 'context[''prompt_data''][''username''] = context[''prompt_data''][''email'']
 
@@ -140,6 +140,21 @@ entries:
   id: null
   identifiers:
     pk: 1dc343d3-c79a-4b82-ad87-c7d5b94ed52a
+  model: authentik_policies_expression.expressionpolicy
+  state: present
+- attrs:
+    execution_logging: true
+    expression: "check_user_username = ak_user_by(username=context['prompt_data']['email'])\n\
+      check_user_email = ak_user_by(email=context['prompt_data']['email'])\n\nif check_user_username\
+      \ or check_user_email:\n  ak_message('This email address has already been taken,\
+      \ you may login instead.')\n  plan = request.context.get(\"flow_plan\")\n  if\
+      \ not plan:\n    return False\n  plan.redirect(\"http://authentik:9000/if/flow/jhaas-authentication\"\
+      )\n  return False\n\nreturn True"
+    name: self-enrollment-check-username
+  conditions: []
+  id: null
+  identifiers:
+    pk: 8559d5ee-7d9e-4472-b4aa-1c7d3ceba553
   model: authentik_policies_expression.expressionpolicy
   state: present
 - attrs:
@@ -340,7 +355,20 @@ entries:
   conditions: []
   id: null
   identifiers:
-    order: 0
+    order: 10
+    pk: 891ca272-50e0-4b73-9b57-171f1bef37f3
+    policy: 8559d5ee-7d9e-4472-b4aa-1c7d3ceba553
+    target: b88f9b97-bb09-4cf9-8777-cfbede5cbb61
+  model: authentik_policies.policybinding
+  state: present
+- attrs:
+    enabled: true
+    negate: true
+    timeout: 30
+  conditions: []
+  id: null
+  identifiers:
+    order: 20
     pk: efaba824-74b5-4c8f-a823-310785f053ef
     policy: 6571b512-e430-43d6-86f8-dae0d5ac23cc
     target: b88f9b97-bb09-4cf9-8777-cfbede5cbb61
@@ -349,5 +377,5 @@ entries:
 metadata:
   labels:
     blueprints.goauthentik.io/generated: 'true'
-  name: authentik Export - 2023-05-24 14:04:09.375276+00:00
+  name: authentik Export - 2023-05-25 14:37:51.940170+00:00
 version: 1
