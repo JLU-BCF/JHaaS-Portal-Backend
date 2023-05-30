@@ -21,13 +21,7 @@ export const DB_CONN: DataSource = new DataSource({
   username: process.env.POSTGRES_USER || 'postgres',
   database: process.env.POSTGRES_DB || 'postgres',
   password: getSecret('POSTGRES_PASSWORD_FILE', 'POSTGRES_PASSWORD', 'postgres'),
-  entities: [
-    User,
-    Credentials,
-    JupyterHubRequest,
-    JupyterHubChangeRequest,
-    Participation
-  ],
+  entities: [User, Credentials, JupyterHubRequest, JupyterHubChangeRequest, Participation],
   synchronize: NODE_ENV != 'production',
   logging: NODE_ENV != 'production',
   migrations: [
