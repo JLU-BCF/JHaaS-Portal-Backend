@@ -1,4 +1,3 @@
-entries:
 # TOTP SETUP
 - attrs:
     invalid_response_action: retry
@@ -39,6 +38,33 @@ entries:
     pk: 8d450255-4e7f-4d7c-8829-13b6c4985895
     stage: be377b94-2867-444e-b51c-474fefa7a795
     target: 55605750-8641-4d53-980b-2a9a56275b23
+  model: authentik_flows.flowstagebinding
+  state: present
+# PASSWORD SETUP
+- attrs:
+    invalid_response_action: retry
+    policy_engine_mode: any
+    re_evaluate_policies: true
+  conditions: []
+  id: null
+  identifiers:
+    order: 0
+    pk: 4c87ed6c-1453-45d5-a461-1c61a90a7f3c
+    stage: d2160f23-8611-428f-8314-db38577750af
+    target: 4ef1df42-7460-4275-8690-aaa65c5c462f
+  model: authentik_flows.flowstagebinding
+  state: present
+- attrs:
+    invalid_response_action: retry
+    policy_engine_mode: any
+    re_evaluate_policies: true
+  conditions: []
+  id: null
+  identifiers:
+    order: 1
+    pk: 5a4ed93a-95bf-43c5-9315-5a962574e2eb
+    stage: 008d379e-d445-4a29-87fa-a9a52fe3548d
+    target: 4ef1df42-7460-4275-8690-aaa65c5c462f
   model: authentik_flows.flowstagebinding
   state: present
 # ENROLLMENT

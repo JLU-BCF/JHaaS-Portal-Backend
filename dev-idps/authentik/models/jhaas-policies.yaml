@@ -1,26 +1,26 @@
-entries:
 # TOTP SETUP
 # WebAuthn SETUP
 # MFA RECOVERY SETUP
+# PASSWORD SETUP
 # ENROLLMENT
 - attrs:
     execution_logging: true
-    expression: 'context[''prompt_data''][''username''] = context[''prompt_data''][''email'']
+    expression: "context['prompt_data']['username'] = context['prompt_data']['email']
 
 
-      context[''prompt_data''][''name''] = context[''prompt_data''][''givenname'']
-      + '' '' + context[''prompt_data''][''familyname'']
+      context['prompt_data']['name'] = context['prompt_data']['givenname']
+      + ' ' + context['prompt_data']['familyname']
 
 
-      context[''prompt_data''][''attributes''] = {}
+      context['prompt_data']['attributes'] = {}
 
-      context[''prompt_data''][''attributes''][''given_name''] = context[''prompt_data''][''givenname'']
+      context['prompt_data']['attributes']['given_name'] = context['prompt_data']['givenname']
 
-      context[''prompt_data''][''attributes''][''family_name''] = context[''prompt_data''][''familyname'']
+      context['prompt_data']['attributes']['family_name'] = context['prompt_data']['familyname']
 
 
 
-      return True'
+      return True"
     name: jhaas-enrollment-map-attributes
   conditions: []
   id: null
@@ -30,7 +30,7 @@ entries:
   state: present
 - attrs:
     execution_logging: true
-    expression: 'context[''flow_plan''].context[''redirect''] = "http://localhost:3000/api/auth/oidc/cb"
+    expression: 'context[''flow_plan''].context[''redirect''] = "__POST_AUTH_CALLBACK_URL__"
 
       return True'
     name: jhaas-enrollment-login-redirect
@@ -46,7 +46,7 @@ entries:
       check_user_email = ak_user_by(email=context['prompt_data']['email'])\n\nif check_user_username\
       \ or check_user_email:\n  ak_message('This email address has already been taken,\
       \ you may login instead.')\n  plan = request.context.get(\"flow_plan\")\n  if\
-      \ not plan:\n    return False\n  plan.redirect(\"http://authentik:9000/if/flow/jhaas-authentication\"\
+      \ not plan:\n    return False\n  plan.redirect(\"__AUTHENTICATION_FLOW_URL__\"\
       )\n  return False\n\nreturn True"
     name: jhaas-enrollment-check-username
   conditions: []
@@ -70,7 +70,7 @@ entries:
 - attrs:
     expression: "if request.user and request.user.is_authenticated:\n  return True\n\
       \nplan = request.context.get(\"flow_plan\")\nif not plan:\n  return False\n\n\
-      plan.redirect(\"http://localhost:3000/user/logout\")\nreturn False"
+      plan.redirect(\"__POST_LOGOUT_URL__\")\nreturn False"
     name: jhaas-logout-redirect-if-unauthenticated
   conditions: []
   id: null
@@ -79,7 +79,7 @@ entries:
   model: authentik_policies_expression.expressionpolicy
   state: present
 - attrs:
-    expression: 'context[''flow_plan''].context[''redirect''] = "http://localhost:3000/user/logout"
+    expression: 'context[''flow_plan''].context[''redirect''] = "__POST_LOGOUT_URL__"
 
       return True'
     name: jhaas-logout-redirect

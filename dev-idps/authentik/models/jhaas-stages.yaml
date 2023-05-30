@@ -1,4 +1,3 @@
-entries:
 # TOTP SETUP
 - attrs:
     configure_flow: fbb1f3ff-81f0-4056-9b2b-c0750ff6d7e0
@@ -36,11 +35,32 @@ entries:
     pk: be377b94-2867-444e-b51c-474fefa7a795
   model: authentik_stages_authenticator_static.authenticatorstaticstage
   state: present
+# PASSWORD SETUP
+- attrs:
+    fields:
+      - 1928f5df-9266-4659-a499-d5374051a9b8
+      - 48603958-8074-4642-bc0c-e38dd2ec53de
+  conditions: []
+  id: null
+  identifiers:
+    name: jhaas-password-setup-prompt-stage
+    pk: d2160f23-8611-428f-8314-db38577750af
+  model: authentik_stages_prompt.promptstage
+  state: present
+- attrs:
+    user_creation_mode: never_create
+  conditions: []
+  id: null
+  identifiers:
+    name: jhaas-password-setup-write-stage
+    pk: 008d379e-d445-4a29-87fa-a9a52fe3548d
+  model: authentik_stages_user_write.userwritestage
+  state: present
 # ENROLLMENT
 - attrs:
     fields:
-    - 148f94c3-45b9-40c1-bd4e-48aa19cf0e11
-    - f18a03a1-e7cc-4c02-ba58-0f6e48ec1149
+      - 148f94c3-45b9-40c1-bd4e-48aa19cf0e11
+      - f18a03a1-e7cc-4c02-ba58-0f6e48ec1149
   conditions: []
   id: null
   identifiers:
@@ -50,11 +70,11 @@ entries:
   state: present
 - attrs:
     configuration_stages:
-    - d166a290-ab4a-476b-8bf5-c941d722a2b1
-    - ee7f35b0-c4c4-474e-b02b-46fbbab899cf
+      - d166a290-ab4a-476b-8bf5-c941d722a2b1
+      - ee7f35b0-c4c4-474e-b02b-46fbbab899cf
     device_classes:
-    - totp
-    - webauthn
+      - totp
+      - webauthn
     last_auth_threshold: seconds=0
     not_configured_action: configure
     webauthn_user_verification: required
@@ -95,10 +115,10 @@ entries:
   state: present
 - attrs:
     fields:
-    - 8307ec2f-6b60-48a1-ae61-41cffbddd25b
-    - 63851e43-9456-49b5-94ff-dd82fd42387d
-    - 6c0e1aaa-6628-45ac-951d-0bc8a2aebf4e
-    - 77a93d08-7e80-4265-a120-98fd4e3e6e20
+      - 8307ec2f-6b60-48a1-ae61-41cffbddd25b
+      - 63851e43-9456-49b5-94ff-dd82fd42387d
+      - 6c0e1aaa-6628-45ac-951d-0bc8a2aebf4e
+      - 77a93d08-7e80-4265-a120-98fd4e3e6e20
   conditions: []
   id: null
   identifiers:
@@ -153,8 +173,8 @@ entries:
   state: present
 - attrs:
     fields:
-    - af9ffa95-f200-4dca-ae3f-f82cdc7bd640
-    - aae314b5-0a36-48ee-88c2-02b0192c9b68
+      - af9ffa95-f200-4dca-ae3f-f82cdc7bd640
+      - aae314b5-0a36-48ee-88c2-02b0192c9b68
   conditions: []
   id: null
   identifiers:
@@ -174,12 +194,12 @@ entries:
   state: present
 - attrs:
     configuration_stages:
-    - d166a290-ab4a-476b-8bf5-c941d722a2b1
-    - ee7f35b0-c4c4-474e-b02b-46fbbab899cf
+      - d166a290-ab4a-476b-8bf5-c941d722a2b1
+      - ee7f35b0-c4c4-474e-b02b-46fbbab899cf
     device_classes:
-    - static
-    - totp
-    - webauthn
+      - static
+      - totp
+      - webauthn
     last_auth_threshold: seconds=0
     not_configured_action: configure
     webauthn_user_verification: required
@@ -194,8 +214,8 @@ entries:
     case_insensitive_matching: true
     show_matched_user: true
     user_fields:
-    - email
-    - username
+      - email
+      - username
   conditions: []
   id: null
   identifiers:
@@ -204,6 +224,18 @@ entries:
   model: authentik_stages_identification.identificationstage
   state: present
 # AUTHENTICATION
+- attrs:
+    backends:
+      - authentik.core.auth.InbuiltBackend
+    configure_flow: 4ef1df42-7460-4275-8690-aaa65c5c462f
+    failed_attempts_before_cancel: 5
+  conditions: []
+  id: null
+  identifiers:
+    name: jhaas-authentication-password
+    pk: 0271a23c-9d3c-4de1-b727-e7e13cf52433
+  model: authentik_stages_password.passwordstage
+  state: present
 - attrs:
     remember_me_offset: seconds=0
     session_duration: seconds=0
@@ -217,14 +249,11 @@ entries:
 - attrs:
     case_insensitive_matching: true
     enrollment_flow: eb16718a-d355-4b6c-a0a6-18b3d63b30ad
-    # TODO
-    password_stage:
+    password_stage: 0271a23c-9d3c-4de1-b727-e7e13cf52433
     recovery_flow: efd15420-84de-43d0-a356-b4c7408b430d
     show_source_labels: true
-    # TODO
-    sources: []
     user_fields:
-    - email
+      - email
   conditions: []
   id: null
   identifiers:
@@ -234,12 +263,12 @@ entries:
   state: present
 - attrs:
     configuration_stages:
-    - d166a290-ab4a-476b-8bf5-c941d722a2b1
-    - ee7f35b0-c4c4-474e-b02b-46fbbab899cf
+      - d166a290-ab4a-476b-8bf5-c941d722a2b1
+      - ee7f35b0-c4c4-474e-b02b-46fbbab899cf
     device_classes:
-    - static
-    - totp
-    - webauthn
+      - static
+      - totp
+      - webauthn
     last_auth_threshold: seconds=0
     not_configured_action: configure
     webauthn_user_verification: required

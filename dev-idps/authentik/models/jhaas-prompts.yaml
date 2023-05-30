@@ -1,7 +1,35 @@
-entries:
 # TOTP SETUP
 # WebAuthn SETUP
 # MFA RECOVERY SETUP
+# PASSWORD SETUP
+- attrs:
+    field_key: password_repeat
+    label: Password (repeat)
+    name: jhaas-setup-field-password-repeat
+    order: 301
+    placeholder: Password (repeat)
+    required: true
+    type: password
+  conditions: []
+  id: null
+  identifiers:
+    pk: 1928f5df-9266-4659-a499-d5374051a9b8
+  model: authentik_stages_prompt.prompt
+  state: present
+- attrs:
+    field_key: password
+    label: Password
+    name: jhaas-setup-field-password
+    order: 300
+    placeholder: Password
+    required: true
+    type: password
+  conditions: []
+  id: null
+  identifiers:
+    pk: 48603958-8074-4642-bc0c-e38dd2ec53de
+  model: authentik_stages_prompt.prompt
+  state: present
 # ENROLLMENT
 - attrs:
     field_key: tos-text

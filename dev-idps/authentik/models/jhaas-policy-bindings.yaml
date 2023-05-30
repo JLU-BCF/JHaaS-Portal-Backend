@@ -1,7 +1,7 @@
-entries:
 # TOTP SETUP
 # WebAuthn SETUP
 # MFA RECOVERY SETUP
+# PASSWORD SETUP
 # ENROLLMENT
 - attrs:
     enabled: true
