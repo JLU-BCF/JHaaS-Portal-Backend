@@ -1,0 +1,7 @@
+jhaas-groups.yaml
+jhaas-flows.yaml
+jhaas-prompts.yaml
+jhaas-policies.yaml
+jhaas-stages.yaml
+jhaas-stage-bindings.yaml
+jhaas-policy-bindings.yaml

@@ -1,0 +1,125 @@
+entries:
+# TOTP SETUP
+# WebAuthn SETUP
+# MFA RECOVERY SETUP
+# ENROLLMENT
+- attrs:
+    field_key: tos-text
+    label: TOS
+    name: jhaas-enrollment-tos-text
+    order: 0
+    sub_text: Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy
+      eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.
+      At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren,
+      no sea takimata sanctus est <a href="#">Lorem ipsum dolor sit amet</a>. Lorem
+      ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor
+      invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero
+      eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren,
+      no sea takimata sanctus est Lorem ipsum dolor sit amet.
+    type: static
+  conditions: []
+  id: null
+  identifiers:
+    pk: 148f94c3-45b9-40c1-bd4e-48aa19cf0e11
+  model: authentik_stages_prompt.prompt
+  state: present
+- attrs:
+    field_key: tos-accept
+    label: I accept the terms of use
+    name: jhaas-enrollment-tos-accept
+    order: 5
+    required: true
+    type: checkbox
+  conditions: []
+  id: null
+  identifiers:
+    pk: f18a03a1-e7cc-4c02-ba58-0f6e48ec1149
+  model: authentik_stages_prompt.prompt
+  state: present
+- attrs:
+    field_key: familyname
+    label: Family Name
+    name: jhaas-enrollment-family-name
+    order: 1
+    placeholder: Family Name
+    required: true
+    type: text
+  conditions: []
+  id: null
+  identifiers:
+    pk: 8307ec2f-6b60-48a1-ae61-41cffbddd25b
+  model: authentik_stages_prompt.prompt
+  state: present
+- attrs:
+    field_key: password
+    label: Password
+    name: jhaas-enrollment-password
+    order: 4
+    placeholder: Password
+    required: true
+    type: password
+  conditions: []
+  id: null
+  identifiers:
+    pk: 63851e43-9456-49b5-94ff-dd82fd42387d
+  model: authentik_stages_prompt.prompt
+  state: present
+- attrs:
+    field_key: givenname
+    label: Given Name
+    name: jhaas-enrollment-given-name
+    order: 0
+    placeholder: Given Name
+    required: true
+    type: text
+  conditions: []
+  id: null
+  identifiers:
+    pk: 6c0e1aaa-6628-45ac-951d-0bc8a2aebf4e
+  model: authentik_stages_prompt.prompt
+  state: present
+- attrs:
+    field_key: email
+    label: Email address
+    name: jhaas-enrollment-email
+    order: 2
+    placeholder: Email address
+    required: true
+    type: email
+  conditions: []
+  id: null
+  identifiers:
+    pk: 77a93d08-7e80-4265-a120-98fd4e3e6e20
+  model: authentik_stages_prompt.prompt
+  state: present
+# PASSWORD RECOVERY
+- attrs:
+    field_key: password
+    label: Password
+    name: jhaas-recovery-field-password
+    order: 0
+    placeholder: Password
+    required: true
+    type: password
+  conditions: []
+  id: null
+  identifiers:
+    pk: af9ffa95-f200-4dca-ae3f-f82cdc7bd640
+  model: authentik_stages_prompt.prompt
+  state: present
+- attrs:
+    field_key: password_repeat
+    label: Password (repeat)
+    name: jhaas-recovery-field-password-repeat
+    order: 1
+    placeholder: Password (repeat)
+    required: true
+    type: password
+  conditions: []
+  id: null
+  identifiers:
+    pk: aae314b5-0a36-48ee-88c2-02b0192c9b68
+  model: authentik_stages_prompt.prompt
+  state: present
+# AUTHENTICATION
+# LOGOUT

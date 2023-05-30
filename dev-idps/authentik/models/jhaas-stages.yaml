@@ -1,0 +1,261 @@
+entries:
+# TOTP SETUP
+- attrs:
+    configure_flow: fbb1f3ff-81f0-4056-9b2b-c0750ff6d7e0
+    digits: 6
+    friendly_name: Authenticator App
+  conditions: []
+  id: null
+  identifiers:
+    name: jhaas-totp-setup-stage
+    pk: d166a290-ab4a-476b-8bf5-c941d722a2b1
+  model: authentik_stages_authenticator_totp.authenticatortotpstage
+  state: present
+# WebAuthn SETUP
+- attrs:
+    configure_flow: cb52bc0d-bc6f-4eb7-9f70-e709231016fc
+    friendly_name: WebAuthn Device
+    resident_key_requirement: preferred
+    user_verification: preferred
+  conditions: []
+  id: null
+  identifiers:
+    name: jhaas-webauthn-setup-stage
+    pk: ee7f35b0-c4c4-474e-b02b-46fbbab899cf
+  model: authentik_stages_authenticator_webauthn.authenticatewebauthnstage
+  state: present
+# MFA RECOVERY SETUP
+- attrs:
+    configure_flow: 55605750-8641-4d53-980b-2a9a56275b23
+    friendly_name: Recovery Code
+    token_count: 6
+  conditions: []
+  id: null
+  identifiers:
+    name: jhaas-mfa-recovery-setup-stage
+    pk: be377b94-2867-444e-b51c-474fefa7a795
+  model: authentik_stages_authenticator_static.authenticatorstaticstage
+  state: present
+# ENROLLMENT
+- attrs:
+    fields:
+    - 148f94c3-45b9-40c1-bd4e-48aa19cf0e11
+    - f18a03a1-e7cc-4c02-ba58-0f6e48ec1149
+  conditions: []
+  id: null
+  identifiers:
+    name: jhaas-enrollment-tos
+    pk: 2e7c5000-e504-40af-b063-14fae38bcee1
+  model: authentik_stages_prompt.promptstage
+  state: present
+- attrs:
+    configuration_stages:
+    - d166a290-ab4a-476b-8bf5-c941d722a2b1
+    - ee7f35b0-c4c4-474e-b02b-46fbbab899cf
+    device_classes:
+    - totp
+    - webauthn
+    last_auth_threshold: seconds=0
+    not_configured_action: configure
+    webauthn_user_verification: required
+  conditions: []
+  id: null
+  identifiers:
+    name: jhaas-enrollment-mfa-setup
+    pk: 856575d5-10af-4286-bde3-ad0d69c126c8
+  model: authentik_stages_authenticator_validate.authenticatorvalidatestage
+  state: present
+- attrs:
+    create_users_as_inactive: true
+    create_users_group: af03fd58-c277-405e-a795-858b43afe73b
+    user_creation_mode: always_create
+  conditions: []
+  id: null
+  identifiers:
+    name: jhaas-enrollment-write
+    pk: 20d6ba43-f66f-4788-8886-62e39e5ff9ce
+  model: authentik_stages_user_write.userwritestage
+  state: present
+- attrs:
+    activate_user_on_success: true
+    from_address: system@authentik.local
+    host: localhost
+    port: 25
+    subject: authentik
+    template: email/account_confirmation.html
+    timeout: 10
+    token_expiry: 30
+    use_global_settings: true
+  conditions: []
+  id: null
+  identifiers:
+    name: jhaas-enrollment-email
+    pk: 1aab54ee-abb7-47f1-9fb8-f1b0a660a411
+  model: authentik_stages_email.emailstage
+  state: present
+- attrs:
+    fields:
+    - 8307ec2f-6b60-48a1-ae61-41cffbddd25b
+    - 63851e43-9456-49b5-94ff-dd82fd42387d
+    - 6c0e1aaa-6628-45ac-951d-0bc8a2aebf4e
+    - 77a93d08-7e80-4265-a120-98fd4e3e6e20
+  conditions: []
+  id: null
+  identifiers:
+    name: jhaas-enrollment-prompt
+    pk: 59518447-27cc-4d1b-8195-b8e67c57595a
+  model: authentik_stages_prompt.promptstage
+  state: present
+- attrs:
+    remember_me_offset: seconds=0
+    session_duration: seconds=0
+  conditions: []
+  id: null
+  identifiers:
+    name: jhaas-enrollment-login
+    pk: e496cb61-2ebd-44d1-9c82-16e140c597e5
+  model: authentik_stages_user_login.userloginstage
+  state: present
+- attrs: {}
+  conditions: []
+  id: null
+  identifiers:
+    name: jhaas-enrollment-cancel
+    pk: c1e38e4a-a15d-4597-a0a7-eb4a4034562b
+  model: authentik_stages_deny.denystage
+  state: present
+# PASSWORD RECOVERY
+- attrs:
+    activate_user_on_success: true
+    from_address: system@authentik.local
+    host: localhost
+    port: 25
+    subject: authentik
+    template: email/password_reset.html
+    timeout: 10
+    token_expiry: 30
+    use_global_settings: true
+  conditions: []
+  id: null
+  identifiers:
+    name: jhaas-password-recovery-email
+    pk: 810d65b6-4e2b-4fc8-8688-df90e5aab5cb
+  model: authentik_stages_email.emailstage
+  state: present
+- attrs:
+    user_creation_mode: never_create
+  conditions: []
+  id: null
+  identifiers:
+    name: jhaas-password-recovery-user-write
+    pk: 0bd84606-6570-4e0f-a6b7-76c766691318
+  model: authentik_stages_user_write.userwritestage
+  state: present
+- attrs:
+    fields:
+    - af9ffa95-f200-4dca-ae3f-f82cdc7bd640
+    - aae314b5-0a36-48ee-88c2-02b0192c9b68
+  conditions: []
+  id: null
+  identifiers:
+    name: jhaas-password-recovery-prompt
+    pk: 03cdd5a1-9cfb-4d70-a8a2-7df57d0a66ae
+  model: authentik_stages_prompt.promptstage
+  state: present
+- attrs:
+    remember_me_offset: seconds=0
+    session_duration: seconds=0
+  conditions: []
+  id: null
+  identifiers:
+    name: jhaas-password-recovery-user-login
+    pk: a485dc1b-994c-4102-8c61-af54ee9587b2
+  model: authentik_stages_user_login.userloginstage
+  state: present
+- attrs:
+    configuration_stages:
+    - d166a290-ab4a-476b-8bf5-c941d722a2b1
+    - ee7f35b0-c4c4-474e-b02b-46fbbab899cf
+    device_classes:
+    - static
+    - totp
+    - webauthn
+    last_auth_threshold: seconds=0
+    not_configured_action: configure
+    webauthn_user_verification: required
+  conditions: []
+  id: null
+  identifiers:
+    name: jhaas-password-recovery-mfa-validation
+    pk: aa9b1063-b0b2-4db6-86cb-cd3091f13696
+  model: authentik_stages_authenticator_validate.authenticatorvalidatestage
+  state: present
+- attrs:
+    case_insensitive_matching: true
+    show_matched_user: true
+    user_fields:
+    - email
+    - username
+  conditions: []
+  id: null
+  identifiers:
+    name: jhaas-password-recovery-identification
+    pk: d2fd5b02-e48d-4470-a659-8701f0208410
+  model: authentik_stages_identification.identificationstage
+  state: present
+# AUTHENTICATION
+- attrs:
+    remember_me_offset: seconds=0
+    session_duration: seconds=0
+  conditions: []
+  id: null
+  identifiers:
+    name: jhaas-authentication-login
+    pk: 132cfcce-9aaf-4305-84a5-ac6c79eaa568
+  model: authentik_stages_user_login.userloginstage
+  state: present
+- attrs:
+    case_insensitive_matching: true
+    enrollment_flow: eb16718a-d355-4b6c-a0a6-18b3d63b30ad
+    # TODO
+    password_stage:
+    recovery_flow: efd15420-84de-43d0-a356-b4c7408b430d
+    show_source_labels: true
+    # TODO
+    sources: []
+    user_fields:
+    - email
+  conditions: []
+  id: null
+  identifiers:
+    name: jhaas-authentication-identification
+    pk: fda794fe-e2f8-4ecd-be05-6490a74dbbc4
+  model: authentik_stages_identification.identificationstage
+  state: present
+- attrs:
+    configuration_stages:
+    - d166a290-ab4a-476b-8bf5-c941d722a2b1
+    - ee7f35b0-c4c4-474e-b02b-46fbbab899cf
+    device_classes:
+    - static
+    - totp
+    - webauthn
+    last_auth_threshold: seconds=0
+    not_configured_action: configure
+    webauthn_user_verification: required
+  conditions: []
+  id: null
+  identifiers:
+    name: jhaas-authentication-mfa-validation
+    pk: 2cdd1f09-e4dd-4c29-b58f-8e4bc4fd810d
+  model: authentik_stages_authenticator_validate.authenticatorvalidatestage
+  state: present
+# LOGOUT
+- attrs: {}
+  conditions: []
+  id: null
+  identifiers:
+    name: jhaas-invalidation-logout
+    pk: eed845bf-5410-4ef1-ad0f-8115b7795477
+  model: authentik_stages_user_logout.userlogoutstage
+  state: present

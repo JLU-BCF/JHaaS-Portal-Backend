@@ -1,0 +1,82 @@
+entries:
+# TOTP SETUP
+# WebAuthn SETUP
+# MFA RECOVERY SETUP
+# ENROLLMENT
+- attrs:
+    enabled: true
+    timeout: 30
+  conditions: []
+  id: null
+  identifiers:
+    order: 0
+    pk: 4f183e23-ea31-4ae6-a862-c63a0e6b33f6
+    policy: 1dc343d3-c79a-4b82-ad87-c7d5b94ed52a
+    target: 93b38a67-d320-45a3-a7ee-caf2db2af0f2
+  model: authentik_policies.policybinding
+  state: present
+- attrs:
+    enabled: true
+    negate: true
+    timeout: 30
+  conditions: []
+  id: null
+  identifiers:
+    order: 10
+    pk: 891ca272-50e0-4b73-9b57-171f1bef37f3
+    policy: 8559d5ee-7d9e-4472-b4aa-1c7d3ceba553
+    target: b88f9b97-bb09-4cf9-8777-cfbede5cbb61
+  model: authentik_policies.policybinding
+  state: present
+- attrs:
+    enabled: true
+    negate: true
+    timeout: 30
+  conditions: []
+  id: null
+  identifiers:
+    order: 20
+    pk: efaba824-74b5-4c8f-a823-310785f053ef
+    policy: 6571b512-e430-43d6-86f8-dae0d5ac23cc
+    target: b88f9b97-bb09-4cf9-8777-cfbede5cbb61
+  model: authentik_policies.policybinding
+  state: present
+# PASSWORD RECOVERY
+- attrs:
+    enabled: true
+    timeout: 30
+  conditions: []
+  id: null
+  identifiers:
+    order: 0
+    pk: 641660ca-38f8-48fc-87c3-449e9e7ba510
+    policy: d869f6bd-73b6-4b90-915f-ee4cb3ca6c19
+    target: a96c5767-f845-4cc8-9cd8-429866e76cea
+  model: authentik_policies.policybinding
+  state: present
+# AUTHENTICATION
+# LOGOUT
+- attrs:
+    enabled: true
+    timeout: 30
+  conditions: []
+  id: null
+  identifiers:
+    order: 0
+    pk: 22a3014f-79db-4f18-9fca-04fc6e01fadc
+    policy: 3f1d09a6-bd7b-4ff2-9bb5-8fac96338224
+    target: a60d24bb-1eca-46d9-be6c-903e7db67053
+  model: authentik_policies.policybinding
+  state: present
+- attrs:
+    enabled: true
+    timeout: 30
+  conditions: []
+  id: null
+  identifiers:
+    order: 10
+    pk: ff28e69c-e695-4935-9537-e2470c5a87e5
+    policy: 56f26251-2ec8-42e9-958f-c8b009090169
+    target: a60d24bb-1eca-46d9-be6c-903e7db67053
+  model: authentik_policies.policybinding
+  state: present

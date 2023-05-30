@@ -16,12 +16,6 @@ Application:
   mit passender Launch Url auf
   /api/auth/oidc/login
 
-Groups:
-  self-enrolled
-  auth-trusted
-  jhaas-leads
-  jhaas-admins
-
 Tenants:
   Entweder default anpassen oder neuen Anlegen
     Default Flows auf JHaaS Flows setzen

@@ -1,0 +1,91 @@
+entries:
+# TOTP SETUP
+# WebAuthn SETUP
+# MFA RECOVERY SETUP
+# ENROLLMENT
+- attrs:
+    execution_logging: true
+    expression: 'context[''prompt_data''][''username''] = context[''prompt_data''][''email'']
+
+
+      context[''prompt_data''][''name''] = context[''prompt_data''][''givenname'']
+      + '' '' + context[''prompt_data''][''familyname'']
+
+
+      context[''prompt_data''][''attributes''] = {}
+
+      context[''prompt_data''][''attributes''][''given_name''] = context[''prompt_data''][''givenname'']
+
+      context[''prompt_data''][''attributes''][''family_name''] = context[''prompt_data''][''familyname'']
+
+
+
+      return True'
+    name: jhaas-enrollment-map-attributes
+  conditions: []
+  id: null
+  identifiers:
+    pk: 6571b512-e430-43d6-86f8-dae0d5ac23cc
+  model: authentik_policies_expression.expressionpolicy
+  state: present
+- attrs:
+    execution_logging: true
+    expression: 'context[''flow_plan''].context[''redirect''] = "http://localhost:3000/api/auth/oidc/cb"
+
+      return True'
+    name: jhaas-enrollment-login-redirect
+  conditions: []
+  id: null
+  identifiers:
+    pk: 1dc343d3-c79a-4b82-ad87-c7d5b94ed52a
+  model: authentik_policies_expression.expressionpolicy
+  state: present
+- attrs:
+    execution_logging: true
+    expression: "check_user_username = ak_user_by(username=context['prompt_data']['email'])\n\
+      check_user_email = ak_user_by(email=context['prompt_data']['email'])\n\nif check_user_username\
+      \ or check_user_email:\n  ak_message('This email address has already been taken,\
+      \ you may login instead.')\n  plan = request.context.get(\"flow_plan\")\n  if\
+      \ not plan:\n    return False\n  plan.redirect(\"http://authentik:9000/if/flow/jhaas-authentication\"\
+      )\n  return False\n\nreturn True"
+    name: jhaas-enrollment-check-username
+  conditions: []
+  id: null
+  identifiers:
+    pk: 8559d5ee-7d9e-4472-b4aa-1c7d3ceba553
+  model: authentik_policies_expression.expressionpolicy
+  state: present
+# PASSWORD RECOVERY
+- attrs:
+    expression: return bool(request.context.get('is_restored', True))
+    name: jhaas-recovery-skip-if-restored
+  conditions: []
+  id: null
+  identifiers:
+    pk: d869f6bd-73b6-4b90-915f-ee4cb3ca6c19
+  model: authentik_policies_expression.expressionpolicy
+  state: present
+# AUTHENTICATION
+# LOGOUT
+- attrs:
+    expression: "if request.user and request.user.is_authenticated:\n  return True\n\
+      \nplan = request.context.get(\"flow_plan\")\nif not plan:\n  return False\n\n\
+      plan.redirect(\"http://localhost:3000/user/logout\")\nreturn False"
+    name: jhaas-logout-redirect-if-unauthenticated
+  conditions: []
+  id: null
+  identifiers:
+    pk: 56f26251-2ec8-42e9-958f-c8b009090169
+  model: authentik_policies_expression.expressionpolicy
+  state: present
+- attrs:
+    expression: 'context[''flow_plan''].context[''redirect''] = "http://localhost:3000/user/logout"
+
+      return True'
+    name: jhaas-logout-redirect
+  conditions: []
+  id: null
+  identifiers:
+    pk: 3f1d09a6-bd7b-4ff2-9bb5-8fac96338224
+  model: authentik_policies_expression.expressionpolicy
+  state: present
