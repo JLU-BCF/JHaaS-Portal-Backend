@@ -7,3 +7,5 @@ export const CALLBACK_URL = process.env.OIDC_URL_CALLBACK || '';
 export const OIDC_ENDPOINT = process.env.OIDC_ENDPOINT || '';
 export const POST_LOGOUT_URL = FRONTEND_LOGOUT_URL;
 export const POST_LOGIN_URL = FRONTEND_LOGIN_URL;
+
+export const FORCE_OIDC_REACHABLE = ['true', true, 1].includes(process.env.FORCE_OIDC_REACHABLE);

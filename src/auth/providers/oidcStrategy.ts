@@ -8,7 +8,8 @@ import {
   CLIENT_ID,
   CLIENT_SECRET,
   POST_LOGOUT_URL,
-  POST_LOGIN_URL
+  POST_LOGIN_URL,
+  FORCE_OIDC_REACHABLE
 } from '../../config/Oidc';
 import CredentialsRepository from '../../repositories/CredentialsRepository';
 import Credentials, { AuthProvider } from '../../models/Credentials';
@@ -95,11 +96,14 @@ Issuer.discover(OIDC_ENDPOINT)
     );
   })
   .catch((err) => {
-    console.log('Could not read OIDC Endpoint. Retry in 5 Seconds.');
+    console.log('Could not read OIDC Endpoint.');
     console.log(err);
-    setTimeout(() => {
-      process.kill(9);
-    }, 5000);
+    if (FORCE_OIDC_REACHABLE) {
+      console.log('Kill to try again in 5 seconds.');
+      setTimeout(() => {
+        process.kill(9);
+      }, 5000);
+    }
   });
 
 export default oidcStrategy;
