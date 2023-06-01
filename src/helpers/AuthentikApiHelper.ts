@@ -22,7 +22,6 @@ async function getJupyterParentGroup(): Promise<string | null> {
     })
     .then(({ data }) => {
       if (data['results'] && Array.isArray(data['results']) && data['results'].length == 1) {
-        console.log(data['results'][0]['pk']);
         return data['results'][0]['pk'];
       }
       return null;
@@ -33,9 +32,9 @@ async function getJupyterParentGroup(): Promise<string | null> {
     });
 }
 
-export async function createJupyterGroup(id: string) {
+export async function createJupyterGroup(id: string): Promise<string | null> {
   const parent_id = await getJupyterParentGroup();
-  axios
+  return axios
     .post(
       `${url}/core/groups/`,
       {
@@ -46,8 +45,10 @@ export async function createJupyterGroup(id: string) {
       { headers }
     )
     .then(({ data }) => {
-      console.log(data['pk']);
       return data['pk'];
     })
-    .catch(console.error);
+    .catch((err) => {
+      console.log(err);
+      return null;
+    });
 }

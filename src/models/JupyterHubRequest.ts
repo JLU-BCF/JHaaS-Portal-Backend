@@ -127,6 +127,9 @@ export class JupyterHubRequest extends JupyterHubBase {
   @Column({ unique: true })
   slug: string;
 
+  @Column({ nullable: true })
+  authentikGroup: string;
+
   @Column()
   instanceFlavour: string;
 

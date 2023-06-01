@@ -5,7 +5,7 @@ import OidcStrategy from './providers/oidcStrategy';
 import UserRepository from '../repositories/UserRepository';
 import User from '../models/User';
 import { genericError } from '../helpers/ErrorHelper';
-import { FRONTEND_LOGOUT_URL } from '../config/Config';
+import { ENABLE_LOCAL_ACCOUNTS, FRONTEND_LOGOUT_URL } from '../config/Config';
 
 passport.serializeUser(function (user: User, cb) {
   process.nextTick(function () {
@@ -32,7 +32,11 @@ passport.deserializeUser(function (user: User, cb) {
 });
 
 const authService = Router();
-authService.use('/local', LocalStrategy);
+
+if (ENABLE_LOCAL_ACCOUNTS) {
+  authService.use('/local', LocalStrategy);
+}
+
 authService.use('/oidc', OidcStrategy);
 
 authService.post('/logout', (req, res) => {
@@ -44,9 +48,7 @@ authService.post('/logout', (req, res) => {
         return genericError.internalServerError(res);
       }
       if (logoutUrl) {
-        // TODO: parameterize
-        return res.redirect('http://authentik:9000/if/flow/jhaas-logout');
-        // return res.redirect(logoutUrl);
+        return res.redirect(logoutUrl);
       }
       return res.redirect(FRONTEND_LOGOUT_URL);
     });

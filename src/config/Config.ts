@@ -11,6 +11,7 @@ export const APP_PATH: string = process.env.APP_PATH || '/api';
 export const JH_DOMAIN: string = process.env.JH_DOMAIN || 'jhaas.local';
 export const RELEASE_NAME: string = process.env.RELEASE_NAME || 'jhaas-portal';
 export const FRONTEND_URL: string = process.env.FRONTEND_URL || '/';
+export const ENABLE_LOCAL_ACCOUNTS = ['true', true, 1].includes(process.env.ENABLE_LOCAL_ACCOUNTS);
 
 export const FRONTEND_LOGIN_URL = FRONTEND_URL.replace(/\/$/, '') + '/auth/verify';
 export const FRONTEND_LOGOUT_URL = FRONTEND_URL.replace(/\/$/, '') + '/auth/logout';
