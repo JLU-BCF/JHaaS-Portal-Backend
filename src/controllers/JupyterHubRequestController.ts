@@ -10,6 +10,7 @@ import JupyterHubRequestRepository from '../repositories/JupyterHubRequestReposi
 import { genericError } from '../helpers/ErrorHelper';
 import { MailHelper } from '../mail/MailHelper';
 import { DeleteResult } from 'typeorm';
+import { createJupyterGroup } from '../helpers/AuthentikApiHelper';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function logErrorAndReturnGeneric500(err: any, res: Response) {
@@ -122,6 +123,7 @@ class JupyterHubRequestController {
 
   public accept(req: Request, res: Response): void {
     modifyJupyterStatus(req, res, false, JupyterHubRequestStatus.ACCEPTED, (instance) => {
+      createJupyterGroup(instance.id);
       MailHelper.sendJupyterAccepted(instance);
     });
   }
