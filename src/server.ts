@@ -11,6 +11,7 @@ import AuthService from './auth/authService';
 import UserService from './routes/user.routes';
 import JupyterHubRequestService from './routes/jupytherHubRequest.routes';
 import { authGuard } from './middlewares/AuthenticatedMiddleware';
+import { leaderGuard } from './middlewares/LeaderMiddleware';
 
 const app: Application = express();
 
@@ -24,7 +25,7 @@ app.use(passport.session());
 
 app.use('/auth', AuthService);
 app.use('/user', authGuard, UserService);
-app.use('/jupyter', authGuard, JupyterHubRequestService);
+app.use('/jupyter', authGuard, leaderGuard, JupyterHubRequestService);
 
 app.get('/', authGuard, (req, res) => res.json(req.user));
 
