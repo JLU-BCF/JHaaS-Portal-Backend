@@ -13,6 +13,7 @@ import {
 } from '../../config/Oidc';
 import CredentialsRepository from '../../repositories/CredentialsRepository';
 import Credentials, { AuthProvider } from '../../models/Credentials';
+import UserRepository from '../../repositories/UserRepository';
 import User from '../../models/User';
 import { MailHelper } from '../../mail/MailHelper';
 
@@ -50,21 +51,32 @@ Issuer.discover(OIDC_ENDPOINT)
     };
 
     function verify(tokenSet: TokenSet, profile: passportProfile, cb: VerifyCallback) {
+      let isAdmin = false;
+      let isLead = false;
+      const firstName = profile.given_name || profile.name;
+      const lastName = profile.family_name || profile.name;
+      const email = profile.email;
       const sessionLogout = client.endSessionUrl({ id_token_hint: tokenSet });
+
+      if (profile.groups?.length) {
+        isAdmin = profile.groups.includes('portal-admins');
+        isLead = profile.groups.includes('portal-leaders');
+      }
 
       CredentialsRepository.findByProvider(AuthProvider.OIDC, profile.sub)
         .then((credentialsInstance) => {
           if (credentialsInstance) {
             const user = credentialsInstance.user;
+
+            if (user.sync({ isAdmin, isLead, firstName, lastName, email })) {
+              UserRepository.updateOne(user);
+            }
+
             user.sessionLogout = sessionLogout;
             return cb(null, user, { message: 'Logged In Successfully' });
           }
 
-          const user = new User(
-            profile.given_name || profile.name,
-            profile.family_name || profile.name,
-            profile.email
-          );
+          const user = new User(firstName, lastName, email, isAdmin, isLead);
           const credentials = new Credentials(user, AuthProvider.OIDC, profile.sub);
 
           return CredentialsRepository.createOne(credentials)

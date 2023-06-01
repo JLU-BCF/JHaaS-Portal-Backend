@@ -46,10 +46,38 @@ export default class User {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  constructor(firstName?: string, lastName?: string, email?: string) {
+  constructor(
+    firstName?: string,
+    lastName?: string,
+    email?: string,
+    isAdmin = false,
+    isLead = false
+  ) {
     this.firstName = firstName;
     this.lastName = lastName;
     this.email = email;
+    this.isAdmin = isAdmin;
+    this.isLead = isLead;
+  }
+
+  sync(toSync: {
+    isAdmin: boolean;
+    isLead: boolean;
+    firstName: string;
+    lastName: string;
+    email: string;
+  }) {
+    let changed = false;
+    const attrs = ['isAdmin', 'isLead', 'firstName', 'lastName', 'email'];
+
+    for (const attr of attrs) {
+      if (this[attr] !== toSync[attr]) {
+        this[attr] = toSync[attr];
+        changed = true;
+      }
+    }
+
+    return changed;
   }
 
   // This is not stored in DB and is only
