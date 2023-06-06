@@ -3,8 +3,7 @@ import { JupyterHubRequest } from '../../models/JupyterHubRequest';
 import * as k8sConf from '../../config/K8s';
 import { RELEASE_NAME } from '../../config/Config';
 
-// TODO: use S3 instead of volume
-export function getTerraformWorkerJob(jh: JupyterHubRequest): k8s.V1Job {
+export function getTerraformWorkerJob(jh: JupyterHubRequest, action: string): k8s.V1Job {
   return {
     kind: 'Job',
     apiVersion: 'batch/v1',
@@ -41,11 +40,17 @@ export function getTerraformWorkerJob(jh: JupyterHubRequest): k8s.V1Job {
               secret: {
                 secretName: `sec-${RELEASE_NAME}-tf-conf`
               }
+            },
+            {
+              name: `vol-${RELEASE_NAME}-cloud-kubeconfig`,
+              secret: {
+                secretName: `sec-${RELEASE_NAME}-cloud-kubeconfig`
+              }
             }
           ],
           containers: [
             {
-              name: `tf-worker-${jh.id}`,
+              name: 'tf-worker',
               image: k8sConf.K8S_TF_IMAGE,
               volumeMounts: [
                 {
@@ -57,9 +62,22 @@ export function getTerraformWorkerJob(jh: JupyterHubRequest): k8s.V1Job {
                   name: `vol-${RELEASE_NAME}-tf-conf`,
                   mountPath: '/run/secrets/tf',
                   readOnly: true
+                },
+                {
+                  name: `vol-${RELEASE_NAME}-cloud-kubeconfig`,
+                  mountPath: '/run/secrets/kubeconfig',
+                  readOnly: true
                 }
               ],
               env: [
+                {
+                  name: 'JH_ACTION',
+                  value: action
+                },
+                {
+                  name: 'JH_ID',
+                  value: jh.id
+                },
                 {
                   name: 'JH_STATUS',
                   value: jh.status
@@ -87,6 +105,96 @@ export function getTerraformWorkerJob(jh: JupyterHubRequest): k8s.V1Job {
                 {
                   name: 'JH_CONTACT',
                   value: jh.creator.email
+                },
+                {
+                  name: 'JHAAS_DOMAIN',
+                  valueFrom: {
+                    configMapKeyRef: {
+                      key: 'JHAAS_DOMAIN',
+                      name: `env-${RELEASE_NAME}-tf-conf`
+                    }
+                  }
+                },
+                {
+                  name: 'JHAAS_ISSUER',
+                  valueFrom: {
+                    configMapKeyRef: {
+                      key: 'JHAAS_ISSUER',
+                      name: `env-${RELEASE_NAME}-tf-conf`
+                    }
+                  }
+                },
+                {
+                  name: 'JHAAS_AUTHENTIK_URL',
+                  valueFrom: {
+                    configMapKeyRef: {
+                      key: 'JHAAS_AUTHENTIK_URL',
+                      name: `env-${RELEASE_NAME}-tf-conf`
+                    }
+                  }
+                },
+                {
+                  name: 'JHAAS_AUTHENTIK_TOKEN',
+                  valueFrom: {
+                    configMapKeyRef: {
+                      key: 'JHAAS_AUTHENTIK_TOKEN',
+                      name: `env-${RELEASE_NAME}-tf-conf`
+                    }
+                  }
+                },
+                {
+                  name: 'JHAAS_AUTHENTICATION_FLOW',
+                  valueFrom: {
+                    configMapKeyRef: {
+                      key: 'JHAAS_AUTHENTICATION_FLOW',
+                      name: `env-${RELEASE_NAME}-tf-conf`
+                    }
+                  }
+                },
+                {
+                  name: 'JHAAS_AUTHORIZATION_FLOW',
+                  valueFrom: {
+                    configMapKeyRef: {
+                      key: 'JHAAS_AUTHORIZATION_FLOW',
+                      name: `env-${RELEASE_NAME}-tf-conf`
+                    }
+                  }
+                },
+                {
+                  name: 'SECRETS_PATH',
+                  valueFrom: {
+                    configMapKeyRef: {
+                      key: 'SECRETS_PATH',
+                      name: `env-${RELEASE_NAME}-tf-conf`
+                    }
+                  }
+                },
+                {
+                  name: 'S3_CONF',
+                  valueFrom: {
+                    configMapKeyRef: {
+                      key: 'S3_CONF',
+                      name: `env-${RELEASE_NAME}-tf-conf`
+                    }
+                  }
+                },
+                {
+                  name: 'TF_CONF',
+                  valueFrom: {
+                    configMapKeyRef: {
+                      key: 'TF_CONF',
+                      name: `env-${RELEASE_NAME}-tf-conf`
+                    }
+                  }
+                },
+                {
+                  name: 'KUBECONFIG',
+                  valueFrom: {
+                    configMapKeyRef: {
+                      key: 'KUBECONFIG',
+                      name: `env-${RELEASE_NAME}-tf-conf`
+                    }
+                  }
                 }
               ]
             }

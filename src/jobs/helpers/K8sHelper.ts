@@ -27,7 +27,7 @@ class K8sHelper {
   }
 
   public deployTerraFormWorkerJob(jh: JupyterHubRequest) {
-    const jobDefinition = getTerraformWorkerJob(jh);
+    const jobDefinition = getTerraformWorkerJob(jh, 'DEPLOY');
     this.batchK8sApi
       .createNamespacedJob(K8S_TF_NS, jobDefinition)
       .then((response) => {

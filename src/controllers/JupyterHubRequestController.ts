@@ -123,7 +123,7 @@ class JupyterHubRequestController {
 
   public accept(req: Request, res: Response): void {
     modifyJupyterStatus(req, res, false, JupyterHubRequestStatus.ACCEPTED, (instance) => {
-      createJupyterGroup(instance.id).then((groupId) => {
+      createJupyterGroup(instance.slug).then((groupId) => {
         instance.authentikGroup = groupId;
         JupyterHubRequestRepository.updateOne(instance);
       });

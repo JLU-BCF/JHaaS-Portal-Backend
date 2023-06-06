@@ -32,13 +32,13 @@ async function getJupyterParentGroup(): Promise<string | null> {
     });
 }
 
-export async function createJupyterGroup(id: string): Promise<string | null> {
+export async function createJupyterGroup(slug: string): Promise<string | null> {
   const parent_id = await getJupyterParentGroup();
   return axios
     .post(
       `${url}/core/groups/`,
       {
-        name: id,
+        name: `jh_${slug}`,
         is_superuser: false,
         parent: parent_id
       },
