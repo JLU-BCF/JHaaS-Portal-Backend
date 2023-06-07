@@ -52,3 +52,21 @@ export async function createJupyterGroup(slug: string): Promise<string | null> {
       return null;
     });
 }
+
+export async function assignUserToGroup(user_id: string, group_uuid: string) {
+  return axios
+    .post(
+      `${url}/core/groups/${group_uuid}/add_user/`,
+      {
+        pk: user_id
+      },
+      { headers }
+    )
+    .then(() => {
+      return true;
+    })
+    .catch((err) => {
+      console.log(err);
+      return null;
+    });
+}
