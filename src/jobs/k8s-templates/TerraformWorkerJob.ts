@@ -112,12 +112,20 @@ export function getTerraformWorkerJob(jh: JupyterHubRequest, action: string): k8
                   value: jh.id
                 },
                 {
+                  name: 'JH_NAME',
+                  value: jh.name
+                },
+                {
                   name: 'JH_STATUS',
                   value: jh.status
                 },
                 {
                   name: 'JH_SLUG',
                   value: jh.slug
+                },
+                {
+                  name: 'JH_GROUP_ID',
+                  value: jh.authentikGroup
                 },
                 {
                   name: 'JH_IMAGE',
