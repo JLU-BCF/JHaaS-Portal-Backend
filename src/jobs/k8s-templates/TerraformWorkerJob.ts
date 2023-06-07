@@ -12,17 +12,21 @@ export function getTerraformWorkerJob(jh: JupyterHubRequest, action: string): k8
       name: `tf-worker-${jh.id}`,
       namespace: k8sConf.K8S_TF_NS,
       labels: {
-        'jupyter-hub-request': jh.id
+        'jupyter-hub-request': jh.id,
+        'jupyter-hub-action': action
       }
     },
     spec: {
+      ttlSecondsAfterFinished: 300,
       template: {
         metadata: {
           labels: {
-            'jupyter-hub-request': jh.id
+            'jupyter-hub-request': jh.id,
+            'jupyter-hub-action': action
           }
         },
         spec: {
+          restartPolicy: 'Never',
           imagePullSecrets: [
             {
               name: `sec-${RELEASE_NAME}-registry-credentials`
@@ -30,21 +34,43 @@ export function getTerraformWorkerJob(jh: JupyterHubRequest, action: string): k8
           ],
           volumes: [
             {
-              name: `vol-${RELEASE_NAME}-s3-conf`,
-              secret: {
-                secretName: `sec-${RELEASE_NAME}-s3-conf`
-              }
-            },
-            {
-              name: `vol-${RELEASE_NAME}-tf-conf`,
-              secret: {
-                secretName: `sec-${RELEASE_NAME}-tf-conf`
-              }
-            },
-            {
-              name: `vol-${RELEASE_NAME}-cloud-kubeconfig`,
-              secret: {
-                secretName: `sec-${RELEASE_NAME}-cloud-kubeconfig`
+              name: `vol-${RELEASE_NAME}-projected-secrets`,
+              projected: {
+                sources: [
+                  {
+                    secret: {
+                      name: `sec-${RELEASE_NAME}-s3-conf`,
+                      items: [
+                        {
+                          key: 'minio.secret',
+                          path: 'minio.secret'
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    secret: {
+                      name: `sec-${RELEASE_NAME}-tf-conf`,
+                      items: [
+                        {
+                          key: 'terraform.secret',
+                          path: 'terraform.secret'
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    secret: {
+                      name: `sec-${RELEASE_NAME}-cloud-kubeconfig`,
+                      items: [
+                        {
+                          key: 'kubeconfig.secret',
+                          path: 'kubeconfig.secret'
+                        }
+                      ]
+                    }
+                  }
+                ]
               }
             }
           ],
@@ -52,24 +78,31 @@ export function getTerraformWorkerJob(jh: JupyterHubRequest, action: string): k8
             {
               name: 'tf-worker',
               image: k8sConf.K8S_TF_IMAGE,
+              imagePullPolicy: 'Always',
               volumeMounts: [
                 {
-                  name: `vol-${RELEASE_NAME}-s3-conf`,
-                  mountPath: '/run/secrets/s3',
-                  readOnly: true
-                },
-                {
-                  name: `vol-${RELEASE_NAME}-tf-conf`,
-                  mountPath: '/run/secrets/tf',
-                  readOnly: true
-                },
-                {
-                  name: `vol-${RELEASE_NAME}-cloud-kubeconfig`,
-                  mountPath: '/run/secrets/kubeconfig',
+                  name: `vol-${RELEASE_NAME}-projected-secrets`,
+                  mountPath: '/secrets',
                   readOnly: true
                 }
               ],
               env: [
+                {
+                  name: 'SECRETS_PATH',
+                  value: '/secrets'
+                },
+                {
+                  name: 'S3_CONF',
+                  value: 'minio.secret'
+                },
+                {
+                  name: 'TF_CONF',
+                  value: 'terraform.secret'
+                },
+                {
+                  name: 'KUBECONFIG',
+                  value: 'kubeconfig.secret'
+                },
                 {
                   name: 'JH_ACTION',
                   value: action
@@ -159,47 +192,10 @@ export function getTerraformWorkerJob(jh: JupyterHubRequest, action: string): k8
                       name: `env-${RELEASE_NAME}-tf-conf`
                     }
                   }
-                },
-                {
-                  name: 'SECRETS_PATH',
-                  valueFrom: {
-                    configMapKeyRef: {
-                      key: 'SECRETS_PATH',
-                      name: `env-${RELEASE_NAME}-tf-conf`
-                    }
-                  }
-                },
-                {
-                  name: 'S3_CONF',
-                  valueFrom: {
-                    configMapKeyRef: {
-                      key: 'S3_CONF',
-                      name: `env-${RELEASE_NAME}-tf-conf`
-                    }
-                  }
-                },
-                {
-                  name: 'TF_CONF',
-                  valueFrom: {
-                    configMapKeyRef: {
-                      key: 'TF_CONF',
-                      name: `env-${RELEASE_NAME}-tf-conf`
-                    }
-                  }
-                },
-                {
-                  name: 'KUBECONFIG',
-                  valueFrom: {
-                    configMapKeyRef: {
-                      key: 'KUBECONFIG',
-                      name: `env-${RELEASE_NAME}-tf-conf`
-                    }
-                  }
                 }
               ]
             }
-          ],
-          restartPolicy: 'Never'
+          ]
         }
       }
     }

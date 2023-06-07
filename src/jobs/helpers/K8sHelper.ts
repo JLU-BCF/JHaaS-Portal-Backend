@@ -8,7 +8,6 @@ import {
 import { getTerraformWorkerJob } from '../k8s-templates/TerraformWorkerJob';
 import { JupyterHubRequest } from '../../models/JupyterHubRequest';
 import { K8S_TF_NS } from '../../config/K8s';
-import { getDemoWorkerJob } from '../k8s-templates/DemoWorkerJob';
 
 class K8sHelper {
   private kc: KubeConfig;
@@ -26,21 +25,8 @@ class K8sHelper {
     this.customK8sApi = this.kc.makeApiClient(CustomObjectsApi);
   }
 
-  public deployTerraFormWorkerJob(jh: JupyterHubRequest) {
-    const jobDefinition = getTerraformWorkerJob(jh, 'DEPLOY');
-    this.batchK8sApi
-      .createNamespacedJob(K8S_TF_NS, jobDefinition)
-      .then((response) => {
-        return response;
-      })
-      .catch((err) => {
-        console.log(err);
-        throw err;
-      });
-  }
-
-  public deployDemoJob() {
-    const jobDefinition = getDemoWorkerJob();
+  public deployTerraFormWorkerJob(jh: JupyterHubRequest, action: string) {
+    const jobDefinition = getTerraformWorkerJob(jh, action);
     this.batchK8sApi
       .createNamespacedJob(K8S_TF_NS, jobDefinition)
       .then((response) => {

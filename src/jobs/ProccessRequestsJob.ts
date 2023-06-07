@@ -33,7 +33,7 @@ function deployOneRequest(request: JupyterHubRequest) {
   request.status = JupyterHubRequestStatus.DEPLOYING;
   JupyterHubRequestRepository.updateOne(request)
     .then((requestInstance) => {
-      k8sHelper.deployTerraFormWorkerJob(requestInstance);
+      k8sHelper.deployTerraFormWorkerJob(requestInstance, 'DEPLOY');
     })
     .catch((err: unknown) => {
       console.log(err);
@@ -45,7 +45,7 @@ function degradeOneRequest(request: JupyterHubRequest) {
   request.status = JupyterHubRequestStatus.DEGRADING;
   JupyterHubRequestRepository.updateOne(request)
     .then((requestInstance) => {
-      k8sHelper.deployTerraFormWorkerJob(requestInstance);
+      k8sHelper.deployTerraFormWorkerJob(requestInstance, 'DEGRADE');
     })
     .catch((err: unknown) => {
       console.log(err);
@@ -54,8 +54,6 @@ function degradeOneRequest(request: JupyterHubRequest) {
 }
 
 init().then(() => processRequests());
-
-k8sHelper.deployDemoJob();
 
 /**
  * npm run job ./src/jobs/ProccessRequestsJob.ts
