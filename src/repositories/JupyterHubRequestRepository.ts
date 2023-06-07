@@ -109,6 +109,21 @@ class JupyterHubRequestRepository {
       skip
     });
   }
+
+  // find jupyterHubRequests which are in progress
+  findProgressingJupyterHubRequests(
+    take?: number,
+    skip?: number
+  ): Promise<[JupyterHubRequest[], number]> {
+    return DB_CONN.getRepository(JupyterHubRequest).findAndCount({
+      where: [
+        { status: JupyterHubRequestStatus.DEPLOYING },
+        { status: JupyterHubRequestStatus.DEGRADING }
+      ],
+      take,
+      skip
+    });
+  }
 }
 
 export default new JupyterHubRequestRepository();

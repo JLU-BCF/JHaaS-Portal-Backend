@@ -22,7 +22,8 @@
             "FunctionExpression > .params[decorators.length > 0]",
             "FunctionExpression > .params > :matches(Decorator, :not(:first-child))",
             "ClassBody.body > PropertyDefinition[decorators.length > 0] > .key"
-        ]
+        ],
+        "SwitchCase": 1
       }
     ],
     "@typescript-eslint/no-unused-vars": ["error", { "argsIgnorePattern": "(next|res|req)" }],
@@ -34,7 +35,8 @@
             "FunctionExpression > .params[decorators.length > 0]",
             "FunctionExpression > .params > :matches(Decorator, :not(:first-child))",
             "ClassBody.body > PropertyDefinition[decorators.length > 0] > .key"
-        ]
+        ],
+        "SwitchCase": 1
       }
     ]
   }
