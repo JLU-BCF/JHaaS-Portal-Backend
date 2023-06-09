@@ -11,6 +11,8 @@ import { genericError } from '../helpers/ErrorHelper';
 import { MailHelper } from '../mail/MailHelper';
 import { DeleteResult } from 'typeorm';
 import { assignUserToGroup, createJupyterGroup } from '../helpers/AuthentikApiHelper';
+import Participation, { ParticipationStatus } from '../models/Participation';
+import ParticipationRepository from '../repositories/ParticipationRepository';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function logErrorAndReturnGeneric500(err: any, res: Response) {
@@ -129,6 +131,9 @@ class JupyterHubRequestController {
         instance.creator.credentials.then((credentialsInstance) => {
           assignUserToGroup(credentialsInstance.authProviderId, groupId);
         });
+        ParticipationRepository.createOne(
+          new Participation(instance.creator.id, instance.id, ParticipationStatus.ACEPPTED)
+        );
       });
       MailHelper.sendJupyterAccepted(instance);
     });

@@ -44,4 +44,10 @@ export default class Participation {
   })
   @JoinColumn({ name: 'participantId' })
   participant: Participant;
+
+  constructor(participantId: string, hubId: string, status = ParticipationStatus.PENDING) {
+    this.participantId = participantId;
+    this.hubId = hubId;
+    this.status = status;
+  }
 }
