@@ -1,4 +1,4 @@
-import { minioClient } from '../config/S3';
+import { S3_JH_SPECS_BUCKET, minioClient } from '../config/S3';
 import { streamToString } from '../helpers/S3Helper';
 import { MailHelper } from '../mail/MailHelper';
 import { JupyterHubRequest, JupyterHubRequestStatus } from '../models/JupyterHubRequest';
@@ -71,40 +71,44 @@ function degradeOneRequest(request: JupyterHubRequest) {
 }
 
 function checkProgress(request: JupyterHubRequest) {
-  minioClient.bucketExists(`tf-state/${request.id}`, (err, exist) => {
+  minioClient.bucketExists(S3_JH_SPECS_BUCKET, (err, exist) => {
     if (err) {
       return console.error(err);
     }
     if (exist) {
-      minioClient.getObject(`tf-state/${request.id}`, 'JupyterHubRequestStatus', (err, stream) => {
-        if (err) {
-          return console.log(err);
-        }
-
-        streamToString(stream)
-          .then((status) => {
-            switch (status) {
-              case 'DEPLOYING':
-              case 'DEGRADING':
-                console.log(`${request.slug} : still in progress, nothing to do.`);
-                break;
-              case 'DEPLOYED':
-                setJupyterHubRequestDeployed(request);
-                break;
-              case 'DEGRATED':
-                setJupyterHubRequestDegrated(request);
-                break;
-              case 'FAILED':
-                setJupyterHubRequestFailed(request);
-                break;
-              default:
-                console.error(`${request.slug} : could not determine status!`);
-            }
-          })
-          .catch((err) => {
+      minioClient.getObject(
+        S3_JH_SPECS_BUCKET,
+        `${request.id}/JupyterHubRequestStatus`,
+        (err, stream) => {
+          if (err) {
             return console.log(err);
-          });
-      });
+          }
+
+          streamToString(stream)
+            .then((status) => {
+              switch (status) {
+                case 'DEPLOYING':
+                case 'DEGRADING':
+                  console.log(`${request.slug} : still in progress, nothing to do.`);
+                  break;
+                case 'DEPLOYED':
+                  setJupyterHubRequestDeployed(request);
+                  break;
+                case 'DEGRATED':
+                  setJupyterHubRequestDegrated(request);
+                  break;
+                case 'FAILED':
+                  setJupyterHubRequestFailed(request);
+                  break;
+                default:
+                  console.error(`${request.slug} : could not determine status!`);
+              }
+            })
+            .catch((err) => {
+              return console.log(err);
+            });
+        }
+      );
     } else {
       console.log(`${request.slug} : could not find existent bucket.`);
     }

@@ -1,6 +1,8 @@
 import { getSecret } from '../helpers/SecretHelper';
 import * as Minio from 'minio';
 
+export const S3_JH_SPECS_BUCKET = process.env.S3_JH_SPECS_BUCKET || 'jh-specs';
+
 export const minioClient = new Minio.Client({
   endPoint: process.env.S3_ENDPOINT || 'minio',
   port: Number(process.env.S3_PORT) || 9000,
