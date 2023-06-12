@@ -6,6 +6,13 @@ const router: Router = Router();
 // list jupyter hub participations from user (my participations)
 router.get('/list', ParticipationController.readUserParticipations);
 
+router.get('/hub/:slug([0-9a-z-]+)', ParticipationController.getHubForParticipation);
+
+router.get('/detail/:slug([0-9a-z-]+)', ParticipationController.getParticipation);
+
+// list jupyter hub participations from user (my participations)
+router.post('/hub/:slug([0-9a-z-]+)', ParticipationController.createParticipation);
+
 // // get a specific user object
 // router.get('/:id([0-9a-f-]+)', UserController.read);
 
