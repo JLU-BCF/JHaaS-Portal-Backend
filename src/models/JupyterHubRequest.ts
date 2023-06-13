@@ -201,6 +201,16 @@ export class JupyterHubRequest extends JupyterHubBase {
       }
     }
   }
+
+  public getCoreData() {
+    return {
+      slug: this.slug,
+      name: this.name,
+      description: this.description,
+      startDate: this.startDate,
+      endDate: this.endDate,
+    }
+  }
 }
 
 @Entity()

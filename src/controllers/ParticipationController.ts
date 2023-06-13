@@ -18,7 +18,7 @@ class ParticipationController {
   public getHubForParticipation(req: Request, res: Response) {
     const slug = req.params.slug;
     JupyterHubRequestRepository.findBySlug(slug)
-      .then((instance) => res.json(instance))
+      .then((instance) => res.json(instance.getCoreData()))
       .catch((err) => {
         console.log(err);
         return genericError.internalServerError(res);
