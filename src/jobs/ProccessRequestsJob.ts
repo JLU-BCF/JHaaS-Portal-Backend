@@ -1,4 +1,5 @@
 import { S3_JH_SPECS_BUCKET, minioClient } from '../config/S3';
+import { destroyJupyterGroup } from '../helpers/AuthentikApiHelper';
 import { streamToString } from '../helpers/S3Helper';
 import { MailHelper } from '../mail/MailHelper';
 import { JupyterHubRequest, JupyterHubRequestStatus } from '../models/JupyterHubRequest';
@@ -133,6 +134,9 @@ function setJupyterHubRequestDegrated(request: JupyterHubRequest) {
   request.status = JupyterHubRequestStatus.DEGRATED;
   JupyterHubRequestRepository.updateOne(request)
     .then((requestInstance) => {
+      if (requestInstance.authentikGroup) {
+        destroyJupyterGroup(requestInstance.authentikGroup);
+      }
       MailHelper.sendJupyterDegrated(requestInstance);
     })
     .catch((err: unknown) => {
