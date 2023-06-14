@@ -15,7 +15,9 @@ export const MailHelper = {
   sendJupyterChangeAccepted: jupyterTemplate('JupyterChangeAccepted'),
   sendJupyterChangeRejected: jupyterTemplate('JupyterChangeRejected'),
   sendJupyterChangeCanceled: jupyterTemplate('JupyterChangeCanceled'),
-  sendUserCreated: userTemplate('UserCreated', true)
+  sendUserCreated: userTemplate('UserCreated', true),
+  sendParticipationAccepted: jupyterTemplate('ParticipationAccepted'),
+  sendParticipationRejected: jupyterTemplate('ParticipationRejected')
 };
 
 const templateSubjects: { [key: string]: string } = {
@@ -30,7 +32,9 @@ const templateSubjects: { [key: string]: string } = {
   JupyterChangeAccepted: 'Your Change Request has been Accepted',
   JupyterChangeRejected: 'Your Change Request has been Rejected',
   JupyterChangeCanceled: 'Your Change Request has been Canceled',
-  UserCreated: 'Welcome to the JHaaS Portal'
+  UserCreated: 'Welcome to the JHaaS Portal',
+  ParticipationAccepted: 'Your participation request has been Accepted',
+  ParticipationRejected: 'Your participation request has been Rejected'
 };
 
 function jupyterTemplate(template: string, copy?: boolean) {

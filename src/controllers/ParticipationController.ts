@@ -5,6 +5,7 @@ import { genericError } from '../helpers/ErrorHelper';
 import JupyterHubRequestRepository from '../repositories/JupyterHubRequestRepository';
 import Participation, { ParticipationStatus } from '../models/Participation';
 import { assignUserToGroup, removeUserFromGroup } from '../helpers/AuthentikApiHelper';
+import { MailHelper } from '../mail/MailHelper';
 
 class ParticipationController {
   public readUserParticipations(req: Request, res: Response) {
@@ -80,8 +81,11 @@ class ParticipationController {
     const slug = req.params.slug;
     JupyterHubRequestRepository.findBySlug(slug)
       .then((hubInstance) => {
-        if (!hubInstance) {
+        if (!hubInstance || !hubInstance.participationAllowed()) {
           return genericError.notFound(res);
+        }
+        if (hubInstance.creator.id == user.id) {
+          return genericError.unprocessableEntity(res, 'This is your own hub');
         }
         ParticipationRepository.createOne(new Participation(user.id, hubInstance.id))
           .then((instance) => res.json(instance))
@@ -105,7 +109,11 @@ class ParticipationController {
     JupyterHubRequestRepository.findById(hubId)
       .then((hubInstance) => {
         // check if user is creator or admin
-        if (!hubInstance || (hubInstance.creator.id !== user.id && !user.isAdmin)) {
+        if (
+          !hubInstance ||
+          (hubInstance.creator.id !== user.id && !user.isAdmin) ||
+          !hubInstance.participationAllowed()
+        ) {
           return genericError.notFound(res);
         }
         ParticipationRepository.findByUserAndHub(participantId, hubId, ['participant'])
@@ -151,7 +159,14 @@ class ParticipationController {
               action == 'accept' ? ParticipationStatus.ACEPPTED : ParticipationStatus.REJECTED;
 
             ParticipationRepository.updateOne(participationInstance)
-              .then((instance) => res.json(instance))
+              .then((instance) => {
+                res.json(instance);
+                if (instance.status == ParticipationStatus.ACEPPTED) {
+                  MailHelper.sendParticipationAccepted(hubInstance);
+                } else {
+                  MailHelper.sendParticipationRejected(hubInstance);
+                }
+              })
               .catch((err) => {
                 console.log(err);
                 return genericError.internalServerError(res);

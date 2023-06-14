@@ -20,24 +20,34 @@ class ParticipationRepository {
   }
 
   // find participations by user_id
-  findByUser(user_id: string, take?: number, skip?: number): Promise<[Participation[], number]> {
+  findByUser(
+    user_id: string,
+    relations = ['hub'],
+    take?: number,
+    skip?: number
+  ): Promise<[Participation[], number]> {
     return DB_CONN.getRepository(Participation).findAndCount({
-      relations: ['hub'],
       where: {
         participantId: user_id
       },
+      relations,
       take,
       skip
     });
   }
 
   // find participations by hub_id
-  findByHub(hub_id: string, take?: number, skip?: number): Promise<[Participation[], number]> {
+  findByHub(
+    hub_id: string,
+    relations = ['participant'],
+    take?: number,
+    skip?: number
+  ): Promise<[Participation[], number]> {
     return DB_CONN.getRepository(Participation).findAndCount({
-      relations: ['participant'],
       where: {
         hubId: hub_id
       },
+      relations,
       take,
       skip
     });

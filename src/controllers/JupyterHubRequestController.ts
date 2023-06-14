@@ -10,8 +10,12 @@ import JupyterHubRequestRepository from '../repositories/JupyterHubRequestReposi
 import { genericError } from '../helpers/ErrorHelper';
 import { MailHelper } from '../mail/MailHelper';
 import { DeleteResult } from 'typeorm';
-import { assignUserToGroup, createJupyterGroup } from '../helpers/AuthentikApiHelper';
-import Participation, { ParticipationStatus } from '../models/Participation';
+import {
+  assignUserToGroup,
+  createJupyterGroup,
+  destroyJupyterGroup
+} from '../helpers/AuthentikApiHelper';
+import { ParticipationStatus } from '../models/Participation';
 import ParticipationRepository from '../repositories/ParticipationRepository';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -126,14 +130,26 @@ class JupyterHubRequestController {
   public accept(req: Request, res: Response): void {
     modifyJupyterStatus(req, res, false, JupyterHubRequestStatus.ACCEPTED, (instance) => {
       createJupyterGroup(instance.slug).then((groupId) => {
+        if (!groupId) {
+          return;
+        }
         instance.authentikGroup = groupId;
         JupyterHubRequestRepository.updateOne(instance);
+
         instance.creator.credentials.then((credentialsInstance) => {
           assignUserToGroup(credentialsInstance.authProviderId, groupId);
         });
-        ParticipationRepository.createOne(
-          new Participation(instance.creator.id, instance.id, ParticipationStatus.ACEPPTED)
-        );
+
+        ParticipationRepository.findByHub(instance.id).then(async ([instances]) => {
+          for (const participation of instances) {
+            if (participation.status == ParticipationStatus.ACEPPTED) {
+              const authentikId = await participation.participant.authentikId();
+              if (authentikId) {
+                assignUserToGroup(authentikId, groupId);
+              }
+            }
+          }
+        });
       });
       MailHelper.sendJupyterAccepted(instance);
     });
@@ -141,12 +157,18 @@ class JupyterHubRequestController {
 
   public reject(req: Request, res: Response): void {
     modifyJupyterStatus(req, res, false, JupyterHubRequestStatus.REJECTED, (instance) => {
+      if (instance.authentikGroup) {
+        destroyJupyterGroup(instance.authentikGroup);
+      }
       MailHelper.sendJupyterRejected(instance);
     });
   }
 
   public cancel(req: Request, res: Response): void {
     modifyJupyterStatus(req, res, false, JupyterHubRequestStatus.CANCELED, (instance) => {
+      if (instance.authentikGroup) {
+        destroyJupyterGroup(instance.authentikGroup);
+      }
       MailHelper.sendJupyterCanceled(instance);
     });
   }

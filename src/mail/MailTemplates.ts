@@ -14,6 +14,8 @@ const templates = [
   'JupyterChangeAccepted',
   'JupyterChangeRejected',
   'JupyterChangeCanceled',
+  'ParticipationAccepted',
+  'ParticipationRejected',
   'UserCreated'
 ];
 

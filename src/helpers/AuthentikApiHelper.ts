@@ -53,6 +53,16 @@ export async function createJupyterGroup(slug: string): Promise<string | null> {
     });
 }
 
+export async function destroyJupyterGroup(group_uuid: string): Promise<true | null> {
+  return axios
+    .delete(`${url}/core/groups/${group_uuid}`, { headers })
+    .then(() => true)
+    .catch((err) => {
+      console.log(err);
+      return null;
+    });
+}
+
 export async function assignUserToGroup(user_id: string, group_uuid: string) {
   return axios
     .post(

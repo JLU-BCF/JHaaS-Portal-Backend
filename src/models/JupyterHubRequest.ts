@@ -6,10 +6,12 @@ import {
   UpdateDateColumn,
   ManyToOne,
   OneToMany,
-  JoinColumn
+  JoinColumn,
+  AfterLoad
 } from 'typeorm';
 import User from './User';
 import Participation from './Participation';
+import { JHAAS_DOMAIN } from '../config/Config';
 
 export enum JupyterHubRequestStatus {
   PENDING = 'PENDING',
@@ -146,6 +148,13 @@ export class JupyterHubRequest extends JupyterHubBase {
   @OneToMany(() => Participation, (participation) => participation.hub)
   participations: Participation[];
 
+  hubUrl: string;
+
+  @AfterLoad()
+  updateHubUrl() {
+    this.hubUrl = `https://${this.slug}.${JHAAS_DOMAIN}/`;
+  }
+
   constructor(data?: JupyterHubRequestObj) {
     super(data);
     if (data) {
@@ -204,12 +213,24 @@ export class JupyterHubRequest extends JupyterHubBase {
 
   public getCoreData() {
     return {
+      creatorId: this.creator.id,
       slug: this.slug,
       name: this.name,
       description: this.description,
       startDate: this.startDate,
       endDate: this.endDate
     };
+  }
+
+  public participationAllowed() {
+    return (
+      this.authentikGroup &&
+      [
+        JupyterHubRequestStatus.ACCEPTED,
+        JupyterHubRequestStatus.DEPLOYING,
+        JupyterHubRequestStatus.DEPLOYED
+      ].includes(this.status)
+    );
   }
 }
 
