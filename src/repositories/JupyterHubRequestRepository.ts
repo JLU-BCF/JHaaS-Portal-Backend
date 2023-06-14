@@ -5,7 +5,11 @@ import User from '../models/User';
 
 class JupyterHubRequestRepository {
   // return all jupyterHubRequests
-  findAll(relations?: string[], take?: number, skip?: number): Promise<[JupyterHubRequest[], number]> {
+  findAll(
+    relations?: string[],
+    take?: number,
+    skip?: number
+  ): Promise<[JupyterHubRequest[], number]> {
     return DB_CONN.getRepository(JupyterHubRequest).findAndCount({
       relations,
       take,
@@ -52,7 +56,10 @@ class JupyterHubRequestRepository {
   }
 
   // find jupyterHubRequest by change request
-  findByChangeRequest(changeRequestId: string, relations = ['changeRequests']): Promise<JupyterHubRequest> {
+  findByChangeRequest(
+    changeRequestId: string,
+    relations = ['changeRequests']
+  ): Promise<JupyterHubRequest> {
     return DB_CONN.getRepository(JupyterHubRequest).findOne({
       where: [{ changeRequests: { id: changeRequestId } }],
       relations
@@ -70,7 +77,11 @@ class JupyterHubRequestRepository {
   }
 
   // find all open jupyterHubRequests
-  findOpen(relations = ['changeRequests'], take?: number, skip?: number): Promise<[JupyterHubRequest[], number]> {
+  findOpen(
+    relations = ['changeRequests'],
+    take?: number,
+    skip?: number
+  ): Promise<[JupyterHubRequest[], number]> {
     return DB_CONN.getRepository(JupyterHubRequest).findAndCount({
       where: [
         { status: JupyterHubRequestStatus.PENDING },

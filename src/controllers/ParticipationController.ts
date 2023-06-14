@@ -3,7 +3,8 @@ import ParticipationRepository from '../repositories/ParticipationRepository';
 import { getUser } from '../helpers/AuthHelper';
 import { genericError } from '../helpers/ErrorHelper';
 import JupyterHubRequestRepository from '../repositories/JupyterHubRequestRepository';
-import Participation from '../models/Participation';
+import Participation, { ParticipationStatus } from '../models/Participation';
+import { assignUserToGroup, removeUserFromGroup } from '../helpers/AuthentikApiHelper';
 
 class ParticipationController {
   public readUserParticipations(req: Request, res: Response) {
@@ -15,15 +16,42 @@ class ParticipationController {
       });
   }
 
-  public getHubForParticipation(req: Request, res: Response) {
+  // protected by leaderguard
+  public readHubParticipations(req: Request, res: Response) {
+    const user = getUser(req);
     const slug = req.params.slug;
     JupyterHubRequestRepository.findBySlug(slug)
-      .then((instance) => res.json(instance.getCoreData()))
+      .then((hubInstance) => {
+        // check if user is creator or admin
+        if (!hubInstance || (hubInstance.creator.id !== user.id && !user.isAdmin)) {
+          return genericError.notFound(res);
+        }
+        ParticipationRepository.findByHub(hubInstance.id)
+          .then(([instances, count]) => res.json({ instances, count }))
+          .catch((err) => {
+            console.log(err);
+            return genericError.internalServerError(res);
+          });
+      })
       .catch((err) => {
         console.log(err);
         return genericError.internalServerError(res);
       });
+  }
 
+  public getHubForParticipation(req: Request, res: Response) {
+    const slug = req.params.slug;
+    JupyterHubRequestRepository.findBySlug(slug)
+      .then((hubInstance) => {
+        if (!hubInstance) {
+          return genericError.notFound(res);
+        }
+        return res.json(hubInstance.getCoreData());
+      })
+      .catch((err) => {
+        console.log(err);
+        return genericError.internalServerError(res);
+      });
   }
 
   public getParticipation(req: Request, res: Response) {
@@ -31,6 +59,9 @@ class ParticipationController {
     const slug = req.params.slug;
     JupyterHubRequestRepository.findBySlug(slug)
       .then((hubInstance) => {
+        if (!hubInstance) {
+          return genericError.notFound(res);
+        }
         ParticipationRepository.findByUserAndHub(user.id, hubInstance.id)
           .then((instance) => res.json(instance))
           .catch((err) => {
@@ -49,8 +80,83 @@ class ParticipationController {
     const slug = req.params.slug;
     JupyterHubRequestRepository.findBySlug(slug)
       .then((hubInstance) => {
+        if (!hubInstance) {
+          return genericError.notFound(res);
+        }
         ParticipationRepository.createOne(new Participation(user.id, hubInstance.id))
           .then((instance) => res.json(instance))
+          .catch((err) => {
+            console.log(err);
+            return genericError.internalServerError(res);
+          });
+      })
+      .catch((err) => {
+        console.log(err);
+        return genericError.internalServerError(res);
+      });
+  }
+
+  // protected by leaderguard
+  public participationAction(req: Request, res: Response) {
+    const user = getUser(req);
+    const participantId = req.params.participantId;
+    const hubId = req.params.hubId;
+    const action = req.params.action;
+    JupyterHubRequestRepository.findById(hubId)
+      .then((hubInstance) => {
+        // check if user is creator or admin
+        if (!hubInstance || (hubInstance.creator.id !== user.id && !user.isAdmin)) {
+          return genericError.notFound(res);
+        }
+        ParticipationRepository.findByUserAndHub(participantId, hubId, ['participant'])
+          .then(async (participationInstance) => {
+            if (!participationInstance) {
+              return genericError.notFound(res);
+            }
+
+            const participantAuthentikId = await participationInstance.participant.authentikId();
+            if (!participantAuthentikId) {
+              return genericError.internalServerError(res);
+            }
+
+            if (
+              participationInstance.status == ParticipationStatus.ACEPPTED &&
+              action == 'reject'
+            ) {
+              // Remove from group
+              const removalResult = await removeUserFromGroup(
+                participantAuthentikId,
+                hubInstance.authentikGroup
+              );
+              if (!removalResult) {
+                return genericError.internalServerError(res);
+              }
+            }
+
+            if (
+              participationInstance.status !== ParticipationStatus.ACEPPTED &&
+              action == 'accept'
+            ) {
+              // Add to group
+              const assignmentResult = await assignUserToGroup(
+                participantAuthentikId,
+                hubInstance.authentikGroup
+              );
+              if (!assignmentResult) {
+                return genericError.internalServerError(res);
+              }
+            }
+
+            participationInstance.status =
+              action == 'accept' ? ParticipationStatus.ACEPPTED : ParticipationStatus.REJECTED;
+
+            ParticipationRepository.updateOne(participationInstance)
+              .then((instance) => res.json(instance))
+              .catch((err) => {
+                console.log(err);
+                return genericError.internalServerError(res);
+              });
+          })
           .catch((err) => {
             console.log(err);
             return genericError.internalServerError(res);

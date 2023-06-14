@@ -70,3 +70,21 @@ export async function assignUserToGroup(user_id: string, group_uuid: string) {
       return null;
     });
 }
+
+export async function removeUserFromGroup(user_id: string, group_uuid: string) {
+  return axios
+    .post(
+      `${url}/core/groups/${group_uuid}/remove_user/`,
+      {
+        pk: user_id
+      },
+      { headers }
+    )
+    .then(() => {
+      return true;
+    })
+    .catch((err) => {
+      console.log(err);
+      return null;
+    });
+}

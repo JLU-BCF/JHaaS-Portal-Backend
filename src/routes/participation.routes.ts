@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import ParticipationController from '../controllers/ParticipationController';
+import { leaderGuard } from '../middlewares/LeaderMiddleware';
 
 const router: Router = Router();
 
@@ -8,21 +9,20 @@ router.get('/list', ParticipationController.readUserParticipations);
 
 router.get('/hub/:slug([0-9a-z-]+)', ParticipationController.getHubForParticipation);
 
-router.get('/detail/:slug([0-9a-z-]+)', ParticipationController.getParticipation);
-
-// list jupyter hub participations from user (my participations)
 router.post('/hub/:slug([0-9a-z-]+)', ParticipationController.createParticipation);
 
-// // get a specific user object
-// router.get('/:id([0-9a-f-]+)', UserController.read);
+router.get('/detail/:slug([0-9a-z-]+)', ParticipationController.getParticipation);
 
-// // get login info
-// router.get('/:id([0-9a-f-]+)/auth', CredentialsController.readAuthMethod);
+const leaderRouter: Router = Router();
+leaderRouter.use(leaderGuard);
 
-// // update a user
-// router.patch('/:id([0-9a-f-]+)', UserController.update);
+leaderRouter.get('/list/:slug([0-9a-z-]+)', ParticipationController.readHubParticipations);
 
-// // delete account
-// router.delete('/:id([0-9a-f-]+)', UserController.delete);
+leaderRouter.post(
+  '/action/:action(accept|reject)/:participantId([0-9a-f-]+)/:hubId([0-9a-f-]+)',
+  ParticipationController.participationAction
+);
+
+router.use(leaderRouter);
 
 export default router;

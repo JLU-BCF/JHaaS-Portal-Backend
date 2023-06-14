@@ -208,8 +208,8 @@ export class JupyterHubRequest extends JupyterHubBase {
       name: this.name,
       description: this.description,
       startDate: this.startDate,
-      endDate: this.endDate,
-    }
+      endDate: this.endDate
+    };
   }
 }
 
