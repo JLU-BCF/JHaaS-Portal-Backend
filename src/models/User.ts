@@ -80,6 +80,15 @@ export default class User {
     return changed;
   }
 
+  authentikId() {
+    return this.credentials
+      .then((creds) => creds.authProviderId)
+      .catch((err) => {
+        console.log(err);
+        return null;
+      });
+  }
+
   // This is not stored in DB and is only
   // a temporary value for session serialization
   // and deserialization

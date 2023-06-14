@@ -9,10 +9,13 @@ class ParticipationRepository {
   }
 
   // find participation by user_id and hub_id
-  findByUserAndHub(user_id: string, hub_id: string): Promise<Participation> {
-    return DB_CONN.getRepository(Participation).findOneBy({
-      participantId: user_id,
-      hubId: hub_id
+  findByUserAndHub(user_id: string, hub_id: string, relations = []): Promise<Participation> {
+    return DB_CONN.getRepository(Participation).findOne({
+      where: {
+        participantId: user_id,
+        hubId: hub_id
+      },
+      relations
     });
   }
 

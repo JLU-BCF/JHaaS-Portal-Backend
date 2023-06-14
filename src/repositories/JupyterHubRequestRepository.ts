@@ -5,8 +5,13 @@ import User from '../models/User';
 
 class JupyterHubRequestRepository {
   // return all jupyterHubRequests
-  findAll(take?: number, skip?: number): Promise<[JupyterHubRequest[], number]> {
+  findAll(
+    relations?: string[],
+    take?: number,
+    skip?: number
+  ): Promise<[JupyterHubRequest[], number]> {
     return DB_CONN.getRepository(JupyterHubRequest).findAndCount({
+      relations,
       take,
       skip
     });
@@ -15,14 +20,15 @@ class JupyterHubRequestRepository {
   // return all jupyterHubRequests
   findByCreator(
     creator: User,
+    relations = ['creator'],
     take?: number,
     skip?: number
   ): Promise<[JupyterHubRequest[], number]> {
     return DB_CONN.getRepository(JupyterHubRequest).findAndCount({
-      relations: ['creator'],
       where: {
         creator: { id: creator.id }
       },
+      relations,
       take,
       skip
     });
@@ -34,20 +40,29 @@ class JupyterHubRequestRepository {
   }
 
   // find jupyterHubRequest by id
-  findById(id: string): Promise<JupyterHubRequest> {
-    return DB_CONN.getRepository(JupyterHubRequest).findOneBy({ id });
+  findById(id: string, relations?: string[]): Promise<JupyterHubRequest> {
+    return DB_CONN.getRepository(JupyterHubRequest).findOne({
+      where: { id },
+      relations
+    });
   }
 
   // find jupyterHubRequest by slug
-  findBySlug(slug: string): Promise<JupyterHubRequest> {
-    return DB_CONN.getRepository(JupyterHubRequest).findOneBy({ slug });
+  findBySlug(slug: string, relations?: string[]): Promise<JupyterHubRequest> {
+    return DB_CONN.getRepository(JupyterHubRequest).findOne({
+      where: { slug },
+      relations
+    });
   }
 
   // find jupyterHubRequest by change request
-  findByChangeRequest(changeRequestId: string): Promise<JupyterHubRequest> {
+  findByChangeRequest(
+    changeRequestId: string,
+    relations = ['changeRequests']
+  ): Promise<JupyterHubRequest> {
     return DB_CONN.getRepository(JupyterHubRequest).findOne({
-      relations: ['changeRequests'],
-      where: [{ changeRequests: { id: changeRequestId } }]
+      where: [{ changeRequests: { id: changeRequestId } }],
+      relations
     });
   }
 
@@ -62,13 +77,17 @@ class JupyterHubRequestRepository {
   }
 
   // find all open jupyterHubRequests
-  findOpen(take?: number, skip?: number): Promise<[JupyterHubRequest[], number]> {
+  findOpen(
+    relations = ['changeRequests'],
+    take?: number,
+    skip?: number
+  ): Promise<[JupyterHubRequest[], number]> {
     return DB_CONN.getRepository(JupyterHubRequest).findAndCount({
-      relations: ['changeRequests'],
       where: [
         { status: JupyterHubRequestStatus.PENDING },
         { changeRequests: { status: JupyterHubRequestStatus.PENDING } }
       ],
+      relations,
       take,
       skip
     });
@@ -76,6 +95,7 @@ class JupyterHubRequestRepository {
 
   // find deployable jupyterHubRequests
   findDeployableJupyterHubRequests(
+    relations?: string[],
     take?: number,
     skip?: number
   ): Promise<[JupyterHubRequest[], number]> {
@@ -88,6 +108,7 @@ class JupyterHubRequestRepository {
         startDate: MoreThan(dueDate),
         endDate: MoreThan(today)
       },
+      relations,
       take,
       skip
     });
@@ -95,6 +116,7 @@ class JupyterHubRequestRepository {
 
   // find degradable jupyterHubRequests
   findDegradableJupyterHubRequests(
+    relations?: string[],
     take?: number,
     skip?: number
   ): Promise<[JupyterHubRequest[], number]> {
@@ -105,6 +127,7 @@ class JupyterHubRequestRepository {
         status: JupyterHubRequestStatus.DEPLOYED,
         endDate: LessThan(today)
       },
+      relations,
       take,
       skip
     });
@@ -112,6 +135,7 @@ class JupyterHubRequestRepository {
 
   // find jupyterHubRequests which are in progress
   findProgressingJupyterHubRequests(
+    relations?: string[],
     take?: number,
     skip?: number
   ): Promise<[JupyterHubRequest[], number]> {
@@ -120,6 +144,7 @@ class JupyterHubRequestRepository {
         { status: JupyterHubRequestStatus.DEPLOYING },
         { status: JupyterHubRequestStatus.DEGRADING }
       ],
+      relations,
       take,
       skip
     });
