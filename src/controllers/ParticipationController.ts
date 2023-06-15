@@ -162,9 +162,15 @@ class ParticipationController {
               .then((instance) => {
                 res.json(instance);
                 if (instance.status == ParticipationStatus.ACEPPTED) {
-                  MailHelper.sendParticipationAccepted(hubInstance);
+                  MailHelper.sendParticipationAccepted(
+                    hubInstance,
+                    participationInstance.participant
+                  );
                 } else {
-                  MailHelper.sendParticipationRejected(hubInstance);
+                  MailHelper.sendParticipationRejected(
+                    hubInstance,
+                    participationInstance.participant
+                  );
                 }
               })
               .catch((err) => {

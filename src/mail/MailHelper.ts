@@ -16,8 +16,8 @@ export const MailHelper = {
   sendJupyterChangeRejected: jupyterTemplate('JupyterChangeRejected'),
   sendJupyterChangeCanceled: jupyterTemplate('JupyterChangeCanceled'),
   sendUserCreated: userTemplate('UserCreated', true),
-  sendParticipationAccepted: jupyterTemplate('ParticipationAccepted'),
-  sendParticipationRejected: jupyterTemplate('ParticipationRejected')
+  sendParticipationAccepted: participationTemplate('ParticipationAccepted'),
+  sendParticipationRejected: participationTemplate('ParticipationRejected')
 };
 
 const templateSubjects: { [key: string]: string } = {
@@ -49,6 +49,12 @@ function jupyterTemplate(template: string, copy?: boolean) {
 function userTemplate(template: string, copy?: boolean) {
   return (user: User) => {
     sendMail(user.email, template, { user }, copy);
+  };
+}
+
+function participationTemplate(template: string, copy?: boolean) {
+  return (jupyter: JupyterHubRequest, participant: User) => {
+    sendMail(participant.email, template, { user: participant, jupyter, participant }, copy);
   };
 }
 
