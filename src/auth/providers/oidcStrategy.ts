@@ -9,7 +9,8 @@ import {
   CLIENT_SECRET,
   POST_LOGOUT_URL,
   POST_LOGIN_URL,
-  FORCE_OIDC_REACHABLE
+  FORCE_OIDC_REACHABLE,
+  AUTHENTIK_INVALIDATION_FLOW
 } from '../../config/Oidc';
 import CredentialsRepository from '../../repositories/CredentialsRepository';
 import Credentials, { AuthProvider } from '../../models/Credentials';
@@ -56,7 +57,8 @@ Issuer.discover(OIDC_ENDPOINT)
       const firstName = profile.given_name || profile.name;
       const lastName = profile.family_name || profile.name;
       const email = profile.email;
-      const sessionLogout = client.endSessionUrl({ id_token_hint: tokenSet });
+      // const sessionLogout = client.endSessionUrl({ id_token_hint: tokenSet });
+      const sessionLogout = AUTHENTIK_INVALIDATION_FLOW;
 
       if (profile.groups?.length) {
         isAdmin = profile.groups.includes('portal-admins');
