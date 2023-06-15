@@ -166,6 +166,15 @@ export function getTerraformWorkerJob(jh: JupyterHubRequest, action: string): k8
                   }
                 },
                 {
+                  name: 'JHAAS_ICON',
+                  valueFrom: {
+                    configMapKeyRef: {
+                      key: 'JHAAS_ICON',
+                      name: `env-${RELEASE_NAME}-tf-conf`
+                    }
+                  }
+                },
+                {
                   name: 'JHAAS_AUTHENTIK_URL',
                   valueFrom: {
                     configMapKeyRef: {
