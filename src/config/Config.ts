@@ -14,8 +14,8 @@ export const FRONTEND_URL: string = process.env.FRONTEND_URL || '/';
 export const JHAAS_DOMAIN: string = process.env.JHAAS_DOMAIN || '';
 export const ENABLE_LOCAL_ACCOUNTS = ['true', true, 1].includes(process.env.ENABLE_LOCAL_ACCOUNTS);
 
-export const FRONTEND_LOGIN_URL = FRONTEND_URL.replace(/\/$/, '') + '/auth/verify';
-export const FRONTEND_LOGOUT_URL = FRONTEND_URL.replace(/\/$/, '') + '/auth/logout';
+export const FRONTEND_LOGIN_URL = FRONTEND_URL.replace(/\/$/, '') + '/verify';
+export const FRONTEND_LOGOUT_URL = FRONTEND_URL.replace(/\/$/, '') + '/verify';
 
 export const DB_CONN: DataSource = new DataSource({
   type: 'postgres',
