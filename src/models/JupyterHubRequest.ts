@@ -37,6 +37,7 @@ type JupyterHubBaseRequestObj = {
   description?;
   userConf;
   containerImage;
+  notebookDefaultUrl?;
   startDate;
   endDate;
 };
@@ -53,6 +54,7 @@ const changeableProps = [
   'description',
   'userConf',
   'containerImage',
+  'notebookDefaultUrl',
   'startDate',
   'endDate'
 ];
@@ -77,6 +79,9 @@ class JupyterHubBase {
   @Column()
   containerImage: string;
 
+  @Column({ nullable: true })
+  notebookDefaultUrl?: string;
+
   @Column({ default: JupyterHubRequestStatus.PENDING })
   status: JupyterHubRequestStatus;
 
@@ -99,6 +104,7 @@ class JupyterHubBase {
       this.description = data.description;
       this.userConf = data.userConf;
       this.containerImage = data.containerImage;
+      this.notebookDefaultUrl = data.notebookDefaultUrl;
       this.startDate = data.startDate;
       this.endDate = data.endDate;
     }

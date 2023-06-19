@@ -16,12 +16,14 @@ export function parseUser(req: Request): User {
 
 function getJupyterHubBaseRequestProperties(req: Request) {
   // extracting properties explicitly to prevent injection of properties we don't want to set from request
-  const { name, description, userConf, containerImage, startDate, endDate } = req.body;
+  const { name, description, userConf, containerImage, notebookDefaultUrl, startDate, endDate } =
+    req.body;
   return {
     name,
     description,
     userConf,
     containerImage,
+    notebookDefaultUrl,
     startDate,
     endDate,
     creator: req.user

@@ -132,6 +132,10 @@ export function getTerraformWorkerJob(jh: JupyterHubRequest, action: string): k8
                   value: jh.containerImage
                 },
                 {
+                  name: 'JH_NB_DEFAULT_URL',
+                  value: jh.notebookDefaultUrl
+                },
+                {
                   name: 'JH_INSTANCE_FLAVOUR',
                   value: jh.instanceFlavour
                 },

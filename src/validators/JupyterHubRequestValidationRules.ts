@@ -10,6 +10,7 @@ const jupyterHubRequestBaseValidation = [
   body('userConf.ramPerUser').exists().isNumeric(),
   body('userConf.userCount').exists().isNumeric(),
   body('containerImage').exists().isString(),
+  body('notebookDefaultUrl').optional().isString(),
   body('startDate').exists().isDate(),
   body('endDate').exists().isDate(),
   body('tosConfirmation').exists().isBoolean().contains(true)
