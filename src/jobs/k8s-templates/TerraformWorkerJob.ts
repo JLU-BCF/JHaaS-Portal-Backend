@@ -78,7 +78,7 @@ export function getTerraformWorkerJob(jh: JupyterHubRequest, action: string): k8
             {
               name: 'tf-worker',
               image: k8sConf.K8S_TF_IMAGE,
-              imagePullPolicy: 'Always',
+              imagePullPolicy: k8sConf.K8S_TF_IMAGE_PP,
               volumeMounts: [
                 {
                   name: `vol-${RELEASE_NAME}-projected-secrets`,
