@@ -6,12 +6,10 @@ import {
   UpdateDateColumn,
   ManyToOne,
   OneToMany,
-  JoinColumn,
-  AfterLoad
+  JoinColumn
 } from 'typeorm';
 import User from './User';
 import Participation from './Participation';
-import { JHAAS_DOMAIN } from '../config/Config';
 
 export enum JupyterHubRequestStatus {
   PENDING = 'PENDING',
@@ -45,6 +43,7 @@ type JupyterHubBaseRequestObj = {
 
 type JupyterHubRequestObj = JupyterHubBaseRequestObj & {
   slug;
+  hubUrl?;
   instanceFlavour?;
   instanceCount?;
 };
@@ -148,17 +147,14 @@ export class JupyterHubRequest extends JupyterHubBase {
   @OneToMany(() => Participation, (participation) => participation.hub)
   participations: Participation[];
 
-  hubUrl: string;
-
-  @AfterLoad()
-  updateHubUrl() {
-    this.hubUrl = `https://${this.slug}.${JHAAS_DOMAIN}/`;
-  }
+  @Column({ nullable: true })
+  hubUrl?: string;
 
   constructor(data?: JupyterHubRequestObj) {
     super(data);
     if (data) {
       this.slug = data.slug;
+      this.hubUrl = data.hubUrl;
       if (data.instanceFlavour && data.instanceCount) {
         this.instanceFlavour = data.instanceFlavour;
         this.instanceCount = data.instanceCount;

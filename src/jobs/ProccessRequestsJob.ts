@@ -118,15 +118,28 @@ function checkProgress(request: JupyterHubRequest) {
 
 function setJupyterHubRequestDeployed(request: JupyterHubRequest) {
   console.log(`${request.slug} : successfully deployed.`);
-  request.status = JupyterHubRequestStatus.DEPLOYED;
-  JupyterHubRequestRepository.updateOne(request)
-    .then((requestInstance) => {
-      MailHelper.sendJupyterDeployed(requestInstance);
-    })
-    .catch((err: unknown) => {
-      console.log(err);
-      throw err;
-    });
+  console.log(`${request.slug} : try getting deployment URL.`);
+
+  minioClient.getObject(S3_JH_SPECS_BUCKET, `${request.id}/JupyterHubUrl`, (err, stream) => {
+    if (err) {
+      return console.log(err);
+    }
+    streamToString(stream)
+      .then((url) => {
+        request.status = JupyterHubRequestStatus.DEPLOYED;
+        request.hubUrl = url;
+        JupyterHubRequestRepository.updateOne(request)
+          .then((requestInstance) => {
+            MailHelper.sendJupyterDeployed(requestInstance);
+          })
+          .catch((err: unknown) => {
+            return console.log(err);
+          });
+      })
+      .catch((err) => {
+        return console.log(err);
+      });
+  });
 }
 
 function setJupyterHubRequestDegrated(request: JupyterHubRequest) {
