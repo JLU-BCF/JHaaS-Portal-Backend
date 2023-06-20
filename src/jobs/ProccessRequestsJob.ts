@@ -9,16 +9,16 @@ import k8sHelper from './helpers/K8sHelper';
 
 export function processRequests(): void {
   JupyterHubRequestRepository.findProgressingJupyterHubRequests()
-  .then(([requests, count]) => {
-    console.log(`Found ${count} requests in progress`);
-    for (const request of requests) {
-      checkProgress(request);
-    }
-  })
-  .catch((err: unknown) => {
-    console.log(err);
-    throw err;
-  });
+    .then(([requests, count]) => {
+      console.log(`Found ${count} requests in progress`);
+      for (const request of requests) {
+        checkProgress(request);
+      }
+    })
+    .catch((err: unknown) => {
+      console.log(err);
+      throw err;
+    });
 
   JupyterHubRequestRepository.findDeployableJupyterHubRequests()
     .then(([requests, count]) => {
