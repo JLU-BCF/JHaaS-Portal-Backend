@@ -8,6 +8,18 @@ import { init } from './helpers/DatabaseHelper';
 import k8sHelper from './helpers/K8sHelper';
 
 export function processRequests(): void {
+  JupyterHubRequestRepository.findProgressingJupyterHubRequests()
+  .then(([requests, count]) => {
+    console.log(`Found ${count} requests in progress`);
+    for (const request of requests) {
+      checkProgress(request);
+    }
+  })
+  .catch((err: unknown) => {
+    console.log(err);
+    throw err;
+  });
+
   JupyterHubRequestRepository.findDeployableJupyterHubRequests()
     .then(([requests, count]) => {
       console.log(`Found ${count} deployable requests`);
@@ -25,18 +37,6 @@ export function processRequests(): void {
       console.log(`Found ${count} degradable requests`);
       for (const request of requests) {
         degradeOneRequest(request);
-      }
-    })
-    .catch((err: unknown) => {
-      console.log(err);
-      throw err;
-    });
-
-  JupyterHubRequestRepository.findProgressingJupyterHubRequests()
-    .then(([requests, count]) => {
-      console.log(`Found ${count} requests in progress`);
-      for (const request of requests) {
-        checkProgress(request);
       }
     })
     .catch((err: unknown) => {
