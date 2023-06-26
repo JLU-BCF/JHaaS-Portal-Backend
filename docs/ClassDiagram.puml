@@ -1,0 +1,122 @@
+@startuml JHaaS Portal
+' skinparam linetype polyline
+' skinparam linetype ortho
+left to right direction
+
+enum              AuthProvider
+entity            Credentials {
+  * userId: UUID
+  ---
+  * authProvider: AuthProvider
+  * authProviderId: string
+  password: string | null
+  createdAt: Date <<generiert>>
+  updatedAt: Date <<generiert>>
+  ---
+  user: User <<eagerloaded>>
+  ---
+  constructor(...)
+}
+
+class             User {
+  * id: UUID
+  ---
+  credentials: Credentials
+  firstName: string
+  lastName: string
+  email: string
+  isAdmin: boolean
+  isLead: boolean
+  createdAt: Date <<generiert>>
+  updatedAt: Date <<generiert>>
+  ---
+  jupyterHubRequests: JupyterHubRequest[]
+  participations: Participation[]
+  ---
+  constructor(...)
+  sync(...)
+  authentikId(...)
+}
+
+enum              JupyterHubRequestStatus
+interface         JupyterHubRequestUserConf
+class             JupyterHubBase {
+  * id: UUID
+  ---
+  name: string
+  description: string | null
+  userConf: JupyterHubRequestUserConf
+  containerImage: string
+  notebookDefaultUrl: string | null
+  status: JupyterHubRequestStatus
+  startDate: Date
+  endDate: Date
+  createdAt: Date <<generiert>>
+  updatedAt: Date <<generiert>>
+  ---
+  creator: User
+  ---
+  constructor(...)
+  changesAllowed()
+  userAllowed()
+  userAndChangesAllowed()
+}
+entity            JupyterHubRequest {
+  slug: string <<unique>>
+  authentikGroup: string | null
+  instanceFlavour: string
+  instanceCount: number
+  hubUrl: string | null
+  ---
+  changeRequests: JupyterHubChangeRequest[]
+  participations: Participation[]
+  ---
+  constructor(...)
+  userConf2instanceConf()
+  cancelPendingChangeRequests()
+  setChangeRequestStatus()
+  applyChangeRequest()
+  getChangeRequestById()
+  getCoreData()
+  participationAllowed()
+}
+entity            JupyterHubChangeRequest {
+  ---
+  origRequest: JupyterHubRequest
+  ---
+  constructor(...)
+  changesAllowed()
+}
+
+enum              ParticipationStatus
+class             Participation {
+  * hubId: UUID
+  * participantId: UUID
+  ---
+  status: ParticipationStatus
+  createdAt: Date <<generiert>>
+  updatedAt: Date <<generiert>>
+  ---
+  hub: JupyterHubRequest
+  participant: Participant
+  ---
+  constructor(...)
+}
+
+JupyterHubBase <|-- JupyterHubRequest
+JupyterHubBase <|-- JupyterHubChangeRequest
+
+Credentials::authProvider -- AuthProvider
+Credentials::user -- User::credentials
+
+User::jupyterHubRequests -- JupyterHubBase::creator
+User::participations -- Participation::participant
+
+Participation::status -- ParticipationStatus
+Participation::hub -- JupyterHubRequest::participations
+
+JupyterHubBase::userConf -- JupyterHubRequestUserConf
+JupyterHubBase::status -- JupyterHubRequestStatus
+
+JupyterHubRequest::changeRequests -- JupyterHubChangeRequest::origRequest
+@enduml

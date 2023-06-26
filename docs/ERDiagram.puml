@@ -1,0 +1,49 @@
+@startuml JHaaS Portal
+' skinparam linetype polyline
+skinparam linetype ortho
+' left to right direction
+
+together {
+  entity Credentials {
+    * userId
+    ---
+    UNIQUE INDEX <authProvider, authProviderId>
+    FK <userId>
+  }
+  entity User {
+    * id
+  }
+}
+
+entity Participation {
+  * INDEX <hubId, participantId>
+  ---
+  FK <hubId>
+  FK <participantId>
+}
+
+together {
+  entity JupyterHubRequest {
+    * id
+    ---
+    UNIQUE <slug>
+    FK <creatorId>
+  }
+  entity JupyterHubChangeRequest {
+    * id
+    ---
+    FK <origRequestId>
+    FK <creatorId>
+  }
+}
+
+Credentials |o--|| User
+
+User ||--o{ JupyterHubRequest
+User ||--o{ JupyterHubChangeRequest
+JupyterHubRequest ||--o{ JupyterHubChangeRequest
+
+User ||--o{ Participation
+JupyterHubRequest ||--o{ Participation
+
+@enduml
