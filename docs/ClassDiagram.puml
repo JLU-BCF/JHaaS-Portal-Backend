@@ -22,7 +22,6 @@ together {
   class             User {
     * id: UUID
     ---
-    credentials: Credentials
     firstName: string
     lastName: string
     email: string
@@ -31,6 +30,7 @@ together {
     createdAt: Date <<generiert>>
     updatedAt: Date <<generiert>>
     ---
+    credentials: Credentials
     participations: Participation[]
     jupyterHubRequests: JupyterHubRequest[]
     ---
@@ -58,7 +58,7 @@ class             Participation {
 together {
   enum              JupyterHubRequestStatus
   interface         JupyterHubRequestUserConf
-  class             JupyterHubBase {
+  abstract          JupyterHubBase {
     * id: UUID
     ---
     name: string
@@ -113,7 +113,7 @@ JupyterHubBase <|-- JupyterHubRequest
 JupyterHubBase <|-- JupyterHubChangeRequest
 
 Credentials::authProvider --|> AuthProvider
-Credentials::user *--* User::credentials
+Credentials::user --* User::credentials
 
 User::jupyterHubRequests *-- JupyterHubBase::creator
 User::participations *-- Participation::participant
