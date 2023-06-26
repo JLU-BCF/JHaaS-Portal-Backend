@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentStyleType="text/css" height="548px" preserveAspectRatio="none" style="width:526px;height:548px;background:#FFFFFF;" version="1.1" viewBox="0 0 526 548" width="526px" zoomAndPan="magnify"><defs/><g><!--MD5=[63e7a34560323ddebc94de26bb3dfe24]
+class Credentials--><g id="elem_Credentials"><rect codeLine="6" fill="#F1F1F1" height="96.8906" id="Credentials" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="333" x="7" y="7"/><ellipse cx="130.25" cy="23" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1.0;"/><path d="M134.3594,29 L126.6406,29 L126.6406,16.6094 L134.3594,16.6094 L134.3594,18.7656 L129.0938,18.7656 L129.0938,21.4375 L133.8594,21.4375 L133.8594,23.5938 L129.0938,23.5938 L129.0938,26.8438 L134.3594,26.8438 L134.3594,29 Z " fill="#000000"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="78" x="150.75" y="27.8467">Credentials</text><line style="stroke:#181818;stroke-width:0.5;" x1="8" x2="339" y1="39" y2="39"/><ellipse cx="18" cy="50" fill="#000000" rx="3" ry="3" style="stroke:#000000;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="43" x="27" y="55.9951">userId</text><line style="stroke:#181818;stroke-width:1.0;" x1="8" x2="339" y1="63.2969" y2="63.2969"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="321" x="13" y="80.292">UNIQUE INDEX &lt;authProvider, authProviderId&gt;</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="88" x="13" y="96.5889">FK &lt;userId&gt;</text></g><!--MD5=[3fd616f346a44cd59a91eb10b19e157c]
+class User--><g id="elem_User"><rect codeLine="12" fill="#F1F1F1" height="64.2969" id="User" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="64" x="141.5" y="164"/><ellipse cx="156.5" cy="180" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1.0;"/><path d="M160.6094,186 L152.8906,186 L152.8906,173.6094 L160.6094,173.6094 L160.6094,175.7656 L155.3438,175.7656 L155.3438,178.4375 L160.1094,178.4375 L160.1094,180.5938 L155.3438,180.5938 L155.3438,183.8438 L160.6094,183.8438 L160.6094,186 Z " fill="#000000"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="32" x="170.5" y="184.8467">User</text><line style="stroke:#181818;stroke-width:0.5;" x1="142.5" x2="204.5" y1="196" y2="196"/><ellipse cx="152.5" cy="207" fill="#000000" rx="3" ry="3" style="stroke:#000000;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="12" x="161.5" y="212.9951">id</text><line style="stroke:#181818;stroke-width:0.5;" x1="142.5" x2="204.5" y1="220.2969" y2="220.2969"/></g><!--MD5=[aeb8a8ed1ca4d2fe8cdfe8347e06bb00]
+class JupyterHubRequest--><g id="elem_JupyterHubRequest"><rect codeLine="25" fill="#F1F1F1" height="96.8906" id="JupyterHubRequest" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="166" x="90.5" y="288"/><ellipse cx="105.5" cy="304" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1.0;"/><path d="M109.6094,310 L101.8906,310 L101.8906,297.6094 L109.6094,297.6094 L109.6094,299.7656 L104.3438,299.7656 L104.3438,302.4375 L109.1094,302.4375 L109.1094,304.5938 L104.3438,304.5938 L104.3438,307.8438 L109.6094,307.8438 L109.6094,310 Z " fill="#000000"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="134" x="119.5" y="308.8467">JupyterHubRequest</text><line style="stroke:#181818;stroke-width:0.5;" x1="91.5" x2="255.5" y1="320" y2="320"/><ellipse cx="101.5" cy="331" fill="#000000" rx="3" ry="3" style="stroke:#000000;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="12" x="110.5" y="336.9951">id</text><line style="stroke:#181818;stroke-width:1.0;" x1="91.5" x2="255.5" y1="344.2969" y2="344.2969"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="110" x="96.5" y="361.292">UNIQUE &lt;slug&gt;</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="106" x="96.5" y="377.5889">FK &lt;creatorId&gt;</text></g><!--MD5=[36acaeea89f1ccff80f66491d66836c7]
+class JupyterHubChangeRequest--><g id="elem_JupyterHubChangeRequest"><rect codeLine="31" fill="#F1F1F1" height="96.8906" id="JupyterHubChangeRequest" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="220" x="36.5" y="445"/><ellipse cx="51.5" cy="461" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1.0;"/><path d="M55.6094,467 L47.8906,467 L47.8906,454.6094 L55.6094,454.6094 L55.6094,456.7656 L50.3438,456.7656 L50.3438,459.4375 L55.1094,459.4375 L55.1094,461.5938 L50.3438,461.5938 L50.3438,464.8438 L55.6094,464.8438 L55.6094,467 Z " fill="#000000"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="188" x="65.5" y="465.8467">JupyterHubChangeRequest</text><line style="stroke:#181818;stroke-width:0.5;" x1="37.5" x2="255.5" y1="477" y2="477"/><ellipse cx="47.5" cy="488" fill="#000000" rx="3" ry="3" style="stroke:#000000;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="12" x="56.5" y="493.9951">id</text><line style="stroke:#181818;stroke-width:1.0;" x1="37.5" x2="255.5" y1="501.2969" y2="501.2969"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="142" x="42.5" y="518.292">FK &lt;origRequestId&gt;</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="106" x="42.5" y="534.5889">FK &lt;creatorId&gt;</text></g><!--MD5=[23bb12025fb3ea604555f955dd7f38e8]
+class Participation--><g id="elem_Participation"><rect codeLine="17" fill="#F1F1F1" height="96.8906" id="Participation" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:0.5;" width="227" x="292" y="445"/><ellipse cx="359.25" cy="461" fill="#ADD1B2" rx="11" ry="11" style="stroke:#181818;stroke-width:1.0;"/><path d="M363.3594,467 L355.6406,467 L355.6406,454.6094 L363.3594,454.6094 L363.3594,456.7656 L358.0938,456.7656 L358.0938,459.4375 L362.8594,459.4375 L362.8594,461.5938 L358.0938,461.5938 L358.0938,464.8438 L363.3594,464.8438 L363.3594,467 Z " fill="#000000"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="84" x="379.75" y="465.8467">Participation</text><line style="stroke:#181818;stroke-width:0.5;" x1="293" x2="518" y1="477" y2="477"/><ellipse cx="303" cy="488" fill="#000000" rx="3" ry="3" style="stroke:#000000;stroke-width:1.0;"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="201" x="312" y="493.9951">INDEX &lt;hubId, participantId&gt;</text><line style="stroke:#181818;stroke-width:1.0;" x1="293" x2="518" y1="501.2969" y2="501.2969"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="84" x="298" y="518.292">FK &lt;hubId&gt;</text><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="129" x="298" y="534.5889">FK &lt;participantId&gt;</text></g><!--MD5=[4b45e4eb18519a00c6e6867f5b84271d]
+link Credentials to User--><g id="link_Credentials_User"><path codeLine="39" d="M173.5,112.25 C173.5,112.25 173.5,155.65 173.5,155.65 " fill="none" id="Credentials-User" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="177.5" x2="169.5" y1="159.65" y2="159.65"/><line style="stroke:#181818;stroke-width:1.0;" x1="177.5" x2="169.5" y1="156.65" y2="156.65"/><line style="stroke:#181818;stroke-width:1.0;" x1="173.5" x2="173.5" y1="155.65" y2="163.65"/><line style="stroke:#181818;stroke-width:1.0;" x1="173.5" x2="173.5" y1="115.25" y2="104.25"/><ellipse cx="173.5" cy="115.25" fill="none" rx="4" ry="4" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="169.5" x2="177.5" y1="108.25" y2="108.25"/></g><!--MD5=[0740e746e4e5a2ee2a89ec51054e8575]
+link User to JupyterHubRequest--><g id="link_User_JupyterHubRequest"><path codeLine="41" d="M173.5,236.23 C173.5,236.23 173.5,279.87 173.5,279.87 " fill="none" id="User-JupyterHubRequest" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="173.5" x2="179.5" y1="279.87" y2="287.87"/><line style="stroke:#181818;stroke-width:1.0;" x1="173.5" x2="167.5" y1="279.87" y2="287.87"/><line style="stroke:#181818;stroke-width:1.0;" x1="173.5" x2="173.5" y1="279.87" y2="287.87"/><ellipse cx="173.5" cy="273.87" fill="none" rx="4" ry="4" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="169.5" x2="177.5" y1="232.23" y2="232.23"/><line style="stroke:#181818;stroke-width:1.0;" x1="169.5" x2="177.5" y1="235.23" y2="235.23"/><line style="stroke:#181818;stroke-width:1.0;" x1="173.5" x2="173.5" y1="236.23" y2="228.23"/></g><!--MD5=[29c457c94ab365457c605ac2b3ef9fcc]
+link User to JupyterHubChangeRequest--><g id="link_User_JupyterHubChangeRequest"><path codeLine="42" d="M133.39,196 C133.39,196 63.5,196 63.5,196 C63.5,196 63.5,436.71 63.5,436.71 " fill="none" id="User-JupyterHubChangeRequest" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="63.5" x2="69.5" y1="436.71" y2="444.71"/><line style="stroke:#181818;stroke-width:1.0;" x1="63.5" x2="57.5" y1="436.71" y2="444.71"/><line style="stroke:#181818;stroke-width:1.0;" x1="63.5" x2="63.5" y1="436.71" y2="444.71"/><ellipse cx="63.5" cy="430.71" fill="none" rx="4" ry="4" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="137.39" x2="137.39" y1="192" y2="200"/><line style="stroke:#181818;stroke-width:1.0;" x1="134.39" x2="134.39" y1="192" y2="200"/><line style="stroke:#181818;stroke-width:1.0;" x1="133.39" x2="141.39" y1="196" y2="196"/></g><!--MD5=[4a7ced34852bdb9ac7b20bc9d839ebe0]
+link JupyterHubRequest to JupyterHubChangeRequest--><g id="link_JupyterHubRequest_JupyterHubChangeRequest"><path codeLine="43" d="M173.5,393.32 C173.5,393.32 173.5,436.98 173.5,436.98 " fill="none" id="JupyterHubRequest-JupyterHubChangeRequest" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="173.5" x2="179.5" y1="436.98" y2="444.98"/><line style="stroke:#181818;stroke-width:1.0;" x1="173.5" x2="167.5" y1="436.98" y2="444.98"/><line style="stroke:#181818;stroke-width:1.0;" x1="173.5" x2="173.5" y1="436.98" y2="444.98"/><ellipse cx="173.5" cy="430.98" fill="none" rx="4" ry="4" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="169.5" x2="177.5" y1="389.32" y2="389.32"/><line style="stroke:#181818;stroke-width:1.0;" x1="169.5" x2="177.5" y1="392.32" y2="392.32"/><line style="stroke:#181818;stroke-width:1.0;" x1="173.5" x2="173.5" y1="393.32" y2="385.32"/></g><!--MD5=[479a7124450ead2c0bfbd4d84c15e4c0]
+link User to Participation--><g id="link_User_Participation"><path codeLine="45" d="M213.79,196 C213.79,196 324,196 324,196 C324,196 324,436.71 324,436.71 " fill="none" id="User-Participation" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="324" x2="330" y1="436.71" y2="444.71"/><line style="stroke:#181818;stroke-width:1.0;" x1="324" x2="318" y1="436.71" y2="444.71"/><line style="stroke:#181818;stroke-width:1.0;" x1="324" x2="324" y1="436.71" y2="444.71"/><ellipse cx="324" cy="430.71" fill="none" rx="4" ry="4" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="209.79" x2="209.79" y1="200" y2="192"/><line style="stroke:#181818;stroke-width:1.0;" x1="212.79" x2="212.79" y1="200" y2="192"/><line style="stroke:#181818;stroke-width:1.0;" x1="213.79" x2="205.79" y1="196" y2="196"/></g><!--MD5=[79f074f2fdf39b53242a86a243809875]
+link JupyterHubRequest to Participation--><g id="link_JupyterHubRequest_Participation"><path codeLine="46" d="M264.77,337 C264.77,337 308,337 308,337 C308,337 308,436.84 308,436.84 " fill="none" id="JupyterHubRequest-Participation" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="308" x2="314" y1="436.84" y2="444.84"/><line style="stroke:#181818;stroke-width:1.0;" x1="308" x2="302" y1="436.84" y2="444.84"/><line style="stroke:#181818;stroke-width:1.0;" x1="308" x2="308" y1="436.84" y2="444.84"/><ellipse cx="308" cy="430.84" fill="none" rx="4" ry="4" style="stroke:#181818;stroke-width:1.0;"/><line style="stroke:#181818;stroke-width:1.0;" x1="260.77" x2="260.77" y1="341" y2="333"/><line style="stroke:#181818;stroke-width:1.0;" x1="263.77" x2="263.77" y1="341" y2="333"/><line style="stroke:#181818;stroke-width:1.0;" x1="264.77" x2="256.77" y1="337" y2="337"/></g><!--MD5=[35053cb734f626ce1c7b50378d2a2dce]
+@startuml
+' skinparam linetype polyline
+skinparam linetype ortho
+' left to right direction
+
+together {
+  entity Credentials {
+    * userId
+    - - -
+    UNIQUE INDEX <authProvider, authProviderId>
+    FK <userId>
+  }
+  entity User {
+    * id
+  }
+}
+
+entity Participation {
+  * INDEX <hubId, participantId>
+  - - -
+  FK <hubId>
+  FK <participantId>
+}
+
+together {
+  entity JupyterHubRequest {
+    * id
+    - - -
+    UNIQUE <slug>
+    FK <creatorId>
+  }
+  entity JupyterHubChangeRequest {
+    * id
+    - - -
+    FK <origRequestId>
+    FK <creatorId>
+  }
+}
+
+Credentials |o- -|| User
+
+User ||- -o{ JupyterHubRequest
+User ||- -o{ JupyterHubChangeRequest
+JupyterHubRequest ||- -o{ JupyterHubChangeRequest
+
+User ||- -o{ Participation
+JupyterHubRequest ||- -o{ Participation
+@enduml
+
+@startuml
+skinparam linetype ortho
+
+together {
+  entity Credentials {
+    * userId
+    - - -
+    UNIQUE INDEX <authProvider, authProviderId>
+    FK <userId>
+  }
+  entity User {
+    * id
+  }
+}
+
+entity Participation {
+  * INDEX <hubId, participantId>
+  - - -
+  FK <hubId>
+  FK <participantId>
+}
+
+together {
+  entity JupyterHubRequest {
+    * id
+    - - -
+    UNIQUE <slug>
+    FK <creatorId>
+  }
+  entity JupyterHubChangeRequest {
+    * id
+    - - -
+    FK <origRequestId>
+    FK <creatorId>
+  }
+}
+
+Credentials |o- -|| User
+
+User ||- -o{ JupyterHubRequest
+User ||- -o{ JupyterHubChangeRequest
+JupyterHubRequest ||- -o{ JupyterHubChangeRequest
+
+User ||- -o{ Participation
+JupyterHubRequest ||- -o{ Participation
+@enduml
+
+PlantUML version 1.2022.2(Sat Mar 05 16:30:19 UTC 2022)
+(GPL source distribution)
+Java Runtime: OpenJDK Runtime Environment
+JVM: OpenJDK 64-Bit Server VM
+Default Encoding: UTF-8
+Language: en
+Country: null
+--></g></svg>
