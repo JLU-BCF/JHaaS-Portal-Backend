@@ -38,7 +38,6 @@ function modifyJupyterStatus(
   JupyterHubRequestRepository[findMeth](entityId)
     .then((jhRequest: JupyterHubRequest) => {
       if (!jhRequest?.userAndChangesAllowed(user)) {
-        console.log('here:', jhRequest);
         return genericError.unprocessableEntity(res);
       }
 
@@ -213,10 +212,17 @@ class JupyterHubRequestController {
     });
   }
 
+  // Protected through admin guard middleware
   public redeploy(req: Request, res: Response): void {
-    modifyJupyterStatus(req, res, false, JupyterHubRequestStatus.REDEPLOY, (instance) => {
-      MailHelper.sendJupyterRedeploy(instance);
-    });
+    JupyterHubRequestRepository.findById(req.params.id)
+      .then((jhRequest: JupyterHubRequest) => {
+        jhRequest.status = JupyterHubRequestStatus.REDEPLOY;
+
+        JupyterHubRequestRepository.updateOne(jhRequest)
+          .then((instance) => res.json(instance))
+          .catch((err) => logErrorAndReturnGeneric500(err, res));
+      })
+      .catch((err) => logErrorAndReturnGeneric500(err, res));
   }
 
   public delete(req: Request, res: Response) {
