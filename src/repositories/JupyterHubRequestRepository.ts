@@ -103,11 +103,18 @@ class JupyterHubRequestRepository {
     const today = new Date();
 
     return DB_CONN.getRepository(JupyterHubRequest).findAndCount({
-      where: {
-        status: JupyterHubRequestStatus.ACCEPTED,
-        startDate: MoreThan(dueDate),
-        endDate: MoreThan(today)
-      },
+      where: [
+        {
+          status: JupyterHubRequestStatus.ACCEPTED,
+          startDate: MoreThan(dueDate),
+          endDate: MoreThan(today)
+        },
+        {
+          status: JupyterHubRequestStatus.REDEPLOY,
+          startDate: MoreThan(dueDate),
+          endDate: MoreThan(today)
+        }
+      ],
       relations,
       take,
       skip

@@ -213,6 +213,12 @@ class JupyterHubRequestController {
     });
   }
 
+  public redeploy(req: Request, res: Response): void {
+    modifyJupyterStatus(req, res, false, JupyterHubRequestStatus.REDEPLOY, (instance) => {
+      MailHelper.sendJupyterRedeploy(instance);
+    });
+  }
+
   public delete(req: Request, res: Response) {
     const jhRequestId = req.params.id;
     const user = getUser(req);

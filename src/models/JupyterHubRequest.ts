@@ -20,6 +20,7 @@ export enum JupyterHubRequestStatus {
   DEGRADING = 'DEGRADING',
   DEGRATED = 'DEGRATED',
   FAILED = 'FAILED',
+  REDEPLOY = 'REDEPLOY',
   CANCELED = 'CANCELED'
 }
 
@@ -230,7 +231,8 @@ export class JupyterHubRequest extends JupyterHubBase {
       [
         JupyterHubRequestStatus.ACCEPTED,
         JupyterHubRequestStatus.DEPLOYING,
-        JupyterHubRequestStatus.DEPLOYED
+        JupyterHubRequestStatus.DEPLOYED,
+        JupyterHubRequestStatus.REDEPLOY
       ].includes(this.status)
     );
   }

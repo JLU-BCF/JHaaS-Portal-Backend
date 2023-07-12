@@ -10,6 +10,7 @@ const templates = [
   'JupyterDeployed',
   'JupyterDegrated',
   'JupyterFailed',
+  'JupyterRedeploy',
   'JupyterChangeCreated',
   'JupyterChangeAccepted',
   'JupyterChangeRejected',

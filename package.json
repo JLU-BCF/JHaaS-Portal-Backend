@@ -36,21 +36,21 @@
     "@types/jsonwebtoken": "^9.0.2",
     "@types/minio": "^7.1.0",
     "@types/morgan": "^1.9.4",
-    "@types/node": "^20.3.1",
+    "@types/node": "^20.4.1",
     "@types/nodemailer": "^6.4.8",
     "@types/passport": "^1.0.12",
-    "@types/passport-jwt": "^3.0.8",
+    "@types/passport-jwt": "^3.0.9",
     "@types/passport-local": "^1.0.35",
     "@types/passport-openidconnect": "^0.1.0",
     "@types/pug": "^2.0.6",
-    "@typescript-eslint/eslint-plugin": "^5.59.11",
-    "@typescript-eslint/parser": "^5.59.11",
-    "eslint": "^8.43.0",
-    "nodemon": "^2.0.22",
-    "npm-check-updates": "^16.10.12",
-    "prettier": "^2.8.8",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "eslint": "^8.44.0",
+    "nodemon": "^3.0.1",
+    "npm-check-updates": "^16.10.15",
+    "prettier": "^3.0.0",
     "ts-node": "^10.9.1",
-    "typescript": "^5.1.3"
+    "typescript": "^5.1.6"
   },
   "dependencies": {
     "@kubernetes/client-node": "^0.18.1",
@@ -64,13 +64,13 @@
     "minio": "^7.1.1",
     "morgan": "^1.10.0",
     "nodemailer": "^6.9.3",
-    "openid-client": "^5.4.2",
+    "openid-client": "^5.4.3",
     "passport": "^0.6.0",
     "passport-local": "^1.0.0",
-    "pg": "^8.11.0",
+    "pg": "^8.11.1",
     "pug": "^3.0.2",
     "redis": "^4.6.7",
     "reflect-metadata": "^0.1.13",
-    "typeorm": "^0.3.16"
+    "typeorm": "^0.3.17"
   }
 }

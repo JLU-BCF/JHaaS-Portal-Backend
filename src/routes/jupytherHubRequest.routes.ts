@@ -51,6 +51,9 @@ adminRouter.put('/change/accept/:id([0-9a-f-]+)', jhRequestController.acceptChan
 // reject jupyter hub change request
 adminRouter.put('/change/reject/:id([0-9a-f-]+)', jhRequestController.rejectChangeRequest);
 
+// mark jupyter hub for redeployment
+adminRouter.put('/redeploy/:id([0-9a-f-]+)', jhRequestController.redeploy);
+
 router.use(adminRouter);
 
 export default router;
