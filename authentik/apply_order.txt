@@ -1,7 +1,0 @@
-./models/jhaas-groups.yaml
-./models/jhaas-flows.yaml
-./models/jhaas-prompts.yaml
-./models/jhaas-policies.yaml
-./models/jhaas-stages.yaml
-./models/jhaas-stage-bindings.yaml
-./models/jhaas-policy-bindings.yaml

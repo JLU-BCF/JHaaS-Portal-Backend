@@ -11,7 +11,6 @@ export const APP_PATH: string = process.env.APP_PATH || '/api';
 export const JH_DOMAIN: string = process.env.JH_DOMAIN || 'jhaas.local';
 export const RELEASE_NAME: string = process.env.RELEASE_NAME || 'jhaas-portal';
 export const FRONTEND_URL: string = process.env.FRONTEND_URL || '/';
-export const ENABLE_LOCAL_ACCOUNTS = ['true', true, 1].includes(process.env.ENABLE_LOCAL_ACCOUNTS);
 
 export const FRONTEND_LOGIN_URL = FRONTEND_URL.replace(/\/$/, '') + '/verify';
 export const FRONTEND_LOGOUT_URL = FRONTEND_URL.replace(/\/$/, '') + '/verify';
@@ -20,9 +19,9 @@ export const DB_CONN: DataSource = new DataSource({
   type: 'postgres',
   host: process.env.POSTGRES_HOST || 'localhost',
   port: Number(process.env.POSTGRES_PORT) || 5432,
-  username: process.env.POSTGRES_USER || 'postgres',
-  database: process.env.POSTGRES_DB || 'postgres',
-  password: getSecret('POSTGRES_PASSWORD_FILE', 'POSTGRES_PASSWORD', 'postgres'),
+  username: process.env.JHAAS_DB_USER || 'postgres',
+  database: process.env.JHAAS_DB_NAME || 'postgres',
+  password: getSecret('JHAAS_DB_PASS_FILE', 'JHAAS_DB_PASS', 'postgres'),
   entities: [User, Credentials, JupyterHubRequest, JupyterHubChangeRequest, Participation],
   synchronize: NODE_ENV != 'production',
   logging: NODE_ENV != 'production',

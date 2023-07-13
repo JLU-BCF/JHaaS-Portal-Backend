@@ -3,18 +3,14 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
-  BeforeInsert,
-  BeforeUpdate,
   Index,
   OneToOne,
   JoinColumn,
   PrimaryColumn
 } from 'typeorm';
-import { hashSync } from 'bcrypt';
 import User from './User';
 
 export enum AuthProvider {
-  LOCAL = 'LOCAL',
   OIDC = 'OIDC'
 }
 
@@ -38,28 +34,15 @@ export default class Credentials {
   @Column()
   authProviderId: string;
 
-  // only for local authentication
-  @Column({ nullable: true })
-  password?: string | null;
-
   @CreateDateColumn()
   createdAt: Date;
 
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @BeforeInsert()
-  @BeforeUpdate()
-  hashPassword(): void {
-    if (this.password) {
-      this.password = hashSync(this.password, 10);
-    }
-  }
-
-  constructor(user: User, authProvider: AuthProvider, authProviderId: string, password?: string) {
+  constructor(user: User, authProvider: AuthProvider, authProviderId: string) {
     this.user = user;
     this.authProvider = authProvider;
     this.authProviderId = authProviderId;
-    this.password = password ?? null;
   }
 }

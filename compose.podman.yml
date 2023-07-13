@@ -37,6 +37,7 @@ services:
     env_file:
       - ./environments/db.env
     volumes:
+      - './environments/db-init.sh:/docker-entrypoint-initdb.d/db-init.sh'
       - 'postgres-data:/var/lib/postgresql/data'
 
   minio:
@@ -72,7 +73,6 @@ services:
     expose:
       - 2525
 
-  # Langfristig nicht Teil des Deployments
   redis:
     image: redis:alpine
     container_name: redis
@@ -82,6 +82,44 @@ services:
       - jhaas-portal-priv
     volumes:
       - redis-data:/data
+
+  authentik:
+    image: ghcr.io/goauthentik/server:2023.5.1
+    restart: unless-stopped
+    command: server
+    depends_on:
+      - jhaas-portal-db
+      - redis
+    networks:
+      - jhaas-portal-priv
+    env_file:
+      - ./environments/authentik.env
+      - ./environments/db.env
+    volumes:
+      # need to mount every single dir...
+      # - 'empty-dir:/blueprints/default:ro'
+      # - 'empty-dir:/blueprints/example:ro'
+      # - 'empty-dir:/blueprints/migrations:ro'
+      # - 'empty-dir:/blueprints/system:ro'
+      - 'empty-dir:/blueprints:ro'
+    ports:
+      - 127.0.0.1:9000:9000
+
+  authentik-worker:
+    image: ghcr.io/goauthentik/server:2023.5.1
+    restart: unless-stopped
+    command: worker
+    networks:
+      - jhaas-portal-priv
+    depends_on:
+      - jhaas-portal-db
+      - redis
+    user: root
+    env_file:
+      - ./environments/authentik.env
+      - ./environments/db.env
+    volumes:
+      - 'empty-dir:/blueprints:ro'
 
 networks:
   jhaas-portal-priv:
@@ -99,3 +137,5 @@ volumes:
     name: jhaas-postgres-data
   redis-data:
     name: redis-data
+  empty-dir:
+    name: empty-dir

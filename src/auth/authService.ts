@@ -1,11 +1,10 @@
 import passport from 'passport';
 import { Router } from 'express';
-import LocalStrategy from './providers/localStrategy';
 import OidcStrategy from './providers/oidcStrategy';
 import UserRepository from '../repositories/UserRepository';
 import User from '../models/User';
 import { genericError } from '../helpers/ErrorHelper';
-import { ENABLE_LOCAL_ACCOUNTS, FRONTEND_LOGOUT_URL } from '../config/Config';
+import { FRONTEND_LOGOUT_URL } from '../config/Config';
 
 passport.serializeUser(function (user: User, cb) {
   process.nextTick(function () {
@@ -32,10 +31,6 @@ passport.deserializeUser(function (user: User, cb) {
 });
 
 const authService = Router();
-
-if (ENABLE_LOCAL_ACCOUNTS) {
-  authService.use('/local', LocalStrategy);
-}
 
 authService.use('/oidc', OidcStrategy);
 
