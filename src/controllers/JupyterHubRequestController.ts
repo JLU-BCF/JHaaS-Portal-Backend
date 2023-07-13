@@ -225,6 +225,19 @@ class JupyterHubRequestController {
       .catch((err) => logErrorAndReturnGeneric500(err, res));
   }
 
+  // Protected through admin guard middleware
+  public degrade(req: Request, res: Response): void {
+    JupyterHubRequestRepository.findById(req.params.id)
+      .then((jhRequest: JupyterHubRequest) => {
+        jhRequest.status = JupyterHubRequestStatus.DEGRADE;
+
+        JupyterHubRequestRepository.updateOne(jhRequest)
+          .then((instance) => res.json(instance))
+          .catch((err) => logErrorAndReturnGeneric500(err, res));
+      })
+      .catch((err) => logErrorAndReturnGeneric500(err, res));
+  }
+
   public delete(req: Request, res: Response) {
     const jhRequestId = req.params.id;
     const user = getUser(req);

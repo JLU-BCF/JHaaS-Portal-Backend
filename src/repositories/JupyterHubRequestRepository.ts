@@ -110,9 +110,7 @@ class JupyterHubRequestRepository {
           endDate: MoreThan(today)
         },
         {
-          status: JupyterHubRequestStatus.REDEPLOY,
-          startDate: MoreThan(dueDate),
-          endDate: MoreThan(today)
+          status: JupyterHubRequestStatus.REDEPLOY
         }
       ],
       relations,
@@ -130,10 +128,15 @@ class JupyterHubRequestRepository {
     const today = new Date();
 
     return DB_CONN.getRepository(JupyterHubRequest).findAndCount({
-      where: {
-        status: JupyterHubRequestStatus.DEPLOYED,
-        endDate: LessThan(today)
-      },
+      where: [
+        {
+          status: JupyterHubRequestStatus.DEPLOYED,
+          endDate: LessThan(today)
+        },
+        {
+          status: JupyterHubRequestStatus.DEGRADE
+        }
+      ],
       relations,
       take,
       skip

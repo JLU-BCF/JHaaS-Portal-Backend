@@ -21,6 +21,7 @@ export enum JupyterHubRequestStatus {
   DEGRATED = 'DEGRATED',
   FAILED = 'FAILED',
   REDEPLOY = 'REDEPLOY',
+  DEGRADE = 'DEGRADE',
   CANCELED = 'CANCELED'
 }
 
