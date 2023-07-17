@@ -38,6 +38,8 @@ const oidcStrategy = Router();
 
 Issuer.discover(OIDC_ENDPOINT)
   .then((issuer: Issuer) => {
+    console.log('OIDC: ', 'discovered.');
+
     const client = new issuer.Client({
       client_id: CLIENT_ID,
       client_secret: CLIENT_SECRET,
@@ -110,7 +112,7 @@ Issuer.discover(OIDC_ENDPOINT)
     );
   })
   .catch((err) => {
-    console.log('Could not read OIDC Endpoint.');
+    console.log('Could not read OIDC Endpoint: ', OIDC_ENDPOINT);
     console.log(err);
     if (FORCE_OIDC_REACHABLE) {
       console.log('Kill to try again in 5 seconds.');

@@ -12,6 +12,8 @@ services:
       - jhaas-portal-db
       - redis
       - mailhog
+      - minio
+      - authentik
     networks:
       - jhaas-portal-priv
     ports:
@@ -47,8 +49,6 @@ services:
     restart: unless-stopped
     networks:
       - jhaas-portal-priv
-    ports:
-      - 127.0.0.1:9001:9001
     volumes:
       - 'minio-data:/data'
     env_file:
@@ -75,8 +75,8 @@ services:
 
   redis:
     image: redis:alpine
-    container_name: redis
-    hostname: redis
+    container_name: jhaas-redis
+    hostname: jhaas-redis
     restart: unless-stopped
     networks:
       - jhaas-portal-priv
@@ -84,7 +84,9 @@ services:
       - redis-data:/data
 
   authentik:
-    image: ghcr.io/goauthentik/server:2023.5.1
+    image: ghcr.io/goauthentik/server:${AUTHENTIK_TAG:-2023.6.1}
+    container_name: jhaas-authentik
+    hostname: jhaas-authentik
     restart: unless-stopped
     command: server
     depends_on:
@@ -96,17 +98,14 @@ services:
       - ./environments/authentik.env
       - ./environments/db.env
     volumes:
-      # need to mount every single dir...
-      # - 'empty-dir:/blueprints/default:ro'
-      # - 'empty-dir:/blueprints/example:ro'
-      # - 'empty-dir:/blueprints/migrations:ro'
-      # - 'empty-dir:/blueprints/system:ro'
-      - 'empty-dir:/blueprints:ro'
+      - './environments/authentik:/blueprints:ro'
     ports:
       - 127.0.0.1:9000:9000
 
   authentik-worker:
-    image: ghcr.io/goauthentik/server:2023.5.1
+    image: ghcr.io/goauthentik/server:${AUTHENTIK_TAG:-2023.6.1}
+    container_name: jhaas-authentik-worker
+    hostname: jhaas-authentik-worker
     restart: unless-stopped
     command: worker
     networks:
@@ -119,7 +118,7 @@ services:
       - ./environments/authentik.env
       - ./environments/db.env
     volumes:
-      - 'empty-dir:/blueprints:ro'
+      - './environments/authentik:/blueprints:ro'
 
 networks:
   jhaas-portal-priv:
@@ -136,6 +135,4 @@ volumes:
   postgres-data:
     name: jhaas-postgres-data
   redis-data:
-    name: redis-data
-  empty-dir:
-    name: empty-dir
+    name: jhaas-redis-data
