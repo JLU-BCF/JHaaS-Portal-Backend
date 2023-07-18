@@ -23,9 +23,8 @@ export const DB_CONN: DataSource = new DataSource({
   database: process.env.JHAAS_DB_NAME || 'postgres',
   password: getSecret('JHAAS_DB_PASS_FILE', 'JHAAS_DB_PASS', 'postgres'),
   entities: [User, Credentials, JupyterHubRequest, JupyterHubChangeRequest, Participation],
-  // synchronize: NODE_ENV != 'production',
   synchronize: [true, 'true', 1].includes(process.env.TYPEORM_DB_SYNC),
-  logging: NODE_ENV != 'production',
+  logging: [true, 'true', 1].includes(process.env.TYPEORM_DB_LOGGING),
   migrations: [
     `${__dirname}/../database-migrations/*.ts`,
     `${__dirname}/../database-migrations/*.js`

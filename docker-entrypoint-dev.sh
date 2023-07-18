@@ -15,5 +15,8 @@ else
   echo "cache is valid, continuing..."
 fi
 
+# Migrate the database
+npm run typeorm -- migration:run
+
 # Start the dev server
 npm run dev

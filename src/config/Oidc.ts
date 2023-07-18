@@ -11,7 +11,5 @@ export const POST_LOGIN_URL = FRONTEND_LOGIN_URL;
 export const FORCE_OIDC_REACHABLE = ['true', true, 1].includes(process.env.FORCE_OIDC_REACHABLE);
 export const AUTHENTIK_API_ENDPOINT = process.env.AUTHENTIK_API_ENDPOINT || '';
 export const AUTHENTIK_API_SECRET = process.env.AUTHENTIK_API_SECRET || '';
+export const AUTHENTIK_INVALIDATION_FLOW = process.env.AUTHENTIK_INVALIDATION_FLOW || '';
 export const AUTHENTIK_JH_GROUP_NAME = process.env.AUTHENTIK_JH_GROUP_NAME || 'jupyterhubs';
-
-// TODO: read from env!
-export const AUTHENTIK_INVALIDATION_FLOW = 'https://auth.jhaas.gi.denbi.de/if/flow/jhaas-logout/';
