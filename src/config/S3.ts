@@ -1,6 +1,7 @@
 import { getSecret } from '../helpers/SecretHelper';
 import * as Minio from 'minio';
 
+export const S3_TF_STATE_BUCKET = process.env.S3_TF_STATE_BUCKET || 'tf-state';
 export const S3_JH_SPECS_BUCKET = process.env.S3_JH_SPECS_BUCKET || 'jh-specs';
 
 export const minioClient = new Minio.Client({

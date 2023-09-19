@@ -2,6 +2,7 @@ import k8s from '@kubernetes/client-node';
 import { JupyterHubRequest } from '../../models/JupyterHubRequest';
 import * as k8sConf from '../../config/K8s';
 import { RELEASE_NAME } from '../../config/Config';
+import { S3_TF_STATE_BUCKET, S3_JH_SPECS_BUCKET } from '../../config/S3';
 
 export function getTerraformWorkerJob(jh: JupyterHubRequest, action: string): k8s.V1Job {
   return {
@@ -213,6 +214,14 @@ export function getTerraformWorkerJob(jh: JupyterHubRequest, action: string): k8
                       name: `env-${RELEASE_NAME}-tf-conf`
                     }
                   }
+                },
+                {
+                  name: 'S3_TF_STATE_BUCKET',
+                  value: S3_TF_STATE_BUCKET
+                },
+                {
+                  name: 'S3_JH_SPECS_BUCKET',
+                  value: S3_JH_SPECS_BUCKET
                 }
               ]
             }
