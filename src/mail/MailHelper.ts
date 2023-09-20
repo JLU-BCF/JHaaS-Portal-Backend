@@ -1,4 +1,4 @@
-import { mailTransporter, MAIL_FROM, MAIL_COPY_ADDRESSES } from '../config/Mail';
+import { mailTransporter, MAIL_FROM, MAIL_FROM_NAME, MAIL_COPY_ADDRESSES } from '../config/Mail';
 import { JupyterHubRequest } from '../models/JupyterHubRequest';
 import User from '../models/User';
 import MailTemplates from './MailTemplates';
@@ -63,7 +63,10 @@ function participationTemplate(template: string, copy?: boolean) {
 function sendMail(to: string, template: string, mailOpts: object, copy?: boolean) {
   mailTransporter
     .sendMail({
-      from: MAIL_FROM,
+      from: {
+        name: MAIL_FROM_NAME,
+        address: MAIL_FROM
+      },
       to,
       cc: copy ? MAIL_COPY_ADDRESSES : undefined,
       subject: templateSubjects[template],

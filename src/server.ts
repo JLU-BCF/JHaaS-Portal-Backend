@@ -1,5 +1,6 @@
 // imports
 import { APP_PORT, DB_CONN } from './config/Config';
+import FRONTEND_CONF from './config/Frontend';
 import SESSION_CONFIG from './config/Session';
 import 'reflect-metadata';
 import createError, { HttpError } from 'http-errors';
@@ -30,6 +31,10 @@ app.use('/jupyter', authGuard, leaderGuard, JupyterHubRequestService);
 app.use('/participation', authGuard, ParticipationService);
 
 app.get('/', authGuard, (req, res) => res.json(req.user));
+
+app.get('/frontend-configuration', (req, res) => {
+  res.json(FRONTEND_CONF);
+});
 
 // catch 404 and forward to error handler
 app.use((req: Request, res: Response, next: NextFunction) => {

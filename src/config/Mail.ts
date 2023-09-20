@@ -8,6 +8,7 @@ export const MAIL_TEMPLATE_DIR: string =
   process.env.MAIL_TEMPLATE_DIR || `${__dirname}/../../templates/mail`;
 
 export const MAIL_FROM: string = process.env.MAIL_FROM || 'portal@jhaas.local';
+export const MAIL_FROM_NAME: string = process.env.MAIL_FROM_NAME || 'JHaaS Portal';
 export const MAIL_COPY_ADDRESSES: string[] = process.env.MAIL_COPY_ADDRESSES
   ? JSON.parse(process.env.MAIL_COPY_ADDRESSES)
   : ['admins@jhaas.local'];
