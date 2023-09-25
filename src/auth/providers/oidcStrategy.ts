@@ -7,11 +7,10 @@ import {
   CALLBACK_URL,
   CLIENT_ID,
   CLIENT_SECRET,
-  POST_LOGOUT_URL,
-  POST_LOGIN_URL,
-  FORCE_OIDC_REACHABLE,
+  OIDC_FORCE_REACHABILITY,
   AUTHENTIK_INVALIDATION_FLOW
 } from '../../config/Oidc';
+import { POST_LOGOUT_URL, POST_LOGIN_URL } from '../../config/Config';
 import CredentialsRepository from '../../repositories/CredentialsRepository';
 import Credentials, { AuthProvider } from '../../models/Credentials';
 import UserRepository from '../../repositories/UserRepository';
@@ -114,7 +113,7 @@ Issuer.discover(OIDC_ENDPOINT)
   .catch((err) => {
     console.log('Could not read OIDC Endpoint: ', OIDC_ENDPOINT);
     console.log(err);
-    if (FORCE_OIDC_REACHABLE) {
+    if (OIDC_FORCE_REACHABILITY) {
       console.log('Kill to try again in 5 seconds.');
       setTimeout(() => {
         process.kill(9);

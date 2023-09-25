@@ -11,8 +11,8 @@ export const JH_DOMAIN: string = process.env.JH_DOMAIN || 'jhaas.local';
 export const RELEASE_NAME: string = process.env.RELEASE_NAME || 'jhaas-portal';
 export const FRONTEND_URL: string = process.env.FRONTEND_URL || '/';
 
-export const FRONTEND_LOGIN_URL = FRONTEND_URL.replace(/\/$/, '') + '/verify';
-export const FRONTEND_LOGOUT_URL = FRONTEND_URL.replace(/\/$/, '') + '/verify';
+export const POST_LOGIN_URL = FRONTEND_URL.replace(/\/$/, '') + '/verify';
+export const POST_LOGOUT_URL = FRONTEND_URL.replace(/\/$/, '') + '/verify';
 
 export const DB_CONN: DataSource = new DataSource({
   type: 'postgres',

@@ -4,7 +4,7 @@ import OidcStrategy from './providers/oidcStrategy';
 import UserRepository from '../repositories/UserRepository';
 import User from '../models/User';
 import { genericError } from '../helpers/ErrorHelper';
-import { FRONTEND_LOGOUT_URL } from '../config/Config';
+import { POST_LOGOUT_URL } from '../config/Config';
 
 passport.serializeUser(function (user: User, cb) {
   process.nextTick(function () {
@@ -45,7 +45,7 @@ authService.post('/logout', (req, res) => {
       if (logoutUrl) {
         return res.redirect(logoutUrl);
       }
-      return res.redirect(FRONTEND_LOGOUT_URL);
+      return res.redirect(POST_LOGOUT_URL);
     });
   }
 
@@ -55,7 +55,7 @@ authService.post('/logout', (req, res) => {
       console.log(err);
       return genericError.internalServerError(res);
     }
-    return res.redirect(FRONTEND_LOGOUT_URL);
+    return res.redirect(POST_LOGOUT_URL);
   });
 });
 
