@@ -97,6 +97,7 @@ services:
       - ./environments/db.env
     volumes:
       - './environments/authentik:/blueprints:ro'
+      - './environments/account_confirmation.html:/templates/account_confirmation.html:ro'
     ports:
       - 127.0.0.1:9000:9000
 

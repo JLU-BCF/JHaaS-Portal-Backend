@@ -1,0 +1,134 @@
+<style>
+  @media print {
+    .noPrint{
+      display:none;
+    }
+  }
+</style>
+<button onclick="window.print();" class="noPrint">
+  Ausdrucken / Print
+</button>
+<hr class="noPrint"/>
+<h1 id="benutzungsordnung-datenschutzerklarung-jhaas">Benutzungsordnung / Datenschutzerklärung JHaaS</h1>
+<p><strong>Gültig ab: 01.10.2023</strong></p>
+<h2 id="vorwort">Vorwort:</h2>
+<p><strong>ACHTUNG!</strong></p>
+<p>JHaaS ist ein experimenteller Service, der im Evaluationsbetrieb betrieben wird. Diese Benutzungsordnung dient der Orientierung; sie ist weder offiziell verabschiedet noch rechtlich geprüft. Änderungen können im Laufe der Evaluation jederzeit eingepflegt werden. Registrierte Benutzer*innen werden per eMail über Änderungen informiert, eine aktive Zustimmung ist nicht vorgesehen. Weiterbenutzung des JHaaS-Services wird als passive Zustimmung gewertet. Dieses wird sich mit der Aufnahme des offiziellen Produktionsbetriebes ändern.</p>
+<p>Diese Benutzungsordnung regelt die Verwendung des JHaaS-Services. Dieser Service dient der Bereitstellung von Jupyter-Notebooks im Rahmen von Kursen und Workshops. Sie deckt das JHaaS-Portal und den Authentisierungmechanismus ab. Von Benutzer*innen generierte Inhalte wie z.B. Kursinhalte werden explizit nicht von dieser Benutzungsordnung abgedeckt.</p>
+<h3 id="begriffsklarung">Begriffsklärung</h3>
+<p>In dieser Benutzungsordnung werden die folgenden Begriffe genutzt:</p>
+<h5 id="betreiber">Betreiber</h5>
+<p>Der JHaaS-Betreiber stellt Benutzer*innen einen JHaaS-Service zur Verfügung.</p>
+<h5 id="benutzer">Benutzer</h5>
+<p>Ein Benutzer ist eine Person, die das JHaaS-Portal, den zugehörigen Authentisierungmechanismus oder ein vom JHaaS-Portal verwalteten JupyterHub verwendet.</p>
+<h5 id="kursverantwortlicher">Kursverantwortlicher</h5>
+<p>Ein Kursverantwortlicher ist berechtigt Kurse im JHaaS-Portal zu beantragen und durchzuführen. Er muss dazu explizit von der Governance authorisiert werden. Er übernimmt die Verantwortung für die Durchführung des Kurses und die Authorisation der Kursteilnehmer.</p>
+<h5 id="kursteilnehmer">Kursteilnehmer</h5>
+<p>Ein Kursteilnehmer ist ein Benutzer, der an einem oder mehreren von dem JHaaS-Portal verwalteten Kursen teilnimmt. Ein Benutzer kann gleichzeitig Kursteilnehmer und Kursverantwortlicher in unterschiedlichen Kursen sein.</p>
+<h5 id="governance">Governance</h5>
+<p>Die Governance fällt Entscheidungen im Rahmen des JHaaS-Portals, z.B. welcher Benutzer als Kursverantwortlicher authorisiert ist und welche Kurse durchgeführt werden können.</p>
+<h5 id="jupyter-notebook">Jupyter-Notebook</h5>
+<p>Ein Jupyter-Notebook ermöglicht Kursteilnehmern das Web-basierte Arbeiten in einer Kurs-spezifischen Umgebung. In der Regel dienen die Notebooks dem Erlernen von Programmiersprachen oder Techniken zur Datenverarbeitung.</p>
+<h5 id="jupyter-hub">Jupyter-Hub</h5>
+<p>Das Jupyter-Hub authentisiert Benutzer eines Kurses und steuert den Zugriff auf Jupyter-Notebook-Instanzen.</p>
+<h5 id="jhaas-portal">JHaaS-Portal</h5>
+<p>Das JHaaS-Portal steuert zentral die Verwaltung von Kursen, Authentisierung von Benutzern und den Zugriff auf Jupyter-Notebooks.</p>
+<h2 id="1-registrierung-benutzungskontos">§1 Registrierung / Benutzungskontos</h2>
+<ol>
+<li>Die Benutzung des JHaaS-Portal und verknüpfter Services setzt eine Registrierung und Erstellen eines Benutzungskontos voraus.</li>
+<li>Die Registrierung ist frei verfügbar.</li>
+<li>Die während der Registrierung erhobenen persönlichen Daten (Vorname, Nachname, eMail-Adresse) dienen der Identifikation und Authorisierung des Benutzers.</li>
+<li>Die hinterlegte eMail-Adresse wird von dem JHaaS-Portal zum Versenden wichtiger Informationen benutzt. Ein registrierter Benutzer ist verpflichtet, Mails an diese Adresse regelmäßig zu prüfen.</li>
+<li>Benutzungskontos von Benutzern, die weder Kursteilnehmer noch Kursverantwortliche sind, werden in dem Portal nach einer Übergangszeit automatisch gelöscht. Gelöschte Benutzungskontos können nicht wiederhergestellt werden. Die weitere Benutzung nach der Löschung eines Benutzungskontos setzt eine erneute Registrierung voraus.</li>
+<li>Ein Benutzungskonto im JHaaS-Portal darf Dritten nicht zugänglich gemacht werden.</li>
+<li>Das Passwort des Benutzungskontos darf nicht bereits für andere Konten benutzt werden</li>
+</ol>
+<h2 id="2-zugangsberechtigung">§2 Zugangsberechtigung</h2>
+<ol>
+<li>Kursverantwortliche können alle Mitglieder*innen der Justus-Liebig-Universität Gießen sein.</li>
+<li>Ein Benutzer kann auf Antrag an die Governance zum Kursverantwortlichen ernannt werden; die Mitgliedschaft der JLU Gießen muss ggf. nachgewiesen werden.</li>
+<li>Kursteilnehmer müssen kein Mitglied der Justus-Liebig-Universität Gießen sein.</li>
+</ol>
+<h2 id="3-kursdurchfuhrung">§3 Kursdurchführung</h2>
+<ol>
+<li>Ein Kurs muss von einem Kursverantwortlichen beantragt werden.</li>
+<li>Die Governance überprüft alle Kursanträge und entscheidet ob ein Kurs in der beantragten Form durchgeführt werden kann. Es besteht kein Anrecht auf Durchführung eines Kurses.</li>
+<li>Im Falle einer Bewilligung kann der Kursverantwortliche potentielle Kursteilnehmer über den Kurs informieren, z.B. in Form eines Registrierungslinks.</li>
+<li>Die Teilnahme an einem Kurs setzt die Erstellung eines Benutzungskontos im JHaaS-Portal voraus.</li>
+<li>Ein Benutzer kann sich durch den Registrierungslink für einen Kurs anmelden.</li>
+<li>Der Kursverantwortliche muss jede Teilnahmeanmeldung prüfen und freigeben oder ablehnen. Die Art der Prüfung obliegt dem Kursverantwortlichen. Von Seiten des Betreibers und der Governance existiert kein Anrecht auf Teilnahme an einem Kurs.</li>
+<li>Missbrauch der zur Verfügung gestellten Resourcen durch Kursteilnehmer ist durch den Kursverantwortlichen zu unterbinden. Der Betreiber ist berechtigt, bei Zuwiderhandlung entsprechenden Maßnahmen zu ergreifen, um den ordentlichen Betrieb zu gewährleisten.</li>
+<li>Es dürfen keine persönlichen oder schützenswerten Daten durch den Kursverantworlichen oder einen Kursteilnehmer auf dem System gespeichert werden.</li>
+<li>Nach Abschluss eines Kurses werden alle zugehörigen Resourcen gelöscht. Hierzu gehören insbesondere alle von dem Kursverantwortlichen und den Kursteilnehmern in den Jupyter-Notebooks hinterlegten Daten. Der Kursverantwortliche und die Kursteilnehmer sind selbst veantwortlich für eine Sicherung der Daten, falls diese benötigt wird.</li>
+</ol>
+<h2 id="4-uberprufung-der-benutzungskontos">§4 Überprüfung der Benutzungskontos</h2>
+<ol>
+<li>Der Betreiber kann in die Korrektheit der hinterlegten Informationen prüfen, z.B. durch Zusenden einer Mail an die hinterlegte eMail-Adresse.</li>
+<li>Sollte der Benutzer nicht innerhalb einer eingeräumten Frist auf die Prüfung antworten (z.B. durch Aufruf eines Link in einer Mail), kann das Benutzerkonto ohne weitere Warnung deaktiviert oder gelöscht werden</li>
+</ol>
+<h1 id="datenschutzerklarung">Datenschutzerklärung</h1>
+<h2 id="verantwortlicher-kontaktdaten">Verantwortlicher / Kontaktdaten</h2>
+<p>Informationen zum Verantwortlichen sowie Kontaktdaten sind der Datenschutzerklärung der Justus-Liebig-Universität Gießen zu entnehmen (<a href="https://www.uni-giessen.de/de/ueber-uns/datenschutz">https://www.uni-giessen.de/de/ueber-uns/datenschutz</a>)</p>
+<h2 id="allgemeines-zur-datenverarbeitung">Allgemeines zur Datenverarbeitung</h2>
+<h3 id="1-umfang-der-verarbeitung-personenbezogener-daten">1. Umfang der Verarbeitung personenbezogener Daten</h3>
+<p>Wir verarbeiten personenbezogene Daten unserer Nutzer grundsätzlich nur, soweit dies zur Bereitstellung einer funktionsfähigen Website sowie unserer Inhalte und Leistungen erforderlich ist. Die Verarbeitung  personenbezogener Daten unserer Nutzer erfolgt regelmäßig nur nach Einwilligung des Nutzers. Eine Ausnahme gilt in solchen Fällen, in denen  eine vorherige Einholung einer Einwilligung aus tatsächlichen Gründen nicht möglich ist und die Verarbeitung der Daten durch gesetzliche Vorschriften gestattet ist.</p>
+<h3 id="2-rechtsgrundlage-fur-die-verarbeitung-personenbezogener-daten">2. Rechtsgrundlage für die Verarbeitung personenbezogener Daten</h3>
+<p>Soweit wir für Verarbeitungsvorgänge personenbezogener Daten eine Einwilligung der betroffenen Person einholen, dient Art.&nbsp;6 Abs.&nbsp;1 lit.&nbsp;a  EU-Datenschutzgrundverordnung (DSGVO) als Rechtsgrundlage.</p>
+<p>Bei der Verarbeitung von personenbezogenen Daten, die zur Erfüllung eines Vertrages, dessen Vertragspartei die betroffene Person ist,  erforderlich ist, dient Art.&nbsp;6 Abs.&nbsp;1 lit.&nbsp;b DSGVO als Rechtsgrundlage.  Dies gilt auch für Verarbeitungsvorgänge, die zur Durchführung vorvertraglicher Maßnahmen erforderlich sind.</p>
+<p>Soweit eine Verarbeitung personenbezogener Daten zur Erfüllung einer rechtlichen Verpflichtung erforderlich ist, der unser Unternehmen  unterliegt, dient Art.&nbsp;6 Abs.&nbsp;1 lit.&nbsp;c DSGVO als Rechtsgrundlage.</p>
+<p>Für den Fall, dass lebenswichtige Interessen der betroffenen Person oder einer anderen natürlichen Person eine Verarbeitung  personenbezogener Daten erforderlich machen, dient Art.&nbsp;6 Abs.&nbsp;1 lit.&nbsp;d  DSGVO als Rechtsgrundlage.</p>
+<p>Ist die Verarbeitung zur Wahrung eines berechtigten Interesses unseres Unternehmens oder eines Dritten erforderlich und überwiegen die  Interessen, Grundrechte und Grundfreiheiten des Betroffenen das  erstgenannte Interesse nicht, so dient Art.&nbsp;6 Abs.&nbsp;1 lit.&nbsp;f DSGVO als Rechtsgrundlage für die Verarbeitung.</p>
+<h3 id="3-datenloschung-und-speicherdauer">3. Datenlöschung und Speicherdauer</h3>
+<p>Die personenbezogenen Daten der betroffenen Person werden gelöscht oder gesperrt, sobald der Zweck der Speicherung entfällt. Eine Speicherung kann darüber hinaus erfolgen, wenn dies durch den europäischen oder nationalen Gesetzgeber in unionsrechtlichen  Verordnungen, Gesetzen oder sonstigen Vorschriften, denen der Verantwortliche unterliegt, vorgesehen wurde. Eine Sperrung oder Löschung der Daten erfolgt auch dann, wenn eine durch die genannten Normen vorgeschriebene Speicherfrist abläuft, es sei denn, dass eine  Erforderlichkeit zur weiteren Speicherung der Daten für einen  Vertragsabschluss oder eine Vertragserfüllung besteht.</p>
+<p>Im Rahmen des JHaaS-Portals werden Benutzungskontos nach 6 Monaten ohne Kursteilname gelöscht. Im Falle eines Kursverantwortlichen bleibt das Benutzerkonto 12 Monate bestehen. Beide Fristen dienen der Vereinfachung der Nutzung. Benutzungskontos können jederzeit auf Anfrage an den Betreiber gelöscht werden.</p>
+<p>In Kursen hinterlegte Daten der Benutzer werden nach Ende des Kurses automatisch von dem JHaaS-Portal gelöscht. Ein persistente Speicherung über Kursende hinaus ist nicht vorgesehen.</p>
+<h2 id="bereitstellung-des-jhaas-portal-der-jupyter-notebooks-und-erstellung-von-logfiles">Bereitstellung des JHaaS-Portal, der Jupyter-Notebooks und Erstellung von Logfiles</h2>
+<h3 id="1-beschreibung-und-umfang-der-datenverarbeitung">1. Beschreibung und Umfang der Datenverarbeitung</h3>
+<p>Bei jedem Aufruf des JHaaS-Portals oder eines im Rahmen eines Kurses angebotenen Jupyter-Notebooks erfasst das System automatisiert Daten und Informationen vom Computersystem des aufrufendens Rechners.</p>
+<p>Folgende Daten werden hierbei erhoben:</p>
+<ul>
+<li>IP-Adresse des anfordernden Rechners</li>
+<li>Datum und Uhrzeit der Anforderung</li>
+<li>vom anfordernden Rechner gewünschte Zugriffsmethode/Funktion</li>
+<li>vom anfordernden Rechner übermittelte Daten</li>
+<li>Zugriffsstatus des Web-Servers (Datei übertragen, Datei nicht gefunden, Kommando nicht ausgeführt, etc.)</li>
+<li>Name der angeforderten Datei</li>
+<li>Name des JHaaS-Benutzerkontos</li>
+</ul>
+<p>Die Daten werden ebefalls in den Logfiles unseres Systems gespeichert. Eine Speicherung dieser Daten zusammen mit anderen personenbezogenen Daten des Nutzer findet nicht statt.</p>
+<h3 id="2-rechtsgrundlage-fur-die-datenverarbeitung">2. Rechtsgrundlage für die Datenverarbeitung</h3>
+<p>Rechtsgrundlage für die vorübergehende Speicherung der Daten und der Logfiles ist Art. 6 Abs. 1 lit. f DSGVO.</p>
+<h3 id="3-zweck-der-datenverarbeitung">3. Zweck der Datenverarbeitung</h3>
+<p>Die vorübergehende Speicherung der IP-Adresse durch das System ist notwendig, um eine Auslieferung der Website an den Rechner des Nutzers  zu ermöglichen. Hierfür muss die IP-Adresse des Nutzers für die Dauer  der Sitzung gespeichert bleiben.</p>
+<p>Die Speicherung in Logfiles erfolgt, um die Funktionsfähigkeit der Website sicherzustellen. Zudem dienen uns die Daten zur Optimierung der  Website und zur Sicherstellung der Sicherheit unserer  informationstechnischen Systeme. Eine Auswertung der Daten zu  Marketingzwecken findet in diesem Zusammenhang nicht statt.
+&nbsp;
+In diesen Zwecken liegt auch unser berechtigtes Interesse an der Datenverarbeitung nach Art.&nbsp;6 Abs.&nbsp;1 lit.&nbsp;f DSGVO.</p>
+<h3 id="4-dauer-der-speicherung">4. Dauer der Speicherung</h3>
+<p>Die Daten werden gelöscht, sobald sie für die Erreichung des Zweckes ihrer Erhebung nicht mehr erforderlich sind. Im Falle der Erfassung der  Daten zur Bereitstellung der Website ist dies der Fall, wenn die  jeweilige Sitzung beendet ist.</p>
+<p>Im Falle der Speicherung der Daten in Logfiles ist dies nach spätestens zwei Monaten der Fall.</p>
+<h3 id="5-widerspruchs-und-beseitigungsmoglichkeit">5. Widerspruchs- und Beseitigungsmöglichkeit</h3>
+<p>Die Erfassung der Daten zur Bereitstellung der Website und die Speicherung der Daten in Logfiles ist für den Betrieb der Internetseite zwingend erforderlich. Es besteht folglich seitens des Nutzers keine Widerspruchsmöglichkeit.</p>
+<h2 id="verwendung-von-cookies">Verwendung von Cookies</h2>
+<h3 id="1-beschreibung-und-umfang-der-datenverarbeitung_1">1. Beschreibung und Umfang der Datenverarbeitung</h3>
+<p>Das JHaaS-Portal, der integrierte Authentisierungdienst sowie die Jupyter-Hub- und Jupyter-Notebook-Instanzen verwenden Cookies. Bei Cookies handelt es sich um Textdateien, die im Internetbrowser bzw. vom Internetbrowser auf dem Computersystem des Nutzers gespeichert werden. Ruft ein Nutzer eine Website auf, so kann ein Cookie auf dem Betriebssystem des Nutzers gespeichert werden. Dieser Cookie enthält eine charakteristische Zeichenfolge, die eine eindeutige Identifizierung des Browsers beim erneuten Aufrufen der Website ermöglicht.</p>
+<p>Die Services im Rahmen des JHaaS-Portals verwenden Cookies, um die Benutzeranmeldung zu implementieren und abzusichern. Ohne die Verwendung von Cookies ist keine Benutzung möglich.</p>
+<p>In den Cookies werden dabei folgende Daten gespeichert und übermittelt:</p>
+<p>(1) Identifikation des Servers, der die Anfrage bedient hat</p>
+<p>(2) Log-In-Informationen (persistene Nutzerauthentifizierung für die Anmeldung in geschützten Bereichen)</p>
+<h3 id="2-rechtsgrundlagen-fur-die-datenverarbeitung">2. Rechtsgrundlagen für die Datenverarbeitung</h3>
+<p>Die Rechtsgrundlage für die Verarbeitung personenbezogener Daten unter Verwendung von Cookies ist Art.&nbsp;6 Abs.&nbsp;1 lit.&nbsp;f DSGVO.</p>
+<h3 id="3-zweck-der-datenverarbeitung_1">3. Zweck der Datenverarbeitung</h3>
+<p>Der Zweck der Verwendung technisch notwendiger Cookies ist die Identifikation des Benutzers und die damit einhergehende Authorisation für den Zugriff auf Funktionen.</p>
+<p>Dies umfasst:</p>
+<p>(1) Zugriff auf Funktionen exklusiv für Kursveranstalter</p>
+<p>(2) Zugriff auf Funktionen exklusiv für Mitglieder der Governance</p>
+<p>(3) Weiterleitung an das benutzereigene Jupyter-Notebook im Rahmen eines Kurses</p>
+<p>Die durch technisch notwendige Cookies erhobenen Nutzerdaten werden nicht zur Erstellung von Nutzerprofilen verwendet.</p>
+<h3 id="4-dauer-der-speicherung-widerspruchs-und-beseitigungsmoglichkeit">4. Dauer der Speicherung, Widerspruchs- und Beseitigungsmöglichkeit</h3>
+<p>Cookies werden auf dem Rechner des Nutzers gespeichert und von diesem an unserer Seite übermittelt. Daher haben Nutzer auch die volle Kontrolle über die Verwendung von Cookies. Durch eine Änderung der Einstellungen in Ihrem Internetbrowser können Sie die Übertragung von Cookies deaktivieren oder einschränken. Bereits gespeicherte Cookies können jederzeit gelöscht werden. Dies kann auch automatisiert erfolgen. Werden Cookies für das JHaaS-Portal deaktiviert, ist eine Benutzung des Portal nicht mehr möglich.</p>
+<h2 id="rechte-der-betroffenden-person">Rechte der betroffenden Person</h2>
+<p>Die individuellen Rechte für betroffene Personen sind der übergeordneten Datenschutzerklärung der Justus-Liebig-Universität Gießen zu entnehmen (<a href="https://www.uni-giessen.de/de/ueber-uns/datenschutz">https://www.uni-giessen.de/de/ueber-uns/datenschutz</a>)</p>
+<hr class="noPrint"/>
+<button onclick="window.print();" class="noPrint">
+  Ausdrucken / Print
+</button>

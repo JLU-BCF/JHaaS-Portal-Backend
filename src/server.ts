@@ -9,6 +9,7 @@ import session from 'express-session';
 import morgan from 'morgan';
 import passport from 'passport';
 import AuthService from './auth/authService';
+import TosService from './routes/tos.routes';
 import UserService from './routes/user.routes';
 import JupyterHubRequestService from './routes/jupytherHubRequest.routes';
 import ParticipationService from './routes/participation.routes';
@@ -25,6 +26,7 @@ app.use(session(SESSION_CONFIG));
 app.use(passport.initialize());
 app.use(passport.session());
 
+app.use('/tos', TosService);
 app.use('/auth', AuthService);
 app.use('/user', authGuard, UserService);
 app.use('/jupyter', authGuard, leaderGuard, JupyterHubRequestService);
