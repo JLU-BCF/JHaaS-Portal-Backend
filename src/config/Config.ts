@@ -4,6 +4,7 @@ import Credentials from '../models/Credentials';
 import { JupyterHubRequest, JupyterHubChangeRequest } from '../models/JupyterHubRequest';
 import { getSecret } from '../helpers/SecretHelper';
 import Participation from '../models/Participation';
+import Tos from '../models/Tos';
 
 export const NODE_ENV: string = process.env.NODE_ENV || '';
 export const APP_PORT: number = Number(process.env.APP_PORT) || 8000;
@@ -21,7 +22,7 @@ export const DB_CONN: DataSource = new DataSource({
   username: process.env.JHAAS_DB_USER || 'postgres',
   database: process.env.JHAAS_DB_NAME || 'postgres',
   password: getSecret('JHAAS_DB_PASS_FILE', 'JHAAS_DB_PASS', 'postgres'),
-  entities: [User, Credentials, JupyterHubRequest, JupyterHubChangeRequest, Participation],
+  entities: [User, Credentials, JupyterHubRequest, JupyterHubChangeRequest, Participation, Tos],
   synchronize: [true, 'true', 1].includes(process.env.TYPEORM_DB_SYNC),
   logging: [true, 'true', 1].includes(process.env.TYPEORM_DB_LOGGING),
   migrations: [

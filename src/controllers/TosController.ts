@@ -1,4 +1,8 @@
 import { Request, Response } from 'express';
+import { marked } from 'marked';
+import Tos from '../models/Tos';
+import TosRepository from '../repositories/TosRepository';
+import { genericError } from '../helpers/ErrorHelper';
 import path from 'path';
 
 class AdminController {
@@ -15,7 +19,18 @@ class AdminController {
   }
 
   public create(req: Request, res: Response): void {
-    res.status(501).end('Not yet implemented.');
+    const { text, date } = req.body;
+    const tos = new Tos(text, date);
+    tos.text_html = marked.parse(tos.text_markdown);
+
+    TosRepository.createOne(tos)
+      .then((instance) => {
+        res.json(instance);
+      })
+      .catch((err) => {
+        console.log(err);
+        return genericError.internalServerError(res);
+      });
   }
 }
 
