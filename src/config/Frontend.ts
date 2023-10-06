@@ -1,4 +1,7 @@
+// DISCRIMINATOR is hardcoded as it defines this export!
+// Increment it and update Frontend Configuration, if this export is touched!
 export default {
+  DISCRIMINATOR: 'v0.1.0',
   AUTHENTIK_FQDN: process.env.AUTHENTIK_FQDN || 'authentik',
   AUTHENTIK_URL: process.env.AUTHENTIK_URL || 'http://authentik:9000',
   AUTHENTIK_NAME: process.env.AUTHENTIK_NAME || 'Authentik',
