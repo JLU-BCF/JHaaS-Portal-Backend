@@ -153,6 +153,34 @@ export function getTerraformWorkerJob(jh: JupyterHubRequest, action: string): k8
                   value: jh.creator.email
                 },
                 {
+                  name: 'NB_RAM_GUARANTEE',
+                  value: `${jh.getNbRamGuarantee()}`
+                },
+                {
+                  name: 'NB_CPU_GUARANTEE',
+                  value: `${jh.getNbCpuGuarantee()}`
+                },
+                {
+                  name: 'NB_RAM_LIMIT',
+                  value: `${jh.getNbRamLimit()}`
+                },
+                {
+                  name: 'NB_CPU_LIMIT',
+                  value: `${jh.getNbCpuLimit()}`
+                },
+                {
+                  name: 'NB_COUNT_LIMIT',
+                  value: `${jh.getNbCountLimit()}`
+                },
+                {
+                  name: 'NS_RAM_LIMIT',
+                  value: `${jh.getNsRamLimit()}`
+                },
+                {
+                  name: 'NS_CPU_LIMIT',
+                  value: `${jh.getNsCpuLimit()}`
+                },
+                {
                   name: 'JHAAS_DOMAIN',
                   valueFrom: {
                     configMapKeyRef: {
