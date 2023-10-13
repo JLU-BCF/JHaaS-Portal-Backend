@@ -269,6 +269,15 @@ export class JupyterHubRequest extends JupyterHubBase {
     return Math.max(Math.ceil(this.userConf.userCount * NB_COUNT_FACTOR), NB_COUNT_MIN_ADD);
   }
 
+  public getNbHomeSize() {
+    return this.userConf.storagePerUser;
+  }
+
+  public getNbHomeMountPath() {
+    // TODO Make it dynamic
+    return '/home/jovyan';
+  }
+
   public getNsRamLimit() {
     return this.userConf.userCount * this.userConf.ramPerUser * NS_LIMITS_FACTOR + NS_RAM_STATIC;
   }
