@@ -7,8 +7,8 @@ import JupyterHubRequestRepository from '../repositories/JupyterHubRequestReposi
 import { init } from './helpers/DatabaseHelper';
 import k8sHelper from './helpers/K8sHelper';
 
-export function processRequests(): void {
-  JupyterHubRequestRepository.findProgressingJupyterHubRequests()
+export async function processRequests(): Promise<void> {
+  await JupyterHubRequestRepository.findProgressingJupyterHubRequests()
     .then(([requests, count]) => {
       console.log(`Found ${count} requests in progress`);
       for (const request of requests) {
@@ -20,7 +20,7 @@ export function processRequests(): void {
       throw err;
     });
 
-  JupyterHubRequestRepository.findDeployableJupyterHubRequests()
+  await JupyterHubRequestRepository.findDeployableJupyterHubRequests()
     .then(([requests, count]) => {
       console.log(`Found ${count} deployable requests`);
       for (const request of requests) {
@@ -32,7 +32,7 @@ export function processRequests(): void {
       throw err;
     });
 
-  JupyterHubRequestRepository.findDegradableJupyterHubRequests()
+  await JupyterHubRequestRepository.findDegradableJupyterHubRequests()
     .then(([requests, count]) => {
       console.log(`Found ${count} degradable requests`);
       for (const request of requests) {

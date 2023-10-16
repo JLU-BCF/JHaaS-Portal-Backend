@@ -10,6 +10,17 @@ import {
 } from 'typeorm';
 import User from './User';
 import Participation from './Participation';
+import {
+  NB_COUNT_FACTOR,
+  NB_COUNT_MIN_ADD,
+  NB_GUARANTEES_FACTOR,
+  NB_LIMITS_FACTOR,
+  NB_MIN_CPU,
+  NB_MIN_RAM,
+  NS_CPU_STATIC,
+  NS_LIMITS_FACTOR,
+  NS_RAM_STATIC
+} from '../config/Config';
 
 export enum JupyterHubRequestStatus {
   PENDING = 'PENDING',
@@ -236,6 +247,43 @@ export class JupyterHubRequest extends JupyterHubBase {
         JupyterHubRequestStatus.REDEPLOY
       ].includes(this.status)
     );
+  }
+
+  public getNbRamGuarantee() {
+    return Math.max(this.userConf.ramPerUser * NB_GUARANTEES_FACTOR, NB_MIN_RAM);
+  }
+
+  public getNbCpuGuarantee() {
+    return Math.max(this.userConf.cpusPerUser * NB_GUARANTEES_FACTOR, NB_MIN_CPU);
+  }
+
+  public getNbRamLimit() {
+    return this.userConf.ramPerUser * NB_LIMITS_FACTOR;
+  }
+
+  public getNbCpuLimit() {
+    return this.userConf.cpusPerUser * NB_LIMITS_FACTOR;
+  }
+
+  public getNbCountLimit() {
+    return Math.max(Math.ceil(this.userConf.userCount * NB_COUNT_FACTOR), NB_COUNT_MIN_ADD);
+  }
+
+  public getNbHomeSize() {
+    return this.userConf.storagePerUser;
+  }
+
+  public getNbHomeMountPath() {
+    // TODO Make it dynamic
+    return '/home/jovyan';
+  }
+
+  public getNsRamLimit() {
+    return this.userConf.userCount * this.userConf.ramPerUser * NS_LIMITS_FACTOR + NS_RAM_STATIC;
+  }
+
+  public getNsCpuLimit() {
+    return this.userConf.userCount * this.userConf.cpusPerUser * NS_LIMITS_FACTOR + NS_CPU_STATIC;
   }
 }
 
