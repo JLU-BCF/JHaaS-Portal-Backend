@@ -158,7 +158,7 @@ export function getTerraformWorkerJob(jh: JupyterHubRequest, action: string): k8
                 },
                 {
                   name: 'NB_RAM_GUARANTEE',
-                  value: `${jh.getNbRamGuarantee()}`
+                  value: `${jh.getNbRamGuarantee()}G`
                 },
                 {
                   name: 'NB_CPU_GUARANTEE',
@@ -166,7 +166,7 @@ export function getTerraformWorkerJob(jh: JupyterHubRequest, action: string): k8
                 },
                 {
                   name: 'NB_RAM_LIMIT',
-                  value: `${jh.getNbRamLimit()}`
+                  value: `${jh.getNbRamLimit()}G`
                 },
                 {
                   name: 'NB_CPU_LIMIT',
@@ -178,7 +178,7 @@ export function getTerraformWorkerJob(jh: JupyterHubRequest, action: string): k8
                 },
                 {
                   name: 'NB_HOME_SIZE',
-                  value: `${jh.getNbHomeSize()}`
+                  value: `${jh.getNbHomeSize()}G`
                 },
                 {
                   name: 'NB_HOME_MOUNT_PATH',
@@ -186,7 +186,7 @@ export function getTerraformWorkerJob(jh: JupyterHubRequest, action: string): k8
                 },
                 {
                   name: 'NS_RAM_LIMIT',
-                  value: `${jh.getNsRamLimit()}`
+                  value: `${jh.getNsRamLimit()}G`
                 },
                 {
                   name: 'NS_CPU_LIMIT',
