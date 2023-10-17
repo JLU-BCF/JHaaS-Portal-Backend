@@ -20,7 +20,7 @@ import {
   NS_CPU_STATIC,
   NS_LIMITS_FACTOR,
   NS_RAM_STATIC
-} from '../config/Config';
+} from '../config/K8s';
 
 export enum JupyterHubRequestStatus {
   PENDING = 'PENDING',
