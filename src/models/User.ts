@@ -16,6 +16,9 @@ export default class User {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
+  @Column({ nullable: true })
+  externalId: string | null;
+
   @OneToOne(() => Credentials, (credentials) => credentials.user)
   credentials: Promise<Credentials>;
 
@@ -66,9 +69,10 @@ export default class User {
     firstName: string;
     lastName: string;
     email: string;
+    externalId: string | null;
   }) {
     let changed = false;
-    const attrs = ['isAdmin', 'isLead', 'firstName', 'lastName', 'email'];
+    const attrs = ['isAdmin', 'isLead', 'firstName', 'lastName', 'email', 'externalId'];
 
     for (const attr of attrs) {
       if (this[attr] !== toSync[attr]) {

@@ -27,6 +27,7 @@ type passportProfile = {
   given_name?: string;
   family_name?: string;
   groups?: string[];
+  external_id?: string;
 
   // allow any additional data
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -60,6 +61,7 @@ Issuer.discover(OIDC_ENDPOINT)
       const email = profile.email;
       // const sessionLogout = client.endSessionUrl({ id_token_hint: tokenSet });
       const sessionLogout = AUTHENTIK_INVALIDATION_FLOW;
+      const externalId = profile.external_id || null;
 
       if (profile.groups?.length) {
         isAdmin = profile.groups.includes('portal-admins');
@@ -71,7 +73,7 @@ Issuer.discover(OIDC_ENDPOINT)
           if (credentialsInstance) {
             const user = credentialsInstance.user;
 
-            if (user.sync({ isAdmin, isLead, firstName, lastName, email })) {
+            if (user.sync({ isAdmin, isLead, firstName, lastName, email, externalId })) {
               UserRepository.updateOne(user);
             }
 
