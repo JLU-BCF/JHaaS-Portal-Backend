@@ -1,14 +1,97 @@
 import { Request, Response } from 'express';
-import { marked } from 'marked';
 import Tos from '../models/Tos';
 import TosRepository from '../repositories/TosRepository';
 import { genericError } from '../helpers/ErrorHelper';
-import path from 'path';
 
-class AdminController {
-  public list(req: Request, res: Response): void {
-    TosRepository.findAll()
-      .then((tos: Tos[]) => {
+function list(req: Request, res: Response, scope = 'published'): void {
+  let listFunction: CallableFunction;
+  switch (scope) {
+    case 'all':
+      listFunction = TosRepository.findAll;
+      break;
+    case 'pending':
+      listFunction = TosRepository.findPending;
+      break;
+    case 'published':
+    default:
+      listFunction = TosRepository.findPublished;
+      break;
+  }
+
+  return listFunction()
+    .then((tosList: Tos[]) => {
+      return res.json(tosList);
+    })
+    .catch((err: unknown) => {
+      console.log(err);
+      return genericError.internalServerError(res);
+    });
+}
+
+function read(req: Request, res: Response, scope = 'latest', html = false): void {
+  let readFunction: CallableFunction;
+  switch (scope) {
+    case 'next':
+      readFunction = TosRepository.findNext;
+      break;
+    case 'latest':
+    default:
+      readFunction = TosRepository.findLatest;
+      break;
+  }
+
+  return readFunction()
+    .then((tos: Tos) => {
+      if (html) {
+        if (tos) {
+          return res.send(tos.text_html);
+        } else {
+          return genericError.notFound(res);
+        }
+      }
+      return res.json(tos);
+    })
+    .catch((err: unknown) => {
+      console.log(err);
+      return genericError.internalServerError(res);
+    });
+}
+
+class TosController {
+  public listPublished(req: Request, res: Response): void {
+    list(req, res, 'published');
+  }
+
+  public listPending(req: Request, res: Response): void {
+    list(req, res, 'pending');
+  }
+
+  public listAll(req: Request, res: Response): void {
+    list(req, res, 'all');
+  }
+
+  public latest(req: Request, res: Response): void {
+    read(req, res, 'latest');
+  }
+
+  public latestHtml(req: Request, res: Response): void {
+    read(req, res, 'latest', true);
+  }
+
+  public next(req: Request, res: Response): void {
+    read(req, res, 'next');
+  }
+
+  public nextHtml(req: Request, res: Response): void {
+    read(req, res, 'next', true);
+  }
+
+  public read(req: Request, res: Response): void {
+    const { id } = req.params;
+
+    TosRepository.findPublishedById(id)
+      .then((tos: Tos) => {
+        if (!tos) return genericError.notFound(res);
         return res.json(tos);
       })
       .catch((err: unknown) => {
@@ -17,30 +100,31 @@ class AdminController {
       });
   }
 
-  public latest(req: Request, res: Response): void {
-    return res.sendFile(path.join(__dirname, '../static/tos', 'latest.html'));
-  }
-
-  public read(req: Request, res: Response): void {
-    res.status(501).end('Not yet implemented.');
-  }
-
   public create(req: Request, res: Response): void {
-    const { text, date } = req.body;
-    const tos = new Tos(text, date);
-    tos.text_html = marked.parse(tos.text_markdown);
+    const { textMarkdown, validityStart, draft, publish } = req.body;
+    const publishedDate = !draft && publish ? new Date() : null;
 
-    res.json(tos);
+    if (!draft && !publish) {
+      res.status(401).json({ msg: 'Need to accept.' });
+      return;
+    }
 
-    // TosRepository.createOne(tos)
-    //   .then((instance) => {
-    //     res.json(instance);
-    //   })
-    //   .catch((err) => {
-    //     console.log(err);
-    //     return genericError.internalServerError(res);
-    //   });
+    const tos = new Tos({
+      text_markdown: textMarkdown,
+      draft: draft,
+      validity_start: validityStart,
+      published_date: publishedDate
+    });
+
+    TosRepository.createOne(tos)
+      .then((instance) => {
+        res.json(instance);
+      })
+      .catch((err) => {
+        console.log(err);
+        return genericError.internalServerError(res);
+      });
   }
 }
 
-export default new AdminController();
+export default new TosController();
