@@ -98,6 +98,8 @@ services:
     volumes:
       - './environments/authentik:/blueprints:ro'
       - './environments/account_confirmation.html:/templates/account_confirmation.html:ro'
+      - './environments/mfa_reset.html:/templates/mfa_reset.html:ro'
+      - './environments/password_reset.html:/templates/password_reset.html:ro'
     ports:
       - 127.0.0.1:9000:9000
 
