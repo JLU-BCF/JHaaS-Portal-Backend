@@ -104,6 +104,22 @@ class TosController {
       });
   }
 
+  public find(req: Request, res: Response): void {
+    const { id } = req.params;
+
+    TosRepository.findById(id)
+      .then((tos: Tos) => {
+        if (!tos) {
+          return genericError.notFound(res);
+        }
+        return res.json(tos);
+      })
+      .catch((err: unknown) => {
+        console.log(err);
+        return genericError.internalServerError(res);
+      });
+  }
+
   public create(req: Request, res: Response): void {
     if (validationErrors(req, res)) return;
     const tosProps = getTosProperties(req);

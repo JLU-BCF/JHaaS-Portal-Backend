@@ -25,6 +25,9 @@ adminRouter.get('/pending', TosController.listPending);
 // List all TOS (including drafts)
 adminRouter.get('/all', TosController.listAll);
 
+// Find TOS (including drafts)
+adminRouter.get('/find/:id([0-9a-f-]+)', TosController.find);
+
 // Create new TOS
 adminRouter.post('/', TosValidation, TosController.create);
 
