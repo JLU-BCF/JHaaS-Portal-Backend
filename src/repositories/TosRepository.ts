@@ -75,12 +75,12 @@ class TosRepository {
     });
   }
 
-  // NO INPLACE UPDATES FOR TOS!
-  // updateOne(tos: Tos): Promise<Tos> {
-  //   return DB_CONN.getRepository(Tos).save(tos);
-  // }
+  // Update only allowed for drafts!
+  updateOne(tos: Tos): Promise<Tos> {
+    return DB_CONN.getRepository(Tos).save(tos);
+  }
 
-  // delete tos
+  // Delete tos only allowed for drafts!
   deleteById(id: string): Promise<DeleteResult> {
     return DB_CONN.getRepository(Tos).delete(id);
   }

@@ -2,6 +2,7 @@ import { Router } from 'express';
 import TosController from '../controllers/TosController';
 import { adminGuard } from '../middlewares/AdminMiddleware';
 import { authGuard } from '../middlewares/AuthenticatedMiddleware';
+import { TosValidation } from '../validators/TosValidationRules';
 
 const router: Router = Router();
 
@@ -25,7 +26,13 @@ adminRouter.get('/pending', TosController.listPending);
 adminRouter.get('/all', TosController.listAll);
 
 // Create new TOS
-adminRouter.post('/', TosController.create);
+adminRouter.post('/', TosValidation, TosController.create);
+
+// Edit existing TOS - only non-published allowed
+adminRouter.put('/:id([0-9a-f-]+)', TosValidation, TosController.update);
+
+// Delete existing TOS - only non-published allowed
+adminRouter.delete('/:id([0-9a-f-]+)', TosController.delete);
 
 router.use(adminRouter);
 

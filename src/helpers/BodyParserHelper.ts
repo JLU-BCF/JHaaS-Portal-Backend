@@ -42,6 +42,18 @@ export function parseJupyterHubChangeRequest(req: Request): JupyterHubChangeRequ
   return new JupyterHubChangeRequest(getJupyterHubBaseRequestProperties(req));
 }
 
+export function getTosProperties(req: Request) {
+  const { textMarkdown, validityStart, draft, publish } = req.body;
+  const publishedDate = publish ? new Date() : null;
+
+  return {
+    text_markdown: textMarkdown,
+    draft: draft,
+    validity_start: validityStart,
+    published_date: publishedDate
+  };
+}
+
 export function validationErrors(req: Request, res: Response) {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {

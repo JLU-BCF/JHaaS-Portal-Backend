@@ -2,6 +2,8 @@ import { Request, Response } from 'express';
 import Tos from '../models/Tos';
 import TosRepository from '../repositories/TosRepository';
 import { genericError } from '../helpers/ErrorHelper';
+import { getTosProperties, validationErrors } from '../helpers/BodyParserHelper';
+import { DeleteResult } from 'typeorm';
 
 function list(req: Request, res: Response, scope = 'published'): void {
   let listFunction: CallableFunction;
@@ -42,14 +44,14 @@ function read(req: Request, res: Response, scope = 'latest', html = false): void
 
   return readFunction()
     .then((tos: Tos) => {
-      if (html) {
-        if (tos) {
+      if (tos) {
+        if (html) {
           return res.send(tos.text_html);
-        } else {
-          return genericError.notFound(res);
         }
+        return res.json(tos);
       }
-      return res.json(tos);
+
+      return genericError.notFound(res);
     })
     .catch((err: unknown) => {
       console.log(err);
@@ -91,7 +93,9 @@ class TosController {
 
     TosRepository.findPublishedById(id)
       .then((tos: Tos) => {
-        if (!tos) return genericError.notFound(res);
+        if (!tos) {
+          return genericError.notFound(res);
+        }
         return res.json(tos);
       })
       .catch((err: unknown) => {
@@ -101,26 +105,85 @@ class TosController {
   }
 
   public create(req: Request, res: Response): void {
-    const { textMarkdown, validityStart, draft, publish } = req.body;
-    const publishedDate = !draft && publish ? new Date() : null;
+    if (validationErrors(req, res)) return;
+    const tosProps = getTosProperties(req);
 
-    if (!draft && !publish) {
-      res.status(401).json({ msg: 'Need to accept.' });
+    if (!tosProps.draft && !tosProps.published_date) {
+      res.status(401).json({ msg: 'Need to accept publication terms.' });
       return;
     }
 
-    const tos = new Tos({
-      text_markdown: textMarkdown,
-      draft: draft,
-      validity_start: validityStart,
-      published_date: publishedDate
-    });
-
-    TosRepository.createOne(tos)
+    TosRepository.createOne(new Tos(tosProps))
       .then((instance) => {
         res.json(instance);
       })
       .catch((err) => {
+        console.log(err);
+        return genericError.internalServerError(res);
+      });
+  }
+
+  public update(req: Request, res: Response): void {
+    if (validationErrors(req, res)) return;
+    const { id } = req.params;
+
+    TosRepository.findById(id)
+      .then((tos: Tos) => {
+        if (!tos) {
+          return genericError.notFound(res);
+        }
+        if (!tos.draft) {
+          return genericError.forbidden(res);
+        }
+        const tosProps = getTosProperties(req);
+
+        Object.assign(
+          tos,
+          Object.keys(tosProps)
+            .filter((k) => tosProps[k] != null)
+            .reduce((a, k) => ({ ...a, [k]: tosProps[k] }), {})
+        );
+
+        TosRepository.updateOne(tos)
+          .then((instace: Tos) => {
+            return res.json(instace);
+          })
+          .catch((err: unknown) => {
+            console.log(err);
+            return genericError.internalServerError(res);
+          });
+      })
+      .catch((err: unknown) => {
+        console.log(err);
+        return genericError.internalServerError(res);
+      });
+  }
+
+  public delete(req: Request, res: Response): void {
+    const id = req.params.id;
+
+    TosRepository.findById(id)
+      .then((tos: Tos) => {
+        if (!tos) {
+          return genericError.notFound(res);
+        }
+        if (!tos.draft) {
+          return genericError.forbidden(res);
+        }
+
+        TosRepository.deleteById(tos.id)
+          .then((deleteResult: DeleteResult) => {
+            if (deleteResult.affected) {
+              return res.json('Deleted.');
+            }
+            return genericError.notFound(res);
+          })
+          .catch((err) => {
+            console.log(err);
+            return genericError.internalServerError(res);
+          });
+      })
+      .catch((err: unknown) => {
         console.log(err);
         return genericError.internalServerError(res);
       });
