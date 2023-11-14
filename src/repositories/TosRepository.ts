@@ -29,10 +29,7 @@ class TosRepository {
   findLatest(): Promise<Tos> {
     return DB_CONN.getRepository(Tos).findOne({
       where: {
-        published_date: And(
-          Not(IsNull()),
-          LessThanOrEqual(new Date)
-        )
+        published_date: And(Not(IsNull()), LessThanOrEqual(new Date()))
       },
       order: {
         published_date: 'DESC'
@@ -44,10 +41,7 @@ class TosRepository {
   findNext(): Promise<Tos> {
     return DB_CONN.getRepository(Tos).findOne({
       where: {
-        published_date: And(
-          Not(IsNull()),
-          MoreThan(new Date)
-        )
+        published_date: And(Not(IsNull()), MoreThan(new Date()))
       },
       order: {
         published_date: 'ASC'

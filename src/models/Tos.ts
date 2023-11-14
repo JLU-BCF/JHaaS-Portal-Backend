@@ -2,11 +2,11 @@ import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn } from 'typeor
 import { marked } from 'marked';
 
 interface ITos {
-  text_markdown: string,
-  text_html?: string,
-  draft: boolean,
-  published_date?: Date,
-  validity_start: Date,
+  text_markdown: string;
+  text_html?: string;
+  draft: boolean;
+  published_date?: Date;
+  validity_start: Date;
 }
 
 @Entity()
