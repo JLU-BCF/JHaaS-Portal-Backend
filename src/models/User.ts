@@ -54,13 +54,15 @@ export default class User {
     lastName?: string,
     email?: string,
     isAdmin = false,
-    isLead = false
+    isLead = false,
+    externalId = null
   ) {
     this.firstName = firstName;
     this.lastName = lastName;
     this.email = email;
     this.isAdmin = isAdmin;
     this.isLead = isLead;
+    this.externalId = externalId;
   }
 
   sync(toSync: {

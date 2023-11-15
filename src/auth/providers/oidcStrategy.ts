@@ -81,7 +81,7 @@ Issuer.discover(OIDC_ENDPOINT)
             return cb(null, user, { message: 'Logged In Successfully' });
           }
 
-          const user = new User(firstName, lastName, email, isAdmin, isLead);
+          const user = new User(firstName, lastName, email, isAdmin, isLead, externalId);
           const credentials = new Credentials(user, AuthProvider.OIDC, profile.sub);
 
           return CredentialsRepository.createOne(credentials)
