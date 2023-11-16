@@ -100,6 +100,7 @@ services:
     volumes:
       - './environments/authentik_blueprints:/blueprints:ro'
       - './environments/authentik_templates:/templates:ro'
+      - './environments/authentik_flow_backgrounds:/web/dist/assets/images/backgrounds:ro'
     ports:
       - 127.0.0.1:9000:9000
 
