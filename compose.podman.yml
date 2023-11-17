@@ -98,8 +98,9 @@ services:
       - ./environments/authentik.env
       - ./environments/db.env
     volumes:
-      - './environments/authentik:/blueprints:ro'
-      - './environments/account_confirmation.html:/templates/account_confirmation.html:ro'
+      - './environments/authentik_blueprints:/blueprints:ro'
+      - './environments/authentik_templates:/templates:ro'
+      - './environments/authentik_flow_backgrounds:/web/dist/assets/images/backgrounds:ro'
     ports:
       - 127.0.0.1:9000:9000
 
@@ -119,7 +120,7 @@ services:
       - ./environments/authentik.env
       - ./environments/db.env
     volumes:
-      - './environments/authentik:/blueprints:ro'
+      - './environments/authentik_blueprints:/blueprints:ro'
 
 networks:
   jhaas-portal-priv:
