@@ -124,11 +124,6 @@ class TosController {
     if (validationErrors(req, res)) return;
     const tosProps = getTosProperties(req);
 
-    if (!tosProps.draft && !tosProps.published_date) {
-      res.status(401).json({ msg: 'Need to accept publication terms.' });
-      return;
-    }
-
     TosRepository.createOne(new Tos(tosProps))
       .then((instance) => {
         res.json(instance);
