@@ -60,7 +60,9 @@ Issuer.discover(OIDC_ENDPOINT)
       const lastName = profile.family_name || profile.name;
       const email = profile.email;
       // const sessionLogout = client.endSessionUrl({ id_token_hint: tokenSet });
-      const sessionLogout = `${AUTHENTIK_INVALIDATION_FLOW}/?redirect=${encodeURIComponent(POST_LOGOUT_URL)}`;
+      const sessionLogout = `${AUTHENTIK_INVALIDATION_FLOW}/?redirect=${encodeURIComponent(
+        POST_LOGOUT_URL
+      )}`;
       const externalId = profile.external_id || null;
 
       if (profile.groups?.length) {
