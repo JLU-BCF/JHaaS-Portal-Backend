@@ -1,11 +1,12 @@
 import { Request, Response } from 'express';
 import ParticipationRepository from '../repositories/ParticipationRepository';
-import { getUser } from '../helpers/AuthHelper';
+import { getUser, isUserAdminOrSelf } from '../helpers/AuthHelper';
 import { genericError } from '../helpers/ErrorHelper';
 import JupyterHubRequestRepository from '../repositories/JupyterHubRequestRepository';
 import Participation, { ParticipationStatus } from '../models/Participation';
 import { assignUserToGroup, removeUserFromGroup } from '../helpers/AuthentikApiHelper';
 import { MailHelper } from '../mail/MailHelper';
+import { DeleteResult } from 'typeorm';
 
 class ParticipationController {
   public readUserParticipations(req: Request, res: Response) {
@@ -182,6 +183,30 @@ class ParticipationController {
             console.log(err);
             return genericError.internalServerError(res);
           });
+      })
+      .catch((err) => {
+        console.log(err);
+        return genericError.internalServerError(res);
+      });
+  }
+
+  public async cancelParticipation(req: Request, res: Response) {
+    const user = getUser(req);
+    const { hubId, participantId } = req.params;
+
+    if (!isUserAdminOrSelf(req, participantId)) {
+      const hubInstance = await JupyterHubRequestRepository.findById(hubId);
+      if (!hubInstance || hubInstance.creator.id !== user.id) {
+        return genericError.forbidden(res);
+      }
+    }
+
+    ParticipationRepository.deleteByUserAndHub(participantId, hubId)
+      .then((deleteResult: DeleteResult) => {
+        if (deleteResult.affected) {
+          return res.json('Deleted.');
+        }
+        return genericError.notFound(res);
       })
       .catch((err) => {
         console.log(err);
