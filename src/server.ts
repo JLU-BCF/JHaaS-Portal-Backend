@@ -1,5 +1,6 @@
 // imports
-import { APP_PORT, DB_CONN } from './config/Config';
+import { APP_PORT } from './config/Config';
+import { DB_CONN } from './config/Database';
 import FRONTEND_CONF from './config/Frontend';
 import SESSION_CONFIG from './config/Session';
 import 'reflect-metadata';

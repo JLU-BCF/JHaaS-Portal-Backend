@@ -133,6 +133,10 @@ export function getTerraformWorkerJob(jh: JupyterHubRequest, action: string): k8
                   value: jh.creator.externalId
                 },
                 {
+                  name: 'JH_API_TOKEN',
+                  value: jh.secrets.apiToken
+                },
+                {
                   name: 'JH_IMAGE',
                   value: jh.containerImage
                 },

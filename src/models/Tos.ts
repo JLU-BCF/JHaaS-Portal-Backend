@@ -35,10 +35,19 @@ export default class Tos implements ITos {
   constructor(tos?: ITos) {
     if (tos) {
       this.text_markdown = tos.text_markdown;
-      this.text_html = tos.text_html || marked(tos.text_markdown);
       this.draft = tos.draft;
       this.published_date = tos.published_date;
       this.validity_start = tos.validity_start;
+
+      if (tos.text_html) {
+        this.text_html = tos.text_html;
+      } else {
+        this.parseMd(this.text_markdown);
+      }
     }
+  }
+
+  private async parseMd(text_md: string) {
+    this.text_html = await marked(text_md);
   }
 }

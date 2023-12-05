@@ -17,6 +17,7 @@ import {
 } from '../helpers/AuthentikApiHelper';
 import { ParticipationStatus } from '../models/Participation';
 import ParticipationRepository from '../repositories/ParticipationRepository';
+import JupyterHubSecrets from '../models/JupyterHubSecrets';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function logErrorAndReturnGeneric500(err: any, res: Response) {
@@ -118,8 +119,11 @@ class JupyterHubRequestController {
     if (validationErrors(req, res)) return;
     const jhRequest = parseJupyterHubRequest(req);
 
+    jhRequest.secrets = new JupyterHubSecrets();
+
     JupyterHubRequestRepository.createOne(jhRequest)
       .then((instance) => {
+        delete instance.secrets;
         res.json(instance);
         MailHelper.sendJupyterCreated(instance);
       })

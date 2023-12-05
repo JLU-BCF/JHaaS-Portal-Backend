@@ -20,7 +20,7 @@ export async function processRequests(): Promise<void> {
       throw err;
     });
 
-  await JupyterHubRequestRepository.findDeployableJupyterHubRequests()
+  await JupyterHubRequestRepository.findDeployableJupyterHubRequests(['creator', 'secrets'])
     .then(([requests, count]) => {
       console.log(`Found ${count} deployable requests`);
       for (const request of requests) {
@@ -32,7 +32,7 @@ export async function processRequests(): Promise<void> {
       throw err;
     });
 
-  await JupyterHubRequestRepository.findDegradableJupyterHubRequests()
+  await JupyterHubRequestRepository.findDegradableJupyterHubRequests(['creator', 'secrets'])
     .then(([requests, count]) => {
       console.log(`Found ${count} degradable requests`);
       for (const request of requests) {

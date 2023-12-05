@@ -13,7 +13,10 @@ router.post('/hub/:slug([0-9a-z-]+)', ParticipationController.createParticipatio
 
 router.get('/detail/:slug([0-9a-z-]+)', ParticipationController.getParticipation);
 
-router.delete('/:participantId([0-9a-f-]+)/:hubId([0-9a-f-]+)', ParticipationController.cancelParticipation);
+router.delete(
+  '/:participantId([0-9a-f-]+)/:hubId([0-9a-f-]+)',
+  ParticipationController.cancelParticipation
+);
 
 const leaderRouter: Router = Router();
 leaderRouter.use(leaderGuard);

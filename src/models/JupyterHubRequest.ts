@@ -6,7 +6,8 @@ import {
   UpdateDateColumn,
   ManyToOne,
   OneToMany,
-  JoinColumn
+  JoinColumn,
+  OneToOne
 } from 'typeorm';
 import User from './User';
 import Participation from './Participation';
@@ -21,6 +22,7 @@ import {
   NS_LIMITS_FACTOR,
   NS_RAM_STATIC
 } from '../config/K8s';
+import JupyterHubSecrets from './JupyterHubSecrets';
 
 export enum JupyterHubRequestStatus {
   PENDING = 'PENDING',
@@ -77,7 +79,7 @@ class JupyterHubBase {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @ManyToOne(() => User, { eager: true })
+  @ManyToOne(() => User)
   creator: User;
 
   @Column()
@@ -168,6 +170,11 @@ export class JupyterHubRequest extends JupyterHubBase {
 
   @Column({ nullable: true })
   hubUrl?: string;
+
+  @OneToOne(() => JupyterHubSecrets, (secrets) => secrets.hub, {
+    cascade: ['insert']
+  })
+  secrets: JupyterHubSecrets;
 
   constructor(data?: JupyterHubRequestObj) {
     super(data);
