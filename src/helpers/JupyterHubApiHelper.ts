@@ -47,11 +47,14 @@ export default class JupyterHubApiHelper {
       .delete(`${this.url}/hub/api/users/${userId}`, {
         headers: this.headers
       })
-      .then((data) => {
-        console.log(data);
-      })
+      .then(() => true)
       .catch((err) => {
+        if (err.response && err.response.status == 404) {
+          // User was never signed into hub, that's ok.
+          return true;
+        }
         console.log(err);
+        return false;
       });
   }
 

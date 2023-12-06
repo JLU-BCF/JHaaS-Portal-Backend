@@ -94,6 +94,10 @@ class UserController {
       return genericError.forbidden(res);
     }
 
+    // TODO: DELETE ALL NOTEBOOKS
+
+    // TODO: DELETE FROM AUTHENTIK
+
     UserRepository.deleteById(userId)
       .then((deleteResult: DeleteResult) => {
         if (deleteResult.affected) {

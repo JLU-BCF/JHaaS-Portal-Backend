@@ -7,6 +7,7 @@ import Participation, { ParticipationStatus } from '../models/Participation';
 import { assignUserToGroup, removeUserFromGroup } from '../helpers/AuthentikApiHelper';
 import { MailHelper } from '../mail/MailHelper';
 import { DeleteResult } from 'typeorm';
+import JupyterHubApiHelper from '../helpers/JupyterHubApiHelper';
 
 class ParticipationController {
   public readUserParticipations(req: Request, res: Response) {
@@ -194,19 +195,41 @@ class ParticipationController {
     const user = getUser(req);
     const { hubId, participantId } = req.params;
 
-    if (!isUserAdminOrSelf(req, participantId)) {
-      const hubInstance = await JupyterHubRequestRepository.findById(hubId);
-      if (!hubInstance || hubInstance.creator.id !== user.id) {
-        return genericError.forbidden(res);
-      }
-    }
-
-    ParticipationRepository.deleteByUserAndHub(participantId, hubId)
-      .then((deleteResult: DeleteResult) => {
-        if (deleteResult.affected) {
-          return res.json('Deleted.');
+    ParticipationRepository.findByUserAndHub(participantId, hubId, ['hub', 'hub.creator', 'hub.secrets', 'participant'])
+      .then(async (participationInstance) => {
+        if (!participationInstance) {
+          return genericError.notFound(res);
         }
-        return genericError.notFound(res);
+
+        if (participationInstance.hub.creator.id !== user.id && !isUserAdminOrSelf(req, participantId)) {
+          return genericError.forbidden(res);
+        }
+
+        // Remove from authentik group
+        const authentikRemovalResult = await removeUserFromGroup(
+          await participationInstance.participant.authentikId(),
+          participationInstance.hub.authentikGroup
+        );
+
+        // Remove from jupyterhub
+        const jhApiHelper = new JupyterHubApiHelper(participationInstance.hub.hubUrl, participationInstance.hub.secrets.apiToken);
+        const jupyterRemoveResult = await jhApiHelper.deleteUser(participationInstance.participant.externalId);
+
+        if (!authentikRemovalResult || !jupyterRemoveResult) {
+          return genericError.internalServerError(res, 'Could not unassign user from connected services. Please contact administrator.');
+        }
+
+        return ParticipationRepository.deleteByUserAndHub(participationInstance.participantId, participationInstance.hubId)
+          .then((deleteResult: DeleteResult) => {
+            if (deleteResult.affected) {
+              return res.json('Deleted.');
+            }
+            return genericError.notFound(res);
+          })
+          .catch((err) => {
+            console.log(err);
+            return genericError.internalServerError(res);
+          });
       })
       .catch((err) => {
         console.log(err);
