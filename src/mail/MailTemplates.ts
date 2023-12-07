@@ -17,7 +17,8 @@ const templates = [
   'JupyterChangeCanceled',
   'ParticipationAccepted',
   'ParticipationRejected',
-  'UserCreated'
+  'UserCreated',
+  'ParticipationRevocationVerification'
 ];
 
 const methods: { [key: string]: { [key: string]: compileTemplate } } = {};

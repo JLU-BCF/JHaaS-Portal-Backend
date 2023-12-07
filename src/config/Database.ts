@@ -6,6 +6,7 @@ import { getSecret } from '../helpers/SecretHelper';
 import Participation from '../models/Participation';
 import Tos from '../models/Tos';
 import JupyterHubSecrets from '../models/JupyterHubSecrets';
+import Verification from '../models/Verification';
 
 export const DB_CONN: DataSource = new DataSource({
   type: 'postgres',
@@ -21,6 +22,7 @@ export const DB_CONN: DataSource = new DataSource({
     JupyterHubChangeRequest,
     JupyterHubSecrets,
     Participation,
+    Verification,
     Tos
   ],
   synchronize: [true, 'true', 1].includes(process.env.TYPEORM_DB_SYNC),

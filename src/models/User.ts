@@ -10,6 +10,7 @@ import {
 import { JupyterHubRequest } from './JupyterHubRequest';
 import Credentials from './Credentials';
 import Participation from './Participation';
+import Verification from './Verification';
 
 @Entity()
 export default class User {
@@ -27,6 +28,9 @@ export default class User {
 
   @OneToMany(() => Participation, (participation) => participation.participant)
   participations: Participation[];
+
+  @OneToMany(() => Verification, (verification) => verification.user)
+  verifications: Verification[];
 
   @Column()
   firstName: string;

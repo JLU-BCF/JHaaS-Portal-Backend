@@ -1,6 +1,7 @@
 import { mailTransporter, MAIL_FROM, MAIL_FROM_NAME, MAIL_COPY_ADDRESSES } from '../config/Mail';
 import { JupyterHubRequest } from '../models/JupyterHubRequest';
 import User from '../models/User';
+import Verification from '../models/Verification';
 import MailTemplates from './MailTemplates';
 
 export const MailHelper = {
@@ -18,7 +19,8 @@ export const MailHelper = {
   sendJupyterChangeCanceled: jupyterTemplate('JupyterChangeCanceled'),
   sendUserCreated: userTemplate('UserCreated', true),
   sendParticipationAccepted: participationTemplate('ParticipationAccepted'),
-  sendParticipationRejected: participationTemplate('ParticipationRejected')
+  sendParticipationRejected: participationTemplate('ParticipationRejected'),
+  participationRevocationVerification: verificationTemplate('ParticipationRevocationVerification')
 };
 
 const templateSubjects: { [key: string]: string } = {
@@ -36,7 +38,8 @@ const templateSubjects: { [key: string]: string } = {
   JupyterChangeCanceled: 'Your Change Request has been Canceled',
   UserCreated: 'Welcome to the JHaaS Portal',
   ParticipationAccepted: 'Your participation request has been Accepted',
-  ParticipationRejected: 'Your participation request has been Rejected'
+  ParticipationRejected: 'Your participation request has been Rejected',
+  ParticipationRevocationVerification: 'Verify the exit from the JupyterHub'
 };
 
 function jupyterTemplate(template: string, copy?: boolean) {
@@ -57,6 +60,12 @@ function userTemplate(template: string, copy?: boolean) {
 function participationTemplate(template: string, copy?: boolean) {
   return (jupyter: JupyterHubRequest, participant: User) => {
     sendMail(participant.email, template, { user: participant, jupyter, participant }, copy);
+  };
+}
+
+function verificationTemplate(template: string, copy?: boolean) {
+  return (user: User, verification: Verification) => {
+    sendMail(user.email, template, { user, verification }, copy);
   };
 }
 
