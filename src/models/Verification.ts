@@ -6,6 +6,12 @@ export enum Purpose {
   DELETE_USER = 'DELETE_USER'
 }
 
+export type VerificationTarget = {
+  identifier: string;
+  displayName: string;
+  url: string;
+}
+
 @Entity()
 export default class Verification {
   @PrimaryGeneratedColumn('uuid')
@@ -21,6 +27,12 @@ export default class Verification {
   target: string;
 
   @Column()
+  targetDisplayName: string;
+
+  @Column()
+  targetUrl: string;
+
+  @Column()
   expiry: Date;
 
   @CreateDateColumn()
@@ -32,10 +44,16 @@ export default class Verification {
   @JoinColumn({ name: 'userId' })
   user: User;
 
-  constructor(user: User, purpose: Purpose, target: string, validityMinutes = 10) {
+  constructor(user: User, purpose: Purpose, target: VerificationTarget, validityMinutes = 10) {
+    if (!(user && purpose && target)) {
+      return;
+    }
+
     this.user = user;
     this.purpose = purpose;
-    this.target = target;
+    this.target = target.identifier;
+    this.targetDisplayName = target.displayName;
+    this.targetUrl = target.url;
     const expiry = new Date();
     expiry.setTime(expiry.getTime() + (validityMinutes * 60000));
     this.expiry = expiry;

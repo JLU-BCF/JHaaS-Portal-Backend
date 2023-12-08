@@ -21,10 +21,10 @@ export default class User {
   externalId: string | null;
 
   @OneToOne(() => Credentials, (credentials) => credentials.user)
-  credentials: Promise<Credentials>;
+  credentials: Credentials;
 
   @OneToMany(() => JupyterHubRequest, (jhr) => jhr.creator)
-  jupyterHubRequests: Promise<JupyterHubRequest[]>;
+  jupyterHubRequests: JupyterHubRequest[];
 
   @OneToMany(() => Participation, (participation) => participation.participant)
   participations: Participation[];
@@ -88,15 +88,6 @@ export default class User {
     }
 
     return changed;
-  }
-
-  authentikId() {
-    return this.credentials
-      .then((creds) => creds.authProviderId)
-      .catch((err) => {
-        console.log(err);
-        return null;
-      });
   }
 
   // This is not stored in DB and is only

@@ -30,13 +30,14 @@ function modifyJupyterStatus(
   res: Response,
   isChangeRequest: boolean,
   status: JupyterHubRequestStatus,
-  cb?: (instance: JupyterHubRequest) => void
+  cb?: (instance: JupyterHubRequest) => void,
+  relations?: string[]
 ) {
   const entityId = req.params.id;
   const user = getUser(req);
   const findMeth = isChangeRequest ? 'findByChangeRequest' : 'findById';
 
-  JupyterHubRequestRepository[findMeth](entityId)
+  JupyterHubRequestRepository[findMeth](entityId, relations)
     .then((jhRequest: JupyterHubRequest) => {
       if (!jhRequest?.userAndChangesAllowed(user)) {
         return genericError.unprocessableEntity(res);
@@ -139,23 +140,18 @@ class JupyterHubRequestController {
         instance.authentikGroup = groupId;
         JupyterHubRequestRepository.updateOne(instance);
 
-        instance.creator.credentials.then((credentialsInstance) => {
-          assignUserToGroup(credentialsInstance.authProviderId, groupId);
-        });
+        assignUserToGroup(instance.creator.credentials.authProviderId, groupId);
 
-        ParticipationRepository.findByHub(instance.id).then(async ([instances]) => {
+        ParticipationRepository.findByHub(instance.id, ['participant', 'participant.credentials']).then(async ([instances]) => {
           for (const participation of instances) {
             if (participation.status == ParticipationStatus.ACEPPTED) {
-              const authentikId = await participation.participant.authentikId();
-              if (authentikId) {
-                assignUserToGroup(authentikId, groupId);
-              }
+              assignUserToGroup(participation.participant.credentials.authProviderId, groupId);
             }
           }
         });
       });
       MailHelper.sendJupyterAccepted(instance);
-    });
+    }, ['creator', 'creator.credentials']);
   }
 
   public reject(req: Request, res: Response): void {

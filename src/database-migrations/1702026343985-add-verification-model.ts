@@ -1,7 +1,7 @@
 import { MigrationInterface, QueryRunner } from "typeorm";
 
-export class AddVerificationsTable1701957522976 implements MigrationInterface {
-    name = 'AddVerificationsTable1701957522976'
+export class AddVerificationModel1702026343985 implements MigrationInterface {
+    name = 'AddVerificationModel1702026343985'
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(`
@@ -10,6 +10,8 @@ export class AddVerificationsTable1701957522976 implements MigrationInterface {
                 "userId" uuid NOT NULL,
                 "purpose" character varying NOT NULL,
                 "target" character varying NOT NULL,
+                "targetDisplayName" character varying NOT NULL,
+                "targetUrl" character varying NOT NULL,
                 "expiry" TIMESTAMP NOT NULL,
                 "createdAt" TIMESTAMP NOT NULL DEFAULT now(),
                 CONSTRAINT "PK_f7e3a90ca384e71d6e2e93bb340" PRIMARY KEY ("id")

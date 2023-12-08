@@ -64,8 +64,8 @@ function participationTemplate(template: string, copy?: boolean) {
 }
 
 function verificationTemplate(template: string, copy?: boolean) {
-  return (user: User, verification: Verification) => {
-    sendMail(user.email, template, { user, verification }, copy);
+  return (verification: Verification) => {
+    sendMail(verification.user.email, template, { user: verification.user, verification }, copy);
   };
 }
 

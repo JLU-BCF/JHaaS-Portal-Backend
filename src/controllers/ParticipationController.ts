@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import ParticipationRepository from '../repositories/ParticipationRepository';
-import { getUser, isUserAdminOrSelf } from '../helpers/AuthHelper';
+import { getUser } from '../helpers/AuthHelper';
 import { genericError } from '../helpers/ErrorHelper';
 import JupyterHubRequestRepository from '../repositories/JupyterHubRequestRepository';
 import Participation, { ParticipationStatus } from '../models/Participation';
@@ -8,6 +8,7 @@ import { assignUserToGroup, removeUserFromGroup } from '../helpers/AuthentikApiH
 import { MailHelper } from '../mail/MailHelper';
 import { DeleteResult } from 'typeorm';
 import JupyterHubApiHelper from '../helpers/JupyterHubApiHelper';
+import Verification, { Purpose } from '../models/Verification';
 
 class ParticipationController {
   public readUserParticipations(req: Request, res: Response) {
@@ -118,16 +119,13 @@ class ParticipationController {
         ) {
           return genericError.notFound(res);
         }
-        ParticipationRepository.findByUserAndHub(participantId, hubId, ['participant'])
+        ParticipationRepository.findByUserAndHub(participantId, hubId, ['participant', 'participant.credentials'])
           .then(async (participationInstance) => {
             if (!participationInstance) {
               return genericError.notFound(res);
             }
 
-            const participantAuthentikId = await participationInstance.participant.authentikId();
-            if (!participantAuthentikId) {
-              return genericError.internalServerError(res);
-            }
+            const participantAuthentikId = participationInstance.participant.credentials.authProviderId;
 
             if (
               participationInstance.status == ParticipationStatus.ACEPPTED &&
@@ -199,56 +197,68 @@ class ParticipationController {
       'hub',
       'hub.creator',
       'hub.secrets',
-      'participant'
+      'participant',
+      'participant.credentials'
     ])
       .then(async (participationInstance) => {
         if (!participationInstance) {
           return genericError.notFound(res);
         }
 
-        if (
-          participationInstance.hub.creator.id !== user.id &&
-          !isUserAdminOrSelf(req, participantId)
-        ) {
+        if (participationInstance.hub.creator.id == user.id || user.isAdmin) {
+          return this.executeParticipationDeletion(participationInstance, res);
+        } else if (user.id == participantId) {
+          const verification = new Verification(user, Purpose.REVOKE_PARTICIPATION, {
+            identifier: `${hubId}|${participantId}`,
+            displayName: 'blub',
+            url: 'http://localhost:3000/'
+          });
+
+          MailHelper.participationRevocationVerification(verification);
+
+          return res.json('E-Mail verification sent.');
+        } else {
           return genericError.forbidden(res);
         }
+      })
+      .catch((err) => {
+        console.log(err);
+        return genericError.internalServerError(res);
+      });
+  }
 
-        // Remove from authentik group
-        const authentikRemovalResult = await removeUserFromGroup(
-          await participationInstance.participant.authentikId(),
-          participationInstance.hub.authentikGroup
-        );
+  private async executeParticipationDeletion(participation: Participation, res: Response) {
+    // Remove from authentik group
+    const authentikRemovalResult = await removeUserFromGroup(
+      participation.participant.credentials.authProviderId,
+      participation.hub.authentikGroup
+    );
 
-        // Remove from jupyterhub
-        const jhApiHelper = new JupyterHubApiHelper(
-          participationInstance.hub.hubUrl,
-          participationInstance.hub.secrets.apiToken
-        );
-        const jupyterRemoveResult = await jhApiHelper.deleteUser(
-          participationInstance.participant.externalId
-        );
+    // Remove from jupyterhub
+    const jhApiHelper = new JupyterHubApiHelper(
+      participation.hub.hubUrl,
+      participation.hub.secrets.apiToken
+    );
+    const jupyterRemoveResult = await jhApiHelper.deleteUser(
+      participation.participant.externalId
+    );
 
-        if (!authentikRemovalResult || !jupyterRemoveResult) {
-          return genericError.internalServerError(
-            res,
-            'Could not unassign user from connected services. Please contact administrator.'
-          );
+    if (!authentikRemovalResult || !jupyterRemoveResult) {
+      return genericError.internalServerError(
+        res,
+        'Could not unassign user from connected services. Please contact administrator.'
+      );
+    }
+
+    return ParticipationRepository.deleteByUserAndHub(
+      participation.participantId,
+      participation.hubId
+    )
+      .then((deleteResult: DeleteResult) => {
+        if (deleteResult.affected) {
+          return res.json('Deleted.');
         }
-
-        return ParticipationRepository.deleteByUserAndHub(
-          participationInstance.participantId,
-          participationInstance.hubId
-        )
-          .then((deleteResult: DeleteResult) => {
-            if (deleteResult.affected) {
-              return res.json('Deleted.');
-            }
-            return genericError.notFound(res);
-          })
-          .catch((err) => {
-            console.log(err);
-            return genericError.internalServerError(res);
-          });
+        return genericError.notFound(res);
       })
       .catch((err) => {
         console.log(err);
