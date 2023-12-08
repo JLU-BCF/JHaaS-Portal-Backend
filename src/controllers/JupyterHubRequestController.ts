@@ -132,26 +132,36 @@ class JupyterHubRequestController {
   }
 
   public accept(req: Request, res: Response): void {
-    modifyJupyterStatus(req, res, false, JupyterHubRequestStatus.ACCEPTED, (instance) => {
-      createJupyterGroup(instance.slug).then((groupId) => {
-        if (!groupId) {
-          return;
-        }
-        instance.authentikGroup = groupId;
-        JupyterHubRequestRepository.updateOne(instance);
-
-        assignUserToGroup(instance.creator.credentials.authProviderId, groupId);
-
-        ParticipationRepository.findByHub(instance.id, ['participant', 'participant.credentials']).then(async ([instances]) => {
-          for (const participation of instances) {
-            if (participation.status == ParticipationStatus.ACEPPTED) {
-              assignUserToGroup(participation.participant.credentials.authProviderId, groupId);
-            }
+    modifyJupyterStatus(
+      req,
+      res,
+      false,
+      JupyterHubRequestStatus.ACCEPTED,
+      (instance) => {
+        createJupyterGroup(instance.slug).then((groupId) => {
+          if (!groupId) {
+            return;
           }
+          instance.authentikGroup = groupId;
+          JupyterHubRequestRepository.updateOne(instance);
+
+          assignUserToGroup(instance.creator.credentials.authProviderId, groupId);
+
+          ParticipationRepository.findByHub(instance.id, [
+            'participant',
+            'participant.credentials'
+          ]).then(async ([instances]) => {
+            for (const participation of instances) {
+              if (participation.status == ParticipationStatus.ACEPPTED) {
+                assignUserToGroup(participation.participant.credentials.authProviderId, groupId);
+              }
+            }
+          });
         });
-      });
-      MailHelper.sendJupyterAccepted(instance);
-    }, ['creator', 'creator.credentials']);
+        MailHelper.sendJupyterAccepted(instance);
+      },
+      ['creator', 'creator.credentials']
+    );
   }
 
   public reject(req: Request, res: Response): void {

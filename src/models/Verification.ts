@@ -1,5 +1,13 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  ManyToOne,
+  JoinColumn
+} from 'typeorm';
 import User from './User';
+import { randomBytes } from 'crypto';
 
 export enum Purpose {
   REVOKE_PARTICIPATION = 'REVOKE_PARTICIPATION',
@@ -10,7 +18,10 @@ export type VerificationTarget = {
   identifier: string;
   displayName: string;
   url: string;
-}
+};
+
+const byteLength = 32;
+const encoding = 'base64';
 
 @Entity()
 export default class Verification {
@@ -33,6 +44,9 @@ export default class Verification {
   targetUrl: string;
 
   @Column()
+  token: string;
+
+  @Column()
   expiry: Date;
 
   @CreateDateColumn()
@@ -49,13 +63,15 @@ export default class Verification {
       return;
     }
 
+    this.token = randomBytes(byteLength).toString(encoding);
     this.user = user;
     this.purpose = purpose;
     this.target = target.identifier;
     this.targetDisplayName = target.displayName;
     this.targetUrl = target.url;
+    this.targetUrl += '?verification=' + encodeURIComponent(this.token);
     const expiry = new Date();
-    expiry.setTime(expiry.getTime() + (validityMinutes * 60000));
+    expiry.setTime(expiry.getTime() + validityMinutes * 60000);
     this.expiry = expiry;
   }
 }

@@ -9,6 +9,8 @@ import { MailHelper } from '../mail/MailHelper';
 import { DeleteResult } from 'typeorm';
 import JupyterHubApiHelper from '../helpers/JupyterHubApiHelper';
 import Verification, { Purpose } from '../models/Verification';
+import { FRONTEND_URL } from '../config/Config';
+import VerificationRepository from '../repositories/VerificationRepository';
 
 class ParticipationController {
   public readUserParticipations(req: Request, res: Response) {
@@ -119,13 +121,17 @@ class ParticipationController {
         ) {
           return genericError.notFound(res);
         }
-        ParticipationRepository.findByUserAndHub(participantId, hubId, ['participant', 'participant.credentials'])
+        ParticipationRepository.findByUserAndHub(participantId, hubId, [
+          'participant',
+          'participant.credentials'
+        ])
           .then(async (participationInstance) => {
             if (!participationInstance) {
               return genericError.notFound(res);
             }
 
-            const participantAuthentikId = participationInstance.participant.credentials.authProviderId;
+            const participantAuthentikId =
+              participationInstance.participant.credentials.authProviderId;
 
             if (
               participationInstance.status == ParticipationStatus.ACEPPTED &&
@@ -192,6 +198,7 @@ class ParticipationController {
   public async cancelParticipation(req: Request, res: Response) {
     const user = getUser(req);
     const { hubId, participantId } = req.params;
+    const { verificationToken } = req.body;
 
     ParticipationRepository.findByUserAndHub(participantId, hubId, [
       'hub',
@@ -206,17 +213,51 @@ class ParticipationController {
         }
 
         if (participationInstance.hub.creator.id == user.id || user.isAdmin) {
-          return this.executeParticipationDeletion(participationInstance, res);
+          return executeParticipationDeletion(participationInstance, res);
         } else if (user.id == participantId) {
-          const verification = new Verification(user, Purpose.REVOKE_PARTICIPATION, {
-            identifier: `${hubId}|${participantId}`,
-            displayName: 'blub',
-            url: 'http://localhost:3000/'
-          });
+          if (verificationToken) {
+            VerificationRepository.findBy({
+              token: verificationToken,
+              target: `${hubId}|${participantId}`,
+              purpose: Purpose.REVOKE_PARTICIPATION
+            })
+              .then((verificationInstance) => {
+                if (!verificationInstance) {
+                  return genericError.unprocessableEntity(res, 'Token not applicable.');
+                }
+                if (verificationInstance.expiry.getTime() < new Date().getTime()) {
+                  return genericError.unprocessableEntity(
+                    res,
+                    'The token has expired. Please start the process from the beginning.'
+                  );
+                }
+                return executeParticipationDeletion(participationInstance, res);
+              })
+              .catch((err) => {
+                console.log(err);
+                return genericError.internalServerError(res);
+              });
+          } else {
+            const verification = new Verification(user, Purpose.REVOKE_PARTICIPATION, {
+              identifier: `${hubId}|${participantId}`,
+              displayName: participationInstance.hub.name,
+              url: `${FRONTEND_URL.replace(/\/$/, '')}/participation/revoke/${
+                participationInstance.hub.slug
+              }`
+            });
 
-          MailHelper.participationRevocationVerification(verification);
-
-          return res.json('E-Mail verification sent.');
+            VerificationRepository.createOne(verification)
+              .then((instance) => {
+                MailHelper.participationRevocationVerification(instance);
+                return res.json(
+                  'We have sent you a verification link by e-mail. Please check your inbox.'
+                );
+              })
+              .catch((err) => {
+                console.log(err);
+                return genericError.internalServerError(res);
+              });
+          }
         } else {
           return genericError.forbidden(res);
         }
@@ -226,45 +267,43 @@ class ParticipationController {
         return genericError.internalServerError(res);
       });
   }
+}
 
-  private async executeParticipationDeletion(participation: Participation, res: Response) {
-    // Remove from authentik group
-    const authentikRemovalResult = await removeUserFromGroup(
-      participation.participant.credentials.authProviderId,
-      participation.hub.authentikGroup
-    );
+async function executeParticipationDeletion(participation: Participation, res: Response) {
+  // Remove from authentik group
+  const authentikRemovalResult = await removeUserFromGroup(
+    participation.participant.credentials.authProviderId,
+    participation.hub.authentikGroup
+  );
 
+  let jupyterRemoveResult = true;
+  if (participation.hub.hubUrl) {
     // Remove from jupyterhub
     const jhApiHelper = new JupyterHubApiHelper(
       participation.hub.hubUrl,
       participation.hub.secrets.apiToken
     );
-    const jupyterRemoveResult = await jhApiHelper.deleteUser(
-      participation.participant.externalId
-    );
-
-    if (!authentikRemovalResult || !jupyterRemoveResult) {
-      return genericError.internalServerError(
-        res,
-        'Could not unassign user from connected services. Please contact administrator.'
-      );
-    }
-
-    return ParticipationRepository.deleteByUserAndHub(
-      participation.participantId,
-      participation.hubId
-    )
-      .then((deleteResult: DeleteResult) => {
-        if (deleteResult.affected) {
-          return res.json('Deleted.');
-        }
-        return genericError.notFound(res);
-      })
-      .catch((err) => {
-        console.log(err);
-        return genericError.internalServerError(res);
-      });
+    jupyterRemoveResult = await jhApiHelper.deleteUser(participation.participant.externalId);
   }
+
+  if (!authentikRemovalResult || !jupyterRemoveResult) {
+    // TODO: Send E-Mail to Admin!
+  }
+
+  return ParticipationRepository.deleteByUserAndHub(
+    participation.participantId,
+    participation.hubId
+  )
+    .then((deleteResult: DeleteResult) => {
+      if (deleteResult.affected) {
+        return res.json('Participation cancelled.');
+      }
+      return genericError.notFound(res);
+    })
+    .catch((err) => {
+      console.log(err);
+      return genericError.internalServerError(res);
+    });
 }
 
 export default new ParticipationController();
