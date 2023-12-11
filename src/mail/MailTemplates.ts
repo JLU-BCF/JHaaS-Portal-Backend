@@ -18,7 +18,8 @@ const templates = [
   'ParticipationAccepted',
   'ParticipationRejected',
   'UserCreated',
-  'ParticipationRevocationVerification'
+  'ParticipationRevocationVerification',
+  'UserDeletionVerification'
 ];
 
 const methods: { [key: string]: { [key: string]: compileTemplate } } = {};

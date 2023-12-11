@@ -20,7 +20,8 @@ export const MailHelper = {
   sendUserCreated: userTemplate('UserCreated', true),
   sendParticipationAccepted: participationTemplate('ParticipationAccepted'),
   sendParticipationRejected: participationTemplate('ParticipationRejected'),
-  participationRevocationVerification: verificationTemplate('ParticipationRevocationVerification')
+  participationRevocationVerification: verificationTemplate('ParticipationRevocationVerification'),
+  userDeletionVerification: verificationTemplate('UserDeletionVerification')
 };
 
 const templateSubjects: { [key: string]: string } = {
@@ -39,7 +40,8 @@ const templateSubjects: { [key: string]: string } = {
   UserCreated: 'Welcome to the JHaaS Portal',
   ParticipationAccepted: 'Your participation request has been Accepted',
   ParticipationRejected: 'Your participation request has been Rejected',
-  ParticipationRevocationVerification: 'Verify the exit from the JupyterHub'
+  ParticipationRevocationVerification: 'Verify the exit from the JupyterHub',
+  UserDeletionVerification: 'Confirm the deletion of your JHaaS account'
 };
 
 function jupyterTemplate(template: string, copy?: boolean) {
