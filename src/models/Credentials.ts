@@ -22,8 +22,7 @@ export default class Credentials {
 
   @OneToOne(() => User, (user) => user.credentials, {
     cascade: ['insert', 'update', 'remove'],
-    onDelete: 'CASCADE',
-    eager: true
+    onDelete: 'CASCADE'
   })
   @JoinColumn({ name: 'userId' })
   user: User;
