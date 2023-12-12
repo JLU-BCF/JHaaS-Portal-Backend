@@ -116,7 +116,10 @@ class UserController {
 
         if (userInstance.jupyterHubRequests.length > 0) {
           // TODO: What to do if Courses are attached? This must be discussed with Layer 8.
-          return genericError.unprocessableEntity(res, 'Your account cannot currently be deleted because you are a course creator. Please contact an administrator.');
+          return genericError.unprocessableEntity(
+            res,
+            'Your account cannot currently be deleted because you are a course creator. Please contact an administrator.'
+          );
         }
 
         if (verificationToken) {
@@ -160,7 +163,6 @@ class UserController {
               return genericError.internalServerError(res);
             });
         }
-
       })
       .catch((err) => {
         console.log(err);
@@ -187,9 +189,7 @@ async function executeUserDeletion(user: User, res: Response) {
   }
 
   // Remove user from authentik
-  const authentikDeletionResult = await deleteUser(
-    user.credentials.authProviderId,
-  );
+  const authentikDeletionResult = await deleteUser(user.credentials.authProviderId);
 
   // Check removal results
   if (!jupyterRemoveResults.every(Boolean) || !authentikDeletionResult) {
