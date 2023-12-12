@@ -8,6 +8,9 @@ import Verification, { Purpose } from '../models/Verification';
 import { FRONTEND_URL } from '../config/Config';
 import VerificationRepository from '../repositories/VerificationRepository';
 import { MailHelper } from '../mail/MailHelper';
+import { DeleteResult } from 'typeorm';
+import JupyterHubApiHelper from '../helpers/JupyterHubApiHelper';
+import { deleteUser } from '../helpers/AuthentikApiHelper';
 // import { DeleteResult } from 'typeorm';
 
 class UserController {
@@ -99,39 +102,46 @@ class UserController {
       return genericError.forbidden(res);
     }
 
-    UserRepository.findById(userId, ['credentials', 'jupyterHubRequests'])
+    UserRepository.findById(userId, [
+      'credentials',
+      'jupyterHubRequests',
+      'participations',
+      'participations.hub',
+      'participations.hub.secrets'
+    ])
       .then((userInstance) => {
         if (!userInstance) {
-          // Should not happen.
-          return genericError.internalServerError(res);
+          return genericError.notFound(res);
         }
 
         if (userInstance.jupyterHubRequests.length > 0) {
           // TODO: What to do if Courses are attached? This must be discussed with Layer 8.
-          return genericError.unprocessableEntity(res, 'At the moment your account cannot be deleted if you have created courses. Please contact an administrator.');
+          return genericError.unprocessableEntity(res, 'Your account cannot currently be deleted because you are a course creator. Please contact an administrator.');
         }
 
         if (verificationToken) {
-          // TODO: DELETE ALL NOTEBOOKS
-
-          // TODO: DELETE FROM AUTHENTIK
-
-          // TODO: DELETE Model
-          // UserRepository.deleteById(userId)
-          //   .then((deleteResult: DeleteResult) => {
-          //     if (deleteResult.affected) {
-          //       return res.json('Deleted.');
-          //     }
-          //     return genericError.notFound(res);
-          //   })
-          //   .catch((err) => {
-          //     console.log(err);
-          //     return genericError.internalServerError(res);
-          //   });
-
-          return res.json('Deleted.');
+          VerificationRepository.findBy({
+            token: verificationToken,
+            target: userInstance.id,
+            purpose: Purpose.DELETE_USER
+          })
+            .then((verificationInstance) => {
+              if (!verificationInstance) {
+                return genericError.unprocessableEntity(res, 'Token not applicable.');
+              }
+              if (verificationInstance.expiry.getTime() < new Date().getTime()) {
+                return genericError.unprocessableEntity(
+                  res,
+                  'The token has expired. Please start the process from the beginning.'
+                );
+              }
+              return executeUserDeletion(userInstance, res);
+            })
+            .catch((err) => {
+              console.log(err);
+              return genericError.internalServerError(res);
+            });
         } else {
-          // TODO: Create Verification
           const verification = new Verification(userInstance, Purpose.DELETE_USER, {
             identifier: userInstance.id,
             displayName: `${userInstance.firstName} ${userInstance.lastName}`,
@@ -157,6 +167,47 @@ class UserController {
         return genericError.internalServerError(res);
       });
   }
+}
+
+async function executeUserDeletion(user: User, res: Response) {
+  // Delete jupyter notebooks
+  const jupyterRemoveResults = [];
+  for (const participation of user.participations) {
+    if (!participation.hub.hubUrl) {
+      continue;
+    }
+    console.log('Trying to remove from:', participation.hub.name);
+
+    const jhApiHelper = new JupyterHubApiHelper(
+      participation.hub.hubUrl,
+      participation.hub.secrets.apiToken
+    );
+
+    jupyterRemoveResults[participation.hub.id] = await jhApiHelper.deleteUser(user.externalId);
+  }
+
+  // Remove user from authentik
+  const authentikDeletionResult = await deleteUser(
+    user.credentials.authProviderId,
+  );
+
+  // Check removal results
+  if (!jupyterRemoveResults.every(Boolean) || !authentikDeletionResult) {
+    // TODO: send mail to admin
+  }
+
+  // Delete user model
+  UserRepository.deleteById(user.id)
+    .then((deleteResult: DeleteResult) => {
+      if (deleteResult.affected) {
+        return res.json('You account has been deleted.');
+      }
+      return genericError.notFound(res);
+    })
+    .catch((err) => {
+      console.log(err);
+      return genericError.internalServerError(res);
+    });
 }
 
 export default new UserController();

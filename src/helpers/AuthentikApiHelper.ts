@@ -98,3 +98,13 @@ export async function removeUserFromGroup(user_id: string, group_uuid: string) {
       return null;
     });
 }
+
+export async function deleteUser(user_id: string) {
+  return axios
+    .delete(`${url}/core/users/${user_id}/`, { headers })
+    .then(() => true)
+    .catch((err) => {
+      console.log(err);
+      return null;
+    });
+}
