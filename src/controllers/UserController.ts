@@ -11,6 +11,7 @@ import { MailHelper } from '../mail/MailHelper';
 import { DeleteResult } from 'typeorm';
 import JupyterHubApiHelper from '../helpers/JupyterHubApiHelper';
 import { deleteUser } from '../helpers/AuthentikApiHelper';
+import { JupyterHubRequestStatus } from '../models/JupyterHubRequest';
 // import { DeleteResult } from 'typeorm';
 
 class UserController {
@@ -175,7 +176,7 @@ async function executeUserDeletion(user: User, res: Response) {
   // Delete jupyter notebooks
   const jupyterRemoveResults = [];
   for (const participation of user.participations) {
-    if (!participation.hub.hubUrl) {
+    if (!(participation.hub.hubUrl && participation.hub.status == JupyterHubRequestStatus.DEPLOYED)) {
       continue;
     }
     console.log('Trying to remove from:', participation.hub.name);
@@ -193,6 +194,8 @@ async function executeUserDeletion(user: User, res: Response) {
 
   // Check removal results
   if (!jupyterRemoveResults.every(Boolean) || !authentikDeletionResult) {
+    console.log('JupyterHub Notebook removal results: ', jupyterRemoveResults);
+    console.log('Authentik removal result: ', authentikDeletionResult);
     // TODO: send mail to admin
   }
 

@@ -11,6 +11,7 @@ import JupyterHubApiHelper from '../helpers/JupyterHubApiHelper';
 import Verification, { Purpose } from '../models/Verification';
 import { FRONTEND_URL } from '../config/Config';
 import VerificationRepository from '../repositories/VerificationRepository';
+import { JupyterHubRequestStatus } from '../models/JupyterHubRequest';
 
 class ParticipationController {
   public readUserParticipations(req: Request, res: Response) {
@@ -277,7 +278,7 @@ async function executeParticipationDeletion(participation: Participation, res: R
   );
 
   let jupyterRemoveResult = true;
-  if (participation.hub.hubUrl) {
+  if (participation.hub.hubUrl && participation.hub.status == JupyterHubRequestStatus.DEPLOYED) {
     // Remove from jupyterhub
     const jhApiHelper = new JupyterHubApiHelper(
       participation.hub.hubUrl,
@@ -287,6 +288,8 @@ async function executeParticipationDeletion(participation: Participation, res: R
   }
 
   if (!authentikRemovalResult || !jupyterRemoveResult) {
+    console.log('JupyterHub Notebook removal result: ', jupyterRemoveResult);
+    console.log('Authentik removal result: ', authentikRemovalResult);
     // TODO: Send E-Mail to Admin!
   }
 
