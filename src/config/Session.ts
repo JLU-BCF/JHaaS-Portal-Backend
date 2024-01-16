@@ -48,10 +48,10 @@ if (SESSION_STORAGE === 'redis') {
     .connect()
     .then(() => console.log('Redis: connected.'))
     .catch((err) => {
-      console.log('Could not connect to Redis. Retry in 5 Seconds.');
+      console.log('Could not connect to Redis. Aborting Server in 5 Seconds.');
       console.log(err);
       setTimeout(() => {
-        process.kill(9);
+        process.kill(process.pid, 'SIGABRT');
       }, 5000);
     });
 
