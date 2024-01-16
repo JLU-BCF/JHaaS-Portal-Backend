@@ -9,7 +9,11 @@ class CredentialsRepository {
   }
 
   // find credentials by provider and id
-  findByProvider(authProvider: AuthProvider, authProviderId: string, relations = ['user']): Promise<Credentials> {
+  findByProvider(
+    authProvider: AuthProvider,
+    authProviderId: string,
+    relations = ['user']
+  ): Promise<Credentials> {
     return DB_CONN.getRepository(Credentials).findOne({
       where: {
         authProvider,

@@ -57,7 +57,7 @@ app.use((err: HttpError, req: Request, res: Response, next: NextFunction) => {
   res.send(err);
 });
 
-let appServer = app.listen(APP_PORT, () => {
+const appServer = app.listen(APP_PORT, () => {
   console.log('Server is running on port:', APP_PORT);
 });
 

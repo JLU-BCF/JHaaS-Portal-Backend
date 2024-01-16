@@ -176,7 +176,9 @@ async function executeUserDeletion(user: User, res: Response) {
   // Delete jupyter notebooks
   const jupyterRemoveResults = [];
   for (const participation of user.participations) {
-    if (!(participation.hub.hubUrl && participation.hub.status == JupyterHubRequestStatus.DEPLOYED)) {
+    if (
+      !(participation.hub.hubUrl && participation.hub.status == JupyterHubRequestStatus.DEPLOYED)
+    ) {
       continue;
     }
     console.log('Trying to remove from:', participation.hub.name);
