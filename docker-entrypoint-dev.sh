@@ -36,4 +36,4 @@ trap "trap_handler SIGINT $NPM_PID" SIGINT
 trap "trap_handler SIGTERM $NPM_PID" SIGTERM
 trap "trap_handler SIGQUIT $NPM_PID" SIGQUIT
 
-wait
+wait $NPM_PID
