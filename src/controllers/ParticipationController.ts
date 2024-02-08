@@ -293,13 +293,14 @@ class ParticipationController {
         participation.hub.secrets.apiToken
       );
 
-      jhApiHelper.startUserServer(participation.participant.externalId)
-        .then((result) => result ? res.json('Start command sent.') : res.status(422).send())
+      jhApiHelper
+        .startUserServer(participation.participant.externalId)
+        .then((result) => (result ? res.json('Start command sent.') : res.status(422).send()))
         .catch((err) => {
           console.log(err);
           return genericError.internalServerError(res);
         });
-    })
+    });
   }
 
   public async stopNotebook(req: Request, res: Response) {
@@ -326,13 +327,14 @@ class ParticipationController {
         participation.hub.secrets.apiToken
       );
 
-      jhApiHelper.stopUserServer(participation.participant.externalId)
-        .then((result) => result ? res.json('Stop command sent.') : res.status(422).send())
+      jhApiHelper
+        .stopUserServer(participation.participant.externalId)
+        .then((result) => (result ? res.json('Stop command sent.') : res.status(422).send()))
         .catch((err) => {
           console.log(err);
           return genericError.internalServerError(res);
         });
-    })
+    });
   }
 
   // Caution: deleting a Notebook is done by deleting the user from the jupyterhub
@@ -360,13 +362,14 @@ class ParticipationController {
         participation.hub.secrets.apiToken
       );
 
-      jhApiHelper.deleteUser(participation.participant.externalId)
-        .then((result) => result ? res.json('Delete command sent.') : res.status(422).send())
+      jhApiHelper
+        .deleteUser(participation.participant.externalId)
+        .then((result) => (result ? res.json('Delete command sent.') : res.status(422).send()))
         .catch((err) => {
           console.log(err);
           return genericError.internalServerError(res);
         });
-    })
+    });
   }
 }
 

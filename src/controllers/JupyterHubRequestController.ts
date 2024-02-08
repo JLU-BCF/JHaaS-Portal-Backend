@@ -294,14 +294,13 @@ class JupyterHubRequestController {
           .getUsers()
           .then((users) => {
             const userNames = [];
-            users.forEach(user => userNames.push(user.name));
+            users.forEach((user) => userNames.push(user.name));
             return res.json(userNames);
           })
           .catch((err) => logErrorAndReturnGeneric500(err, res));
       })
       .catch((err) => logErrorAndReturnGeneric500(err, res));
   }
-
 
   public stopAllNotebooks(req: Request, res: Response) {
     const slug = req.params.slug;
