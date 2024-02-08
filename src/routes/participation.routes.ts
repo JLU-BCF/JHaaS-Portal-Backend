@@ -28,6 +28,15 @@ leaderRouter.post(
   ParticipationController.participationAction
 );
 
+// start user's notebook
+leaderRouter.post('/notebook/start/:participantId([0-9a-f-]+)/:hubId([0-9a-f-]+)', ParticipationController.startNotebook);
+
+// stop user's notebook
+leaderRouter.post('/notebook/stop/:participantId([0-9a-f-]+)/:hubId([0-9a-f-]+)', ParticipationController.stopNotebook);
+
+// delete user's notebook
+leaderRouter.post('/notebook/delete/:participantId([0-9a-f-]+)/:hubId([0-9a-f-]+)', ParticipationController.deleteNotebook);
+
 router.use(leaderRouter);
 
 export default router;

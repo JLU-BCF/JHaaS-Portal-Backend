@@ -2,12 +2,10 @@ import axios, { AxiosHeaders } from 'axios';
 
 export default class JupyterHubApiHelper {
   private url: string;
-  private apiToken: string;
   private headers: AxiosHeaders;
 
   constructor(url: string, apiToken: string) {
     this.url = url.replace(/\/$/, '');
-    this.apiToken = apiToken;
 
     this.headers = new AxiosHeaders({
       accept: 'application/json',
@@ -21,11 +19,10 @@ export default class JupyterHubApiHelper {
       .get(`${this.url}/hub/api/`, {
         headers: this.headers
       })
-      .then((data) => {
-        console.log(data);
-      })
+      .then((res) => res.data)
       .catch((err) => {
         console.log(err);
+        return Promise.reject(err);
       });
   }
 
@@ -34,11 +31,22 @@ export default class JupyterHubApiHelper {
       .get(`${this.url}/hub/api/info`, {
         headers: this.headers
       })
-      .then((data) => {
-        console.log(data);
-      })
+      .then((res) => res.data)
       .catch((err) => {
         console.log(err);
+        return Promise.reject(err);
+      });
+  }
+
+  public async getUsers() {
+    return axios
+      .get(`${this.url}/hub/api/users`, {
+        headers: this.headers
+      })
+      .then((res) => res.data)
+      .catch((err) => {
+        console.log(err);
+        return Promise.reject(err);
       });
   }
 
@@ -58,29 +66,47 @@ export default class JupyterHubApiHelper {
       });
   }
 
+  public async startUserServer(userId: string) {
+    console.log('going to start notebook for:', userId);
+    return axios
+      .post(`${this.url}/hub/api/users/${userId}/server`, {
+        headers: this.headers
+      })
+      .then(() => true)
+      .catch((err) => {
+        console.log(err);
+        return false;
+      });
+  }
+
   public async stopUserServer(userId: string) {
     return axios
       .delete(`${this.url}/hub/api/users/${userId}/server`, {
         headers: this.headers
       })
-      .then((data) => {
-        console.log(data);
-      })
+      .then(() => true)
       .catch((err) => {
         console.log(err);
+        return false;
       });
   }
 
-  public async stopAllServers(userId: string) {
-    return axios
-      .delete(`${this.url}/hub/api/users/${userId}/server`, {
-        headers: this.headers
-      })
-      .then((data) => {
-        console.log(data);
+  public async stopAllServers() {
+    const failures = [];
+    return this.getUsers()
+      .then((users) => {
+        users.forEach(async (user) => {
+          try {
+            await this.stopUserServer(user.name);
+          } catch (err) {
+            failures.push({ user: user.name, err });
+          }
+        });
+        return failures;
       })
       .catch((err) => {
         console.log(err);
+        return false;
       });
   }
 }

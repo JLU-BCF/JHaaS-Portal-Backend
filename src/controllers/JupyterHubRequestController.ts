@@ -18,6 +18,7 @@ import {
 import { ParticipationStatus } from '../models/Participation';
 import ParticipationRepository from '../repositories/ParticipationRepository';
 import JupyterHubSecrets from '../models/JupyterHubSecrets';
+import JupyterHubApiHelper from '../helpers/JupyterHubApiHelper';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function logErrorAndReturnGeneric500(err: any, res: Response) {
@@ -274,6 +275,48 @@ class JupyterHubRequestController {
           return genericError.unprocessableEntity(res, 'Changes are not allowed.');
         }
         return genericError.notFound(res);
+      })
+      .catch((err) => logErrorAndReturnGeneric500(err, res));
+  }
+
+  public getJupyterHubUsers(req: Request, res: Response) {
+    const slug = req.params.slug;
+    const user = getUser(req);
+
+    JupyterHubRequestRepository.findBySlug(slug, ['creator', 'secrets'])
+      .then((jhRequest) => {
+        if (!jhRequest || !jhRequest.userAllowed(user)) {
+          return genericError.notFound(res);
+        }
+
+        const jhApi = new JupyterHubApiHelper(jhRequest.hubUrl, jhRequest.secrets.apiToken);
+        jhApi
+          .getUsers()
+          .then((users) => {
+            const userNames = [];
+            users.forEach(user => userNames.push(user.name));
+            return res.json(userNames);
+          })
+          .catch((err) => logErrorAndReturnGeneric500(err, res));
+      })
+      .catch((err) => logErrorAndReturnGeneric500(err, res));
+  }
+
+
+  public stopAllNotebooks(req: Request, res: Response) {
+    const slug = req.params.slug;
+    const user = getUser(req);
+
+    JupyterHubRequestRepository.findBySlug(slug, ['creator', 'secrets'])
+      .then((jhRequest) => {
+        if (!jhRequest || !jhRequest.userAllowed(user)) {
+          return genericError.notFound(res);
+        }
+
+        const jhApi = new JupyterHubApiHelper(jhRequest.hubUrl, jhRequest.secrets.apiToken);
+        jhApi
+          .stopAllServers()
+          .then((success) => (success ? res.json('ok') : genericError.internalServerError(res)));
       })
       .catch((err) => logErrorAndReturnGeneric500(err, res));
   }

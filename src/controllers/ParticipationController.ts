@@ -268,6 +268,106 @@ class ParticipationController {
         return genericError.internalServerError(res);
       });
   }
+
+  public async startNotebook(req: Request, res: Response) {
+    const user = getUser(req);
+    const { hubId, participantId } = req.params;
+
+    ParticipationRepository.findByUserAndHub(participantId, hubId, [
+      'hub',
+      'hub.creator',
+      'hub.secrets',
+      'participant',
+      'participant.credentials'
+    ]).then((participation) => {
+      if (!participation) {
+        return genericError.notFound(res);
+      }
+
+      if (participation.hub.creator.id !== user.id && !user.isAdmin) {
+        return genericError.forbidden(res);
+      }
+
+      const jhApiHelper = new JupyterHubApiHelper(
+        participation.hub.hubUrl,
+        participation.hub.secrets.apiToken
+      );
+
+      jhApiHelper.startUserServer(participation.participant.externalId)
+        .then((result) => result ? res.json('Start command sent.') : res.status(422).send())
+        .catch((err) => {
+          console.log(err);
+          return genericError.internalServerError(res);
+        });
+    })
+  }
+
+  public async stopNotebook(req: Request, res: Response) {
+    const user = getUser(req);
+    const { hubId, participantId } = req.params;
+
+    ParticipationRepository.findByUserAndHub(participantId, hubId, [
+      'hub',
+      'hub.creator',
+      'hub.secrets',
+      'participant',
+      'participant.credentials'
+    ]).then((participation) => {
+      if (!participation) {
+        return genericError.notFound(res);
+      }
+
+      if (participation.hub.creator.id !== user.id && !user.isAdmin) {
+        return genericError.forbidden(res);
+      }
+
+      const jhApiHelper = new JupyterHubApiHelper(
+        participation.hub.hubUrl,
+        participation.hub.secrets.apiToken
+      );
+
+      jhApiHelper.stopUserServer(participation.participant.externalId)
+        .then((result) => result ? res.json('Stop command sent.') : res.status(422).send())
+        .catch((err) => {
+          console.log(err);
+          return genericError.internalServerError(res);
+        });
+    })
+  }
+
+  // Caution: deleting a Notebook is done by deleting the user from the jupyterhub
+  public async deleteNotebook(req: Request, res: Response) {
+    const user = getUser(req);
+    const { hubId, participantId } = req.params;
+
+    ParticipationRepository.findByUserAndHub(participantId, hubId, [
+      'hub',
+      'hub.creator',
+      'hub.secrets',
+      'participant',
+      'participant.credentials'
+    ]).then((participation) => {
+      if (!participation) {
+        return genericError.notFound(res);
+      }
+
+      if (participation.hub.creator.id !== user.id && !user.isAdmin) {
+        return genericError.forbidden(res);
+      }
+
+      const jhApiHelper = new JupyterHubApiHelper(
+        participation.hub.hubUrl,
+        participation.hub.secrets.apiToken
+      );
+
+      jhApiHelper.deleteUser(participation.participant.externalId)
+        .then((result) => result ? res.json('Delete command sent.') : res.status(422).send())
+        .catch((err) => {
+          console.log(err);
+          return genericError.internalServerError(res);
+        });
+    })
+  }
 }
 
 async function executeParticipationDeletion(participation: Participation, res: Response) {
