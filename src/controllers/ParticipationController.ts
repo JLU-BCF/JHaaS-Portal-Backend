@@ -30,7 +30,7 @@ class ParticipationController {
     JupyterHubRequestRepository.findBySlug(slug)
       .then((hubInstance) => {
         // check if user is creator or admin
-        if (!hubInstance || (hubInstance.creator.id !== user.id && !user.isAdmin)) {
+        if (!hubInstance || !hubInstance.userAllowed(user)) {
           return genericError.notFound(res);
         }
         ParticipationRepository.findByHub(hubInstance.id)
@@ -117,7 +117,7 @@ class ParticipationController {
         // check if user is creator or admin
         if (
           !hubInstance ||
-          (hubInstance.creator.id !== user.id && !user.isAdmin) ||
+          !hubInstance.userAllowed(user) ||
           !hubInstance.participationAllowed()
         ) {
           return genericError.notFound(res);
@@ -284,7 +284,7 @@ class ParticipationController {
         return genericError.notFound(res);
       }
 
-      if (participation.hub.creator.id !== user.id && !user.isAdmin) {
+      if (!participation.hub.userAllowed(user)) {
         return genericError.forbidden(res);
       }
 
@@ -318,7 +318,7 @@ class ParticipationController {
         return genericError.notFound(res);
       }
 
-      if (participation.hub.creator.id !== user.id && !user.isAdmin) {
+      if (!participation.hub.userAllowed(user)) {
         return genericError.forbidden(res);
       }
 
@@ -353,7 +353,7 @@ class ParticipationController {
         return genericError.notFound(res);
       }
 
-      if (participation.hub.creator.id !== user.id && !user.isAdmin) {
+      if (!participation.hub.userAllowed(user)) {
         return genericError.forbidden(res);
       }
 
