@@ -17,6 +17,8 @@ import {
 } from '../helpers/AuthentikApiHelper';
 import { ParticipationStatus } from '../models/Participation';
 import ParticipationRepository from '../repositories/ParticipationRepository';
+import JupyterHubSecrets from '../models/JupyterHubSecrets';
+import JupyterHubApiHelper from '../helpers/JupyterHubApiHelper';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function logErrorAndReturnGeneric500(err: any, res: Response) {
@@ -29,13 +31,14 @@ function modifyJupyterStatus(
   res: Response,
   isChangeRequest: boolean,
   status: JupyterHubRequestStatus,
-  cb?: (instance: JupyterHubRequest) => void
+  cb?: (instance: JupyterHubRequest) => void,
+  relations?: string[]
 ) {
   const entityId = req.params.id;
   const user = getUser(req);
   const findMeth = isChangeRequest ? 'findByChangeRequest' : 'findById';
 
-  JupyterHubRequestRepository[findMeth](entityId)
+  JupyterHubRequestRepository[findMeth](entityId, relations)
     .then((jhRequest: JupyterHubRequest) => {
       if (!jhRequest?.userAndChangesAllowed(user)) {
         return genericError.unprocessableEntity(res);
@@ -118,8 +121,11 @@ class JupyterHubRequestController {
     if (validationErrors(req, res)) return;
     const jhRequest = parseJupyterHubRequest(req);
 
+    jhRequest.secrets = new JupyterHubSecrets();
+
     JupyterHubRequestRepository.createOne(jhRequest)
       .then((instance) => {
+        delete instance.secrets;
         res.json(instance);
         MailHelper.sendJupyterCreated(instance);
       })
@@ -127,31 +133,36 @@ class JupyterHubRequestController {
   }
 
   public accept(req: Request, res: Response): void {
-    modifyJupyterStatus(req, res, false, JupyterHubRequestStatus.ACCEPTED, (instance) => {
-      createJupyterGroup(instance.slug).then((groupId) => {
-        if (!groupId) {
-          return;
-        }
-        instance.authentikGroup = groupId;
-        JupyterHubRequestRepository.updateOne(instance);
+    modifyJupyterStatus(
+      req,
+      res,
+      false,
+      JupyterHubRequestStatus.ACCEPTED,
+      (instance) => {
+        createJupyterGroup(instance.slug).then((groupId) => {
+          if (!groupId) {
+            return;
+          }
+          instance.authentikGroup = groupId;
+          JupyterHubRequestRepository.updateOne(instance);
 
-        instance.creator.credentials.then((credentialsInstance) => {
-          assignUserToGroup(credentialsInstance.authProviderId, groupId);
-        });
+          assignUserToGroup(instance.creator.credentials.authProviderId, groupId);
 
-        ParticipationRepository.findByHub(instance.id).then(async ([instances]) => {
-          for (const participation of instances) {
-            if (participation.status == ParticipationStatus.ACEPPTED) {
-              const authentikId = await participation.participant.authentikId();
-              if (authentikId) {
-                assignUserToGroup(authentikId, groupId);
+          ParticipationRepository.findByHub(instance.id, [
+            'participant',
+            'participant.credentials'
+          ]).then(async ([instances]) => {
+            for (const participation of instances) {
+              if (participation.status == ParticipationStatus.ACEPPTED) {
+                assignUserToGroup(participation.participant.credentials.authProviderId, groupId);
               }
             }
-          }
+          });
         });
-      });
-      MailHelper.sendJupyterAccepted(instance);
-    });
+        MailHelper.sendJupyterAccepted(instance);
+      },
+      ['creator', 'creator.credentials']
+    );
   }
 
   public reject(req: Request, res: Response): void {
@@ -264,6 +275,47 @@ class JupyterHubRequestController {
           return genericError.unprocessableEntity(res, 'Changes are not allowed.');
         }
         return genericError.notFound(res);
+      })
+      .catch((err) => logErrorAndReturnGeneric500(err, res));
+  }
+
+  public getJupyterHubUsers(req: Request, res: Response) {
+    const slug = req.params.slug;
+    const user = getUser(req);
+
+    JupyterHubRequestRepository.findBySlug(slug, ['creator', 'secrets'])
+      .then((jhRequest) => {
+        if (!jhRequest || !jhRequest.userAllowed(user)) {
+          return genericError.notFound(res);
+        }
+
+        const jhApi = new JupyterHubApiHelper(jhRequest.hubUrl, jhRequest.secrets.apiToken);
+        jhApi
+          .getUsers()
+          .then((users) => {
+            const userNames = [];
+            users.forEach((user) => userNames.push(user.name));
+            return res.json(userNames);
+          })
+          .catch((err) => logErrorAndReturnGeneric500(err, res));
+      })
+      .catch((err) => logErrorAndReturnGeneric500(err, res));
+  }
+
+  public stopAllNotebooks(req: Request, res: Response) {
+    const slug = req.params.slug;
+    const user = getUser(req);
+
+    JupyterHubRequestRepository.findBySlug(slug, ['creator', 'secrets'])
+      .then((jhRequest) => {
+        if (!jhRequest || !jhRequest.userAllowed(user)) {
+          return genericError.notFound(res);
+        }
+
+        const jhApi = new JupyterHubApiHelper(jhRequest.hubUrl, jhRequest.secrets.apiToken);
+        jhApi
+          .stopAllServers()
+          .then((success) => (success ? res.json('ok') : genericError.internalServerError(res)));
       })
       .catch((err) => logErrorAndReturnGeneric500(err, res));
   }

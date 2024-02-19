@@ -1,11 +1,11 @@
 import User from '../models/User';
-import { DB_CONN } from '../config/Config';
+import { DB_CONN } from '../config/Database';
 import { DeleteResult } from 'typeorm';
 
 class UserRepository {
   // return all users
-  findAll(): Promise<User[]> {
-    return DB_CONN.getRepository(User).find();
+  findAll(relations?: string[]): Promise<User[]> {
+    return DB_CONN.getRepository(User).find({ relations });
   }
 
   // create a new user
@@ -14,8 +14,11 @@ class UserRepository {
   }
 
   // find user by id
-  findById(id: string): Promise<User> {
-    return DB_CONN.getRepository(User).findOneBy({ id: id });
+  findById(id: string, relations?: string[]): Promise<User> {
+    return DB_CONN.getRepository(User).findOne({
+      where: { id },
+      relations
+    });
   }
 
   // update a single user

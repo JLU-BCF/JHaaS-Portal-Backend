@@ -118,9 +118,9 @@ Issuer.discover(OIDC_ENDPOINT)
     console.log('Could not read OIDC Endpoint: ', OIDC_ENDPOINT);
     console.log(err);
     if (OIDC_FORCE_REACHABILITY) {
-      console.log('Kill to try again in 5 seconds.');
+      console.log('Aborting Server in 5 Seconds.');
       setTimeout(() => {
-        process.kill(9);
+        process.kill(process.pid, 'SIGABRT');
       }, 5000);
     }
   });

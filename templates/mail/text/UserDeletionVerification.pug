@@ -1,0 +1,10 @@
+//- text/UserDeletionVerification.pug
+extends ../layout-text
+
+block content
+  | You have requested to permanently delete your account.
+  | Please confirm this action by following the link below:
+  |
+  | #{verification.targetUrl}
+  |
+  | This Link expires on #{verification.expiry.toLocaleString('en-US', { timeZone: 'Europe/Berlin' })} (CEST).

@@ -55,7 +55,7 @@ export async function createJupyterGroup(slug: string): Promise<string | null> {
 
 export async function destroyJupyterGroup(group_uuid: string): Promise<true | null> {
   return axios
-    .delete(`${url}/core/groups/${group_uuid}`, { headers })
+    .delete(`${url}/core/groups/${group_uuid}/`, { headers })
     .then(() => true)
     .catch((err) => {
       console.log(err);
@@ -93,6 +93,16 @@ export async function removeUserFromGroup(user_id: string, group_uuid: string) {
     .then(() => {
       return true;
     })
+    .catch((err) => {
+      console.log(err);
+      return null;
+    });
+}
+
+export async function deleteUser(user_id: string) {
+  return axios
+    .delete(`${url}/core/users/${user_id}/`, { headers })
+    .then(() => true)
     .catch((err) => {
       console.log(err);
       return null;

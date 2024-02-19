@@ -1,4 +1,4 @@
-import { DB_CONN } from '../config/Config';
+import { DB_CONN } from '../config/Database';
 import { DeleteResult } from 'typeorm';
 import Participation from '../models/Participation';
 

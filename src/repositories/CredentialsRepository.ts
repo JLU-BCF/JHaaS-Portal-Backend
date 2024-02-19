@@ -1,5 +1,5 @@
 import Credentials, { AuthProvider } from '../models/Credentials';
-import { DB_CONN } from '../config/Config';
+import { DB_CONN } from '../config/Database';
 import { DeleteResult } from 'typeorm';
 
 class CredentialsRepository {
@@ -8,22 +8,18 @@ class CredentialsRepository {
     return DB_CONN.getRepository(Credentials).save(credentials);
   }
 
-  // find credentials by userId
-  findByUserId(userId: string): Promise<Credentials> {
+  // find credentials by provider and id
+  findByProvider(
+    authProvider: AuthProvider,
+    authProviderId: string,
+    relations = ['user']
+  ): Promise<Credentials> {
     return DB_CONN.getRepository(Credentials).findOne({
       where: {
-        userId: userId
+        authProvider,
+        authProviderId
       },
-      select: ['userId', 'authProvider', 'authProviderId'],
-      loadEagerRelations: false
-    });
-  }
-
-  // find credentials by provider and id
-  findByProvider(authProvider: AuthProvider, authProviderId: string): Promise<Credentials> {
-    return DB_CONN.getRepository(Credentials).findOneBy({
-      authProvider: authProvider,
-      authProviderId: authProviderId
+      relations
     });
   }
 

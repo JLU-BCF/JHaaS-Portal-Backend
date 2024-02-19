@@ -1,5 +1,6 @@
 // imports
-import { APP_PORT, DB_CONN } from './config/Config';
+import { APP_PORT } from './config/Config';
+import { DB_CONN } from './config/Database';
 import FRONTEND_CONF from './config/Frontend';
 import SESSION_CONFIG from './config/Session';
 import 'reflect-metadata';
@@ -56,17 +57,46 @@ app.use((err: HttpError, req: Request, res: Response, next: NextFunction) => {
   res.send(err);
 });
 
+const appServer = app.listen(APP_PORT, () => {
+  console.log('Server is running on port:', APP_PORT);
+});
+
 DB_CONN.initialize()
-  .then(() => {
-    console.log('Database: connected.');
-    app.listen(APP_PORT, () => {
-      console.log('Server is running on port:', APP_PORT);
-    });
-  })
+  .then(() => console.log('Database: connected.'))
   .catch((err: unknown) => {
-    console.log('Could not connect to Database. Retry in 5 Seconds.');
+    console.log('Could not connect to Database. Aborting Server in 5 Seconds.');
     console.log(err);
-    setTimeout(() => {
-      process.kill(9);
-    }, 5000);
+    setTimeout(() => process.kill(process.pid, 'SIGABRT'), 5000);
   });
+
+process.on('SIGINT', () => {
+  console.log('SIGINT received');
+  stopServer();
+});
+
+process.on('SIGQUIT', () => {
+  console.log('SIGQUIT received');
+  stopServer();
+});
+
+process.on('SIGABRT', () => {
+  console.log('SIGABRT received');
+  stopServer(1);
+});
+
+process.on('SIGTERM', () => {
+  console.log('SIGTERM received');
+  stopServer();
+});
+
+function stopServer(exitCode = 0) {
+  console.log('Gracefully stopping...');
+  appServer.close((err) => {
+    err ? console.log(' -> Server: FAILED TO STOP', err) : console.log(' -> Server: stopped');
+
+    DB_CONN.destroy()
+      .then(() => console.log(' -> Database: disconnected'))
+      .catch((err) => console.log(' -> Database: FAILED TO DISCONNECT', err))
+      .finally(() => process.exit(exitCode));
+  });
+}

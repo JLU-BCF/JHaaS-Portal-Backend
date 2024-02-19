@@ -26,6 +26,7 @@ services:
     volumes:
       - cache:${CACHEDIR:-/jhaas-cache}
       - ./:${APPDIR:-/jhaas-app}
+      - ./docker-entrypoint-dev.sh:/entrypoint.sh
 
   jhaas-portal-db:
     image: postgres:15

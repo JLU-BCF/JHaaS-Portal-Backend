@@ -10,6 +10,7 @@ import {
 import { JupyterHubRequest } from './JupyterHubRequest';
 import Credentials from './Credentials';
 import Participation from './Participation';
+import Verification from './Verification';
 
 @Entity()
 export default class User {
@@ -20,13 +21,16 @@ export default class User {
   externalId: string | null;
 
   @OneToOne(() => Credentials, (credentials) => credentials.user)
-  credentials: Promise<Credentials>;
+  credentials: Credentials;
 
   @OneToMany(() => JupyterHubRequest, (jhr) => jhr.creator)
-  jupyterHubRequests: Promise<JupyterHubRequest[]>;
+  jupyterHubRequests: JupyterHubRequest[];
 
   @OneToMany(() => Participation, (participation) => participation.participant)
   participations: Participation[];
+
+  @OneToMany(() => Verification, (verification) => verification.user)
+  verifications: Verification[];
 
   @Column()
   firstName: string;
@@ -84,15 +88,6 @@ export default class User {
     }
 
     return changed;
-  }
-
-  authentikId() {
-    return this.credentials
-      .then((creds) => creds.authProviderId)
-      .catch((err) => {
-        console.log(err);
-        return null;
-      });
   }
 
   // This is not stored in DB and is only

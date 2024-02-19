@@ -1,12 +1,12 @@
 import { JupyterHubRequest, JupyterHubRequestStatus } from '../models/JupyterHubRequest';
-import { DB_CONN } from '../config/Config';
+import { DB_CONN } from '../config/Database';
 import { DeleteResult, LessThan, MoreThan } from 'typeorm';
 import User from '../models/User';
 
 class JupyterHubRequestRepository {
   // return all jupyterHubRequests
   findAll(
-    relations?: string[],
+    relations = ['creator'],
     take?: number,
     skip?: number
   ): Promise<[JupyterHubRequest[], number]> {
@@ -40,7 +40,7 @@ class JupyterHubRequestRepository {
   }
 
   // find jupyterHubRequest by id
-  findById(id: string, relations?: string[]): Promise<JupyterHubRequest> {
+  findById(id: string, relations = ['creator']): Promise<JupyterHubRequest> {
     return DB_CONN.getRepository(JupyterHubRequest).findOne({
       where: { id },
       relations
@@ -48,7 +48,7 @@ class JupyterHubRequestRepository {
   }
 
   // find jupyterHubRequest by slug
-  findBySlug(slug: string, relations?: string[]): Promise<JupyterHubRequest> {
+  findBySlug(slug: string, relations = ['creator']): Promise<JupyterHubRequest> {
     return DB_CONN.getRepository(JupyterHubRequest).findOne({
       where: { slug },
       relations
@@ -58,7 +58,7 @@ class JupyterHubRequestRepository {
   // find jupyterHubRequest by change request
   findByChangeRequest(
     changeRequestId: string,
-    relations = ['changeRequests']
+    relations = ['creator', 'changeRequests']
   ): Promise<JupyterHubRequest> {
     return DB_CONN.getRepository(JupyterHubRequest).findOne({
       where: [{ changeRequests: { id: changeRequestId } }],
@@ -78,7 +78,7 @@ class JupyterHubRequestRepository {
 
   // find all open jupyterHubRequests
   findOpen(
-    relations = ['changeRequests'],
+    relations = ['creator', 'changeRequests'],
     take?: number,
     skip?: number
   ): Promise<[JupyterHubRequest[], number]> {
@@ -95,7 +95,7 @@ class JupyterHubRequestRepository {
 
   // find deployable jupyterHubRequests
   findDeployableJupyterHubRequests(
-    relations?: string[],
+    relations = ['creator'],
     take?: number,
     skip?: number
   ): Promise<[JupyterHubRequest[], number]> {
@@ -121,7 +121,7 @@ class JupyterHubRequestRepository {
 
   // find degradable jupyterHubRequests
   findDegradableJupyterHubRequests(
-    relations?: string[],
+    relations = ['creator'],
     take?: number,
     skip?: number
   ): Promise<[JupyterHubRequest[], number]> {
@@ -145,7 +145,7 @@ class JupyterHubRequestRepository {
 
   // find jupyterHubRequests which are in progress
   findProgressingJupyterHubRequests(
-    relations?: string[],
+    relations = ['creator'],
     take?: number,
     skip?: number
   ): Promise<[JupyterHubRequest[], number]> {

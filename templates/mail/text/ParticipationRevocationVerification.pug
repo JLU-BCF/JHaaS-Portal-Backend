@@ -1,0 +1,7 @@
+//- text/ParticipationRevocationVerification.pug
+extends ../layout-text
+
+block content
+  | You have requested to leave the JupyterHub "#{verification.targetDisplayName}".
+  | Please confirm this action by following the link below:
+  | #{verification.targetUrl}

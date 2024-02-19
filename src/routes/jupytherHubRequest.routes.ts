@@ -29,6 +29,12 @@ router.put('/cancel/:id([0-9a-f-]+)', jhRequestController.cancel);
 // cancel jupyter hub change request
 router.put('/change/cancel/:id([0-9a-f-]+)', jhRequestController.cancelChangeRequest);
 
+// get all users present on the jupyterhub
+router.get('/jh-users/:slug([0-9a-z-]+)', jhRequestController.getJupyterHubUsers);
+
+// stop all servers on the jupyterhub
+router.post('/stopall/:slug([0-9a-z-]+)', jhRequestController.stopAllNotebooks);
+
 // Admin routes, protected by admin guard
 const adminRouter: Router = Router();
 adminRouter.use(adminGuard);

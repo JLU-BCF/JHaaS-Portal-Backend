@@ -6,6 +6,12 @@ import JupyterHubRequestRepository from '../repositories/JupyterHubRequestReposi
 import Participation, { ParticipationStatus } from '../models/Participation';
 import { assignUserToGroup, removeUserFromGroup } from '../helpers/AuthentikApiHelper';
 import { MailHelper } from '../mail/MailHelper';
+import { DeleteResult } from 'typeorm';
+import JupyterHubApiHelper from '../helpers/JupyterHubApiHelper';
+import Verification, { Purpose } from '../models/Verification';
+import { FRONTEND_URL } from '../config/Config';
+import VerificationRepository from '../repositories/VerificationRepository';
+import { JupyterHubRequestStatus } from '../models/JupyterHubRequest';
 
 class ParticipationController {
   public readUserParticipations(req: Request, res: Response) {
@@ -24,7 +30,7 @@ class ParticipationController {
     JupyterHubRequestRepository.findBySlug(slug)
       .then((hubInstance) => {
         // check if user is creator or admin
-        if (!hubInstance || (hubInstance.creator.id !== user.id && !user.isAdmin)) {
+        if (!hubInstance || !hubInstance.userAllowed(user)) {
           return genericError.notFound(res);
         }
         ParticipationRepository.findByHub(hubInstance.id)
@@ -111,21 +117,22 @@ class ParticipationController {
         // check if user is creator or admin
         if (
           !hubInstance ||
-          (hubInstance.creator.id !== user.id && !user.isAdmin) ||
+          !hubInstance.userAllowed(user) ||
           !hubInstance.participationAllowed()
         ) {
           return genericError.notFound(res);
         }
-        ParticipationRepository.findByUserAndHub(participantId, hubId, ['participant'])
+        ParticipationRepository.findByUserAndHub(participantId, hubId, [
+          'participant',
+          'participant.credentials'
+        ])
           .then(async (participationInstance) => {
             if (!participationInstance) {
               return genericError.notFound(res);
             }
 
-            const participantAuthentikId = await participationInstance.participant.authentikId();
-            if (!participantAuthentikId) {
-              return genericError.internalServerError(res);
-            }
+            const participantAuthentikId =
+              participationInstance.participant.credentials.authProviderId;
 
             if (
               participationInstance.status == ParticipationStatus.ACEPPTED &&
@@ -188,6 +195,221 @@ class ParticipationController {
         return genericError.internalServerError(res);
       });
   }
+
+  public async cancelParticipation(req: Request, res: Response) {
+    const user = getUser(req);
+    const { hubId, participantId } = req.params;
+    const { verificationToken } = req.body;
+
+    ParticipationRepository.findByUserAndHub(participantId, hubId, [
+      'hub',
+      'hub.creator',
+      'hub.secrets',
+      'participant',
+      'participant.credentials'
+    ])
+      .then(async (participationInstance) => {
+        if (!participationInstance) {
+          return genericError.notFound(res);
+        }
+
+        if (participationInstance.hub.creator.id == user.id || user.isAdmin) {
+          return executeParticipationDeletion(participationInstance, res);
+        } else if (user.id == participantId) {
+          if (verificationToken) {
+            VerificationRepository.findBy({
+              token: verificationToken,
+              target: `${hubId}|${participantId}`,
+              purpose: Purpose.REVOKE_PARTICIPATION
+            })
+              .then((verificationInstance) => {
+                if (!verificationInstance) {
+                  return genericError.unprocessableEntity(res, 'Token not applicable.');
+                }
+                if (verificationInstance.expiry.getTime() < new Date().getTime()) {
+                  return genericError.unprocessableEntity(
+                    res,
+                    'The token has expired. Please start the process from the beginning.'
+                  );
+                }
+                return executeParticipationDeletion(participationInstance, res);
+              })
+              .catch((err) => {
+                console.log(err);
+                return genericError.internalServerError(res);
+              });
+          } else {
+            const verification = new Verification(user, Purpose.REVOKE_PARTICIPATION, {
+              identifier: `${hubId}|${participantId}`,
+              displayName: participationInstance.hub.name,
+              url: `${FRONTEND_URL.replace(/\/$/, '')}/participation/revoke/${
+                participationInstance.hub.slug
+              }`
+            });
+
+            VerificationRepository.createOne(verification)
+              .then((instance) => {
+                MailHelper.participationRevocationVerification(instance);
+                return res.json(
+                  'We have sent you a verification link by e-mail. Please check your inbox.'
+                );
+              })
+              .catch((err) => {
+                console.log(err);
+                return genericError.internalServerError(res);
+              });
+          }
+        } else {
+          return genericError.forbidden(res);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+        return genericError.internalServerError(res);
+      });
+  }
+
+  public async startNotebook(req: Request, res: Response) {
+    const user = getUser(req);
+    const { hubId, participantId } = req.params;
+
+    ParticipationRepository.findByUserAndHub(participantId, hubId, [
+      'hub',
+      'hub.creator',
+      'hub.secrets',
+      'participant',
+      'participant.credentials'
+    ]).then((participation) => {
+      if (!participation) {
+        return genericError.notFound(res);
+      }
+
+      if (!participation.hub.userAllowed(user)) {
+        return genericError.forbidden(res);
+      }
+
+      const jhApiHelper = new JupyterHubApiHelper(
+        participation.hub.hubUrl,
+        participation.hub.secrets.apiToken
+      );
+
+      jhApiHelper
+        .startUserServer(participation.participant.externalId)
+        .then((result) => (result ? res.json('Start command sent.') : res.status(422).send()))
+        .catch((err) => {
+          console.log(err);
+          return genericError.internalServerError(res);
+        });
+    });
+  }
+
+  public async stopNotebook(req: Request, res: Response) {
+    const user = getUser(req);
+    const { hubId, participantId } = req.params;
+
+    ParticipationRepository.findByUserAndHub(participantId, hubId, [
+      'hub',
+      'hub.creator',
+      'hub.secrets',
+      'participant',
+      'participant.credentials'
+    ]).then((participation) => {
+      if (!participation) {
+        return genericError.notFound(res);
+      }
+
+      if (!participation.hub.userAllowed(user)) {
+        return genericError.forbidden(res);
+      }
+
+      const jhApiHelper = new JupyterHubApiHelper(
+        participation.hub.hubUrl,
+        participation.hub.secrets.apiToken
+      );
+
+      jhApiHelper
+        .stopUserServer(participation.participant.externalId)
+        .then((result) => (result ? res.json('Stop command sent.') : res.status(422).send()))
+        .catch((err) => {
+          console.log(err);
+          return genericError.internalServerError(res);
+        });
+    });
+  }
+
+  // Caution: deleting a Notebook is done by deleting the user from the jupyterhub
+  public async deleteNotebook(req: Request, res: Response) {
+    const user = getUser(req);
+    const { hubId, participantId } = req.params;
+
+    ParticipationRepository.findByUserAndHub(participantId, hubId, [
+      'hub',
+      'hub.creator',
+      'hub.secrets',
+      'participant',
+      'participant.credentials'
+    ]).then((participation) => {
+      if (!participation) {
+        return genericError.notFound(res);
+      }
+
+      if (!participation.hub.userAllowed(user)) {
+        return genericError.forbidden(res);
+      }
+
+      const jhApiHelper = new JupyterHubApiHelper(
+        participation.hub.hubUrl,
+        participation.hub.secrets.apiToken
+      );
+
+      jhApiHelper
+        .deleteUser(participation.participant.externalId)
+        .then((result) => (result ? res.json('Delete command sent.') : res.status(422).send()))
+        .catch((err) => {
+          console.log(err);
+          return genericError.internalServerError(res);
+        });
+    });
+  }
+}
+
+async function executeParticipationDeletion(participation: Participation, res: Response) {
+  // Remove from authentik group
+  const authentikRemovalResult = await removeUserFromGroup(
+    participation.participant.credentials.authProviderId,
+    participation.hub.authentikGroup
+  );
+
+  let jupyterRemoveResult = true;
+  if (participation.hub.hubUrl && participation.hub.status == JupyterHubRequestStatus.DEPLOYED) {
+    // Remove from jupyterhub
+    const jhApiHelper = new JupyterHubApiHelper(
+      participation.hub.hubUrl,
+      participation.hub.secrets.apiToken
+    );
+    jupyterRemoveResult = await jhApiHelper.deleteUser(participation.participant.externalId);
+  }
+
+  if (!authentikRemovalResult || !jupyterRemoveResult) {
+    console.log('JupyterHub Notebook removal result: ', jupyterRemoveResult);
+    console.log('Authentik removal result: ', authentikRemovalResult);
+    // TODO: Send E-Mail to Admin!
+  }
+
+  return ParticipationRepository.deleteByUserAndHub(
+    participation.participantId,
+    participation.hubId
+  )
+    .then((deleteResult: DeleteResult) => {
+      if (deleteResult.affected) {
+        return res.json('Participation cancelled.');
+      }
+      return genericError.notFound(res);
+    })
+    .catch((err) => {
+      console.log(err);
+      return genericError.internalServerError(res);
+    });
 }
 
 export default new ParticipationController();
