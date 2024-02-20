@@ -1,5 +1,6 @@
 variables:
   NODE_CACHE_DIR: node_modules/
+  NODE_TAG: 20
 
 stages:
   - dependencies
@@ -9,7 +10,7 @@ stages:
 # As the k8s runner does not support cache yet, we need to use artifacts :(
 node_modules:
   stage: dependencies
-  image: node:20
+  image: node:${NODE_TAG}
   cache:
     key:
       files:
@@ -25,7 +26,7 @@ node_modules:
 
 eslint:
   stage: codequality
-  image: node:20
+  image: node:${NODE_TAG}
   dependencies:
     - node_modules
   script:

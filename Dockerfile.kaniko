@@ -3,7 +3,10 @@
 # This Dockerfile can only be used within the CI pipeline,
 # as it depends on artifacts from preceding jobs.
 ##########################################################
-FROM node:20 AS build
+ARG NODE_TAG="20"
+ARG NODE_TAG_PROD="20-alpine"
+
+FROM node:${NODE_TAG} AS build
 
 ARG APPDIR=/jhaas-app
 WORKDIR ${APPDIR}
@@ -13,7 +16,7 @@ COPY . .
 # node_modules are coming from ci artifact
 RUN npm run build
 
-FROM node:20-alpine AS production
+FROM node:${NODE_TAG_PROD} AS production
 
 # pull in latest security patches for base
 RUN apk upgrade --no-cache --purge
