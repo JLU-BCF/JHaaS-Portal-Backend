@@ -115,11 +115,7 @@ class ParticipationController {
     JupyterHubRequestRepository.findById(hubId)
       .then((hubInstance) => {
         // check if user is creator or admin
-        if (
-          !hubInstance ||
-          !hubInstance.userAllowed(user) ||
-          !hubInstance.participationAllowed()
-        ) {
+        if (!hubInstance || !hubInstance.userAllowed(user) || !hubInstance.participationAllowed()) {
           return genericError.notFound(res);
         }
         ParticipationRepository.findByUserAndHub(participantId, hubId, [
