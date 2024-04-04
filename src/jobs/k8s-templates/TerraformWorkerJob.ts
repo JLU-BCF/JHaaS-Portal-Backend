@@ -45,6 +45,10 @@ export function getTerraformWorkerJob(jh: JupyterHubRequest, action: string): k8
                         {
                           key: 'minio.secret',
                           path: 'minio.secret'
+                        },
+                        {
+                          key: 's3.secret',
+                          path: 's3.secret'
                         }
                       ]
                     }
@@ -94,7 +98,7 @@ export function getTerraformWorkerJob(jh: JupyterHubRequest, action: string): k8
                 },
                 {
                   name: 'S3_CONF',
-                  value: 'minio.secret'
+                  value: 's3.secret'
                 },
                 {
                   name: 'TF_CONF',
