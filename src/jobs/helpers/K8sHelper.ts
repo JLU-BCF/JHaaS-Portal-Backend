@@ -33,7 +33,10 @@ class K8sHelper {
 
     const jobDefinition = getTerraformWorkerJob(jh, action);
     this.batchK8sApi
-      .createNamespacedJob(K8S_TF_NS, jobDefinition)
+      .createNamespacedJob({
+        namespace: K8S_TF_NS,
+        body: jobDefinition
+      })
       .then((response) => {
         return response;
       })

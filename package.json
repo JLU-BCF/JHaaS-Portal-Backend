@@ -50,7 +50,7 @@
     "typescript-eslint": "^7.6.0"
   },
   "dependencies": {
-    "@kubernetes/client-node": "^0.20.0",
+    "@kubernetes/client-node": "1.0.0-rc4",
     "axios": "^1.6.8",
     "bcrypt": "^5.1.1",
     "connect-redis": "^7.1.1",
