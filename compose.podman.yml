@@ -121,6 +121,7 @@ services:
       - ./environments/db.env
     volumes:
       - './environments/authentik_blueprints:/blueprints:ro'
+      - './environments/authentik_templates:/templates:ro'
 
 networks:
   jhaas-portal-priv:

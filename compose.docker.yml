@@ -1,3 +1,4 @@
+# This file is for use with Docker!
 # This is a compose file for development! Do not use in prod!
 version: '3'
 
@@ -120,6 +121,7 @@ services:
       - ./environments/db.env
     volumes:
       - './environments/authentik_blueprints:/blueprints:ro'
+      - './environments/authentik_templates:/templates:ro'
 
 networks:
   jhaas-portal-priv:
