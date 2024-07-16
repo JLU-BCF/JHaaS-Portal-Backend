@@ -3,8 +3,8 @@
 # This Dockerfile can only be used within the CI pipeline,
 # as it depends on artifacts from preceding jobs.
 ##########################################################
-ARG NODE_TAG="20"
-ARG NODE_TAG_PROD="20-alpine"
+ARG NODE_TAG="22"
+ARG NODE_TAG_PROD="22-alpine"
 
 FROM node:${NODE_TAG} AS build
 

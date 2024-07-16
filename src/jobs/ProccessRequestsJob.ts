@@ -72,19 +72,16 @@ function degradeOneRequest(request: JupyterHubRequest) {
 }
 
 function checkProgress(request: JupyterHubRequest) {
-  minioClient.bucketExists(S3_JH_SPECS_BUCKET, (err, exist) => {
-    if (err) {
-      return console.error(err);
-    }
-    if (exist) {
-      minioClient.getObject(
-        S3_JH_SPECS_BUCKET,
-        `${request.id}/JupyterHubRequestStatus`,
-        (err, stream) => {
-          if (err) {
-            return console.log(err);
-          }
+  minioClient
+    .bucketExists(S3_JH_SPECS_BUCKET)
+    .then((exist) => {
+      if (!exist) {
+        return console.warn(`${request.slug} : could not find existent bucket.`);
+      }
 
+      minioClient
+        .getObject(S3_JH_SPECS_BUCKET, `${request.id}/JupyterHubRequestStatus`)
+        .then((stream) => {
           streamToString(stream)
             .then((status) => {
               switch (status) {
@@ -102,44 +99,48 @@ function checkProgress(request: JupyterHubRequest) {
                   setJupyterHubRequestFailed(request);
                   break;
                 default:
-                  console.error(`${request.slug} : could not determine status!`);
+                  console.warn(`${request.slug} : could not determine status!`);
               }
             })
             .catch((err) => {
-              return console.log(err);
+              return console.error('ERROR converting s3 object stream to string', err);
             });
-        }
-      );
-    } else {
-      console.log(`${request.slug} : could not find existent bucket.`);
-    }
-  });
+        })
+        .catch((err) => {
+          return console.error('ERROR retrieving S3 Object', err);
+        });
+    })
+    .catch((err) => {
+      console.error('ERROR retrieving bucket existence:', err);
+    });
 }
 
 function setJupyterHubRequestDeployed(request: JupyterHubRequest) {
   console.log(`${request.slug} : successfully deployed.`);
   console.log(`${request.slug} : try getting deployment URL.`);
 
-  minioClient.getObject(S3_JH_SPECS_BUCKET, `${request.id}/JupyterHubUrl`, (err, stream) => {
-    if (err) {
-      return console.log(err);
-    }
-    streamToString(stream)
-      .then((url) => {
-        request.status = JupyterHubRequestStatus.DEPLOYED;
-        request.hubUrl = url;
-        JupyterHubRequestRepository.updateOne(request)
-          .then((requestInstance) => {
-            MailHelper.sendJupyterDeployed(requestInstance);
-          })
-          .catch((err: unknown) => {
-            return console.log(err);
-          });
-      })
-      .catch((err) => {
-        return console.log(err);
-      });
-  });
+  minioClient
+    .getObject(S3_JH_SPECS_BUCKET, `${request.id}/JupyterHubUrl`)
+    .then((stream) => {
+      streamToString(stream)
+        .then((url) => {
+          request.status = JupyterHubRequestStatus.DEPLOYED;
+          request.hubUrl = url;
+          JupyterHubRequestRepository.updateOne(request)
+            .then((requestInstance) => {
+              MailHelper.sendJupyterDeployed(requestInstance);
+            })
+            .catch((err: unknown) => {
+              return console.error('ERROR updating JupyterHub Instance', err);
+            });
+        })
+        .catch((err) => {
+          return console.error('ERROR converting s3 object stream to string', err);
+        });
+    })
+    .catch((err) => {
+      return console.error('ERROR retrieving S3 Object', err);
+    });
 }
 
 function setJupyterHubRequestDegrated(request: JupyterHubRequest) {

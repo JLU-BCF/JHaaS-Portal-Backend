@@ -1,6 +1,6 @@
 variables:
   NODE_CACHE_DIR: node_modules/
-  NODE_TAG: 20
+  NODE_TAG: 22
 
 stages:
   - dependencies

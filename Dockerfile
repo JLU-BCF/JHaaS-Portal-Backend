@@ -1,5 +1,5 @@
-ARG NODE_TAG="20"
-ARG NODE_TAG_PROD="20-alpine"
+ARG NODE_TAG="22"
+ARG NODE_TAG_PROD="22-alpine"
 
 FROM node:${NODE_TAG} as develop
 

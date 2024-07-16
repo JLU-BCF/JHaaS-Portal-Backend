@@ -1,10 +1,9 @@
 # This file is for use with Podman!
 # This is a compose file for development! Do not use in prod!
-version: '3'
 
 services:
   jhaas-portal-backend:
-    image: node:${NODE_TAG:-20}
+    image: node:${NODE_TAG:-22}
     container_name: jhaas-portal-backend
     hostname: jhaas-portal-backend
     restart: unless-stopped
