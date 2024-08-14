@@ -1,7 +1,7 @@
 ARG NODE_TAG="22"
 ARG NODE_TAG_PROD="22-alpine"
 
-FROM node:${NODE_TAG} as develop
+FROM node:${NODE_TAG} AS develop
 
 ARG USER='1000:1000'
 ARG CACHEDIR=/jhaas-cache
