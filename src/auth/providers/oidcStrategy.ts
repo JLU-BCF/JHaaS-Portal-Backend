@@ -20,7 +20,7 @@ import { MailHelper } from '../../mail/MailHelper';
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type VerifyCallback = (err?: Error | null, user?: Express.User, info?: any) => void;
 
-type passportProfile = {
+interface passportProfile {
   sub: string;
   email: string;
   name: string;
@@ -32,7 +32,7 @@ type passportProfile = {
   // allow any additional data
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [key: string]: any;
-};
+}
 
 const oidcStrategy = Router();
 

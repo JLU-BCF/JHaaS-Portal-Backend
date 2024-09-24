@@ -24,7 +24,7 @@ export const MailHelper = {
   userDeletionVerification: verificationTemplate('UserDeletionVerification')
 };
 
-const templateSubjects: { [key: string]: string } = {
+const templateSubjects: Record<string, string> = {
   JupyterCreated: 'Your Jupyter Hub Request has been Created',
   JupyterAccepted: 'Your Jupyter Hub Request has been Accepted',
   JupyterRejected: 'Your Jupyter Hub Request has been Rejected',

@@ -14,11 +14,11 @@ export enum Purpose {
   DELETE_USER = 'DELETE_USER'
 }
 
-export type VerificationTarget = {
+export interface VerificationTarget {
   identifier: string;
   displayName: string;
   url: string;
-};
+}
 
 const byteLength = 32;
 const encoding = 'base64';

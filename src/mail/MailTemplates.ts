@@ -22,7 +22,7 @@ const templates = [
   'UserDeletionVerification'
 ];
 
-const methods: { [key: string]: { [key: string]: compileTemplate } } = {};
+const methods: Record<string, Record<string, compileTemplate>> = {};
 
 templates.forEach((template) => {
   methods[template] = {};

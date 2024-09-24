@@ -38,15 +38,15 @@ export enum JupyterHubRequestStatus {
   CANCELED = 'CANCELED'
 }
 
-export type JupyterHubRequestUserConf = {
+export interface JupyterHubRequestUserConf {
   storagePerUser: number;
   cpusPerUser: number;
   ramPerUser: number;
   userCount: number;
-};
+}
 
 // types will be validated by middleware!
-type JupyterHubBaseRequestObj = {
+interface JupyterHubBaseRequestObj {
   creator;
   name;
   description?;
@@ -55,7 +55,7 @@ type JupyterHubBaseRequestObj = {
   notebookDefaultUrl?;
   startDate;
   endDate;
-};
+}
 
 type JupyterHubRequestObj = JupyterHubBaseRequestObj & {
   slug;
@@ -299,10 +299,6 @@ export class JupyterHubChangeRequest extends JupyterHubBase {
   @ManyToOne(() => JupyterHubRequest)
   @JoinColumn()
   origRequest: JupyterHubRequest;
-
-  constructor(data?: JupyterHubBaseRequestObj) {
-    super(data);
-  }
 
   // After Change Request is accepted,
   // it is merged with Orig, so no
