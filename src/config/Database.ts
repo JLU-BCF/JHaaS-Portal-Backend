@@ -32,3 +32,5 @@ export const DB_CONN: DataSource = new DataSource({
     `${__dirname}/../database-migrations/*.js`
   ]
 });
+
+export default DB_CONN;
