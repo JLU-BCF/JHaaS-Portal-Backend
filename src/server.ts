@@ -33,7 +33,9 @@ app.use('/user', authGuard, UserService);
 app.use('/jupyter', authGuard, leaderGuard, JupyterHubRequestService);
 app.use('/participation', authGuard, ParticipationService);
 
-app.get('/', authGuard, (req, res) => res.json(req.user));
+app.get('/', authGuard, (req, res) => {
+  res.json(req.user);
+});
 
 app.get('/frontend-configuration', (req, res) => {
   res.json(FRONTEND_CONF);

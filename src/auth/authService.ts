@@ -37,7 +37,7 @@ authService.use('/oidc', OidcStrategy);
 authService.post('/logout', (req, res) => {
   if (req.user instanceof User) {
     const logoutUrl = req.user.sessionLogout;
-    return req.logout((err) => {
+    req.logout((err) => {
       if (err) {
         console.log(err);
         return genericError.internalServerError(res);
@@ -50,7 +50,7 @@ authService.post('/logout', (req, res) => {
   }
 
   // somethings not quite right - destroy the session
-  return req.session.destroy((err) => {
+  req.session.destroy((err) => {
     if (err) {
       console.log(err);
       return genericError.internalServerError(res);
