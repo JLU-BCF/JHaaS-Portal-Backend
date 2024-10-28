@@ -8,7 +8,7 @@ import Tos from '../models/Tos';
 import JupyterHubSecrets from '../models/JupyterHubSecrets';
 import Verification from '../models/Verification';
 
-export const DB_CONN: DataSource = new DataSource({
+const DB_CONN: DataSource = new DataSource({
   type: 'postgres',
   host: process.env.POSTGRES_HOST || 'localhost',
   port: Number(process.env.POSTGRES_PORT) || 5432,

@@ -1,5 +1,5 @@
 import Credentials, { AuthProvider } from '../models/Credentials';
-import { DB_CONN } from '../config/Database';
+import DB_CONN from '../config/Database';
 import { DeleteResult } from 'typeorm';
 
 class CredentialsRepository {

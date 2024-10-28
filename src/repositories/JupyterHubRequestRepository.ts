@@ -1,5 +1,5 @@
 import { JupyterHubRequest, JupyterHubRequestStatus } from '../models/JupyterHubRequest';
-import { DB_CONN } from '../config/Database';
+import DB_CONN from '../config/Database';
 import { DeleteResult, LessThan, MoreThan } from 'typeorm';
 import User from '../models/User';
 

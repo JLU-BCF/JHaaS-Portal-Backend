@@ -1,5 +1,5 @@
 import Verification from '../models/Verification';
-import { DB_CONN } from '../config/Database';
+import DB_CONN from '../config/Database';
 import { DeleteResult, FindOptionsWhere } from 'typeorm';
 
 class VerificationRepository {

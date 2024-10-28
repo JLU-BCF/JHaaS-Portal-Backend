@@ -1,5 +1,5 @@
 import Tos from '../models/Tos';
-import { DB_CONN } from '../config/Database';
+import DB_CONN from '../config/Database';
 import { And, DeleteResult, IsNull, LessThanOrEqual, MoreThan, Not } from 'typeorm';
 
 class TosRepository {

@@ -1,5 +1,5 @@
 import User from '../models/User';
-import { DB_CONN } from '../config/Database';
+import DB_CONN from '../config/Database';
 import { DeleteResult } from 'typeorm';
 
 class UserRepository {
