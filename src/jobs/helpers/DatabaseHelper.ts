@@ -1,5 +1,5 @@
 import { DataSource } from 'typeorm';
-import DB_CONN from '../../config/Database';
+import { DB_CONN } from '../../config/Database';
 
 export async function init(): Promise<DataSource> {
   return DB_CONN.initialize()
