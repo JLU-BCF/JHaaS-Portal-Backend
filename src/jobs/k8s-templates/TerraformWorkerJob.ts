@@ -264,6 +264,15 @@ export function getTerraformWorkerJob(jh: JupyterHubRequest, action: string): k8
                   }
                 },
                 {
+                  name: 'JHAAS_INVALIDATION_FLOW',
+                  valueFrom: {
+                    configMapKeyRef: {
+                      key: 'JHAAS_INVALIDATION_FLOW',
+                      name: `env-${RELEASE_NAME}-tf-conf`
+                    }
+                  }
+                },
+                {
                   name: 'S3_TF_STATE_BUCKET',
                   value: S3_TF_STATE_BUCKET
                 },
