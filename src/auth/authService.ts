@@ -47,16 +47,16 @@ authService.post('/logout', (req, res) => {
       }
       return res.redirect(POST_LOGOUT_URL);
     });
+  } else {
+    // somethings not quite right - destroy the session
+    req.session.destroy((err) => {
+      if (err) {
+        console.log(err);
+        return genericError.internalServerError(res);
+      }
+      return res.redirect(POST_LOGOUT_URL);
+    });
   }
-
-  // somethings not quite right - destroy the session
-  req.session.destroy((err) => {
-    if (err) {
-      console.log(err);
-      return genericError.internalServerError(res);
-    }
-    return res.redirect(POST_LOGOUT_URL);
-  });
 });
 
 export default authService;
