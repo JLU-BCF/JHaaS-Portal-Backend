@@ -9,6 +9,7 @@ export const OIDC_FORCE_REACHABILITY = ['true', true, 1].includes(
   process.env.OIDC_FORCE_REACHABILITY
 );
 
+export const AUTHENTIK_URL = process.env.AUTHENTIK_URL || '';
 export const AUTHENTIK_API_ENDPOINT = process.env.AUTHENTIK_API_ENDPOINT || '';
 export const AUTHENTIK_API_SECRET = process.env.AUTHENTIK_API_SECRET || '';
 export const AUTHENTIK_INVALIDATION_FLOW = process.env.AUTHENTIK_INVALIDATION_FLOW || '';

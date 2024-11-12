@@ -8,6 +8,7 @@ import {
   CLIENT_ID,
   CLIENT_SECRET,
   OIDC_FORCE_REACHABILITY,
+  AUTHENTIK_URL,
   AUTHENTIK_INVALIDATION_FLOW
 } from '../../config/Oidc';
 import { POST_LOGOUT_URL, POST_LOGIN_URL } from '../../config/Config';
@@ -60,7 +61,7 @@ Issuer.discover(OIDC_ENDPOINT)
       const lastName = profile.family_name || profile.name;
       const email = profile.email;
       // const sessionLogout = client.endSessionUrl({ id_token_hint: tokenSet });
-      const sessionLogout = `${AUTHENTIK_INVALIDATION_FLOW}/?redirect=${encodeURIComponent(
+      const sessionLogout = `${AUTHENTIK_URL}/if/flow/${AUTHENTIK_INVALIDATION_FLOW}/?redirect=${encodeURIComponent(
         POST_LOGOUT_URL
       )}`;
       const externalId = profile.external_id || null;
