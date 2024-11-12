@@ -273,6 +273,15 @@ export function getTerraformWorkerJob(jh: JupyterHubRequest, action: string): k8
                   }
                 },
                 {
+                  name: 'JH_CHART_VERSION',
+                  valueFrom: {
+                    configMapKeyRef: {
+                      key: 'JH_CHART_VERSION',
+                      name: `env-${RELEASE_NAME}-tf-conf`
+                    }
+                  }
+                },
+                {
                   name: 'S3_TF_STATE_BUCKET',
                   value: S3_TF_STATE_BUCKET
                 },
