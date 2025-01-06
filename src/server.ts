@@ -102,3 +102,5 @@ function stopServer(exitCode = 0) {
       .finally(() => process.exit(exitCode));
   });
 }
+
+export default app;

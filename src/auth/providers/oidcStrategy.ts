@@ -1,6 +1,8 @@
 import { Router } from 'express';
 import passport from 'passport';
-import { Issuer, Strategy as OpenIDConnectStrategy, TokenSet } from 'openid-client';
+
+import { discovery, Configuration, TokenEndpointResponse } from 'openid-client'
+import { Strategy as OpenIDConnectStrategy } from 'openid-client/passport';
 
 import {
   OIDC_ENDPOINT,
@@ -37,83 +39,78 @@ interface passportProfile {
 
 const oidcStrategy = Router();
 
-Issuer.discover(OIDC_ENDPOINT)
-  .then((issuer: Issuer) => {
+discovery(OIDC_ENDPOINT, CLIENT_ID, CLIENT_SECRET)
+  .then((config: Configuration) => {
     console.log('OIDC: ', 'discovered.');
 
-    const client = new issuer.Client({
-      client_id: CLIENT_ID,
-      client_secret: CLIENT_SECRET,
-      redirect_uris: [CALLBACK_URL],
-      post_logout_redirect_uris: [POST_LOGOUT_URL]
-    });
-
     const params = {
-      client_id: CLIENT_ID,
-      redirect_uri: CALLBACK_URL,
+      callbackURL: CALLBACK_URL,
       scope: 'openid email profile user-attributes'
     };
 
-    function verify(tokenSet: TokenSet, profile: passportProfile, cb: VerifyCallback) {
-      let isAdmin = false;
-      let isLead = false;
-      const firstName = profile.given_name || profile.name;
-      const lastName = profile.family_name || profile.name;
-      const email = profile.email;
-      // const sessionLogout = client.endSessionUrl({ id_token_hint: tokenSet });
-      const sessionLogout = `${AUTHENTIK_URL}/if/flow/${AUTHENTIK_INVALIDATION_FLOW}/?redirect=${encodeURIComponent(
-        POST_LOGOUT_URL
-      )}`;
-      const externalId = profile.external_id || null;
+    function verify(tokenSet: TokenEndpointResponse, cb: VerifyCallback) {
+      console.log(tokenSet);
 
-      if (profile.groups?.length) {
-        isAdmin = profile.groups.includes('portal-admins');
-        isLead = profile.groups.includes('portal-leaders');
-      }
+      // let isAdmin = false;
+      // let isLead = false;
+      // const firstName = profile.given_name || profile.name;
+      // const lastName = profile.family_name || profile.name;
+      // const email = profile.email;
+      // // const sessionLogout = client.endSessionUrl({ id_token_hint: tokenSet });
+      // const sessionLogout = `${AUTHENTIK_URL}/if/flow/${AUTHENTIK_INVALIDATION_FLOW}/?redirect=${encodeURIComponent(
+      //   POST_LOGOUT_URL
+      // )}`;
+      // const externalId = profile.external_id || null;
 
-      CredentialsRepository.findByProvider(AuthProvider.OIDC, profile.sub)
-        .then((credentialsInstance) => {
-          if (credentialsInstance) {
-            const user = credentialsInstance.user;
+      // if (profile.groups?.length) {
+      //   isAdmin = profile.groups.includes('portal-admins');
+      //   isLead = profile.groups.includes('portal-leaders');
+      // }
 
-            if (user.sync({ isAdmin, isLead, firstName, lastName, email, externalId })) {
-              UserRepository.updateOne(user);
-            }
+      // CredentialsRepository.findByProvider(AuthProvider.OIDC, profile.sub)
+      //   .then((credentialsInstance) => {
+      //     if (credentialsInstance) {
+      //       const user = credentialsInstance.user;
 
-            user.sessionLogout = sessionLogout;
-            return cb(null, user, { message: 'Logged In Successfully' });
-          }
+      //       if (user.sync({ isAdmin, isLead, firstName, lastName, email, externalId })) {
+      //         UserRepository.updateOne(user);
+      //       }
 
-          const user = new User(firstName, lastName, email, isAdmin, isLead, externalId);
-          const credentials = new Credentials(user, AuthProvider.OIDC, profile.sub);
+      //       user.sessionLogout = sessionLogout;
+      //       return cb(null, user, { message: 'Logged In Successfully' });
+      //     }
 
-          return CredentialsRepository.createOne(credentials)
-            .then((credentialsInstance) => {
-              const newUser = credentialsInstance.user;
-              newUser.sessionLogout = sessionLogout;
-              MailHelper.sendUserCreated(newUser);
-              return cb(null, newUser, {
-                message: 'Created and logged In Successfully'
-              });
-            })
-            .catch((err) => {
-              console.log(err);
-              return cb(new Error('Oops - Something went wrong.'), false);
-            });
-        })
-        .catch((err) => {
-          console.log(err);
-          return cb(new Error('Oops - Something went wrong.'), false);
-        });
+      //     const user = new User(firstName, lastName, email, isAdmin, isLead, externalId);
+      //     const credentials = new Credentials(user, AuthProvider.OIDC, profile.sub);
+
+      //     return CredentialsRepository.createOne(credentials)
+      //       .then((credentialsInstance) => {
+      //         const newUser = credentialsInstance.user;
+      //         newUser.sessionLogout = sessionLogout;
+      //         MailHelper.sendUserCreated(newUser);
+      //         return cb(null, newUser, {
+      //           message: 'Created and logged In Successfully'
+      //         });
+      //       })
+      //       .catch((err) => {
+      //         console.log(err);
+      //         return cb(new Error('Oops - Something went wrong.'), false);
+      //       });
+      //   })
+      //   .catch((err) => {
+      //     console.log(err);
+      //     return cb(new Error('Oops - Something went wrong.'), false);
+      //   });
     }
 
-    passport.use('oidc', new OpenIDConnectStrategy({ client, params }, verify));
+    passport.use('oidc', new OpenIDConnectStrategy({ config, ...params }, verify));
 
     oidcStrategy.get('/login', passport.authenticate('oidc'));
 
     oidcStrategy.get('/cb', passport.authenticate('oidc'), (req, res) =>
       res.redirect(POST_LOGIN_URL)
     );
+
   })
   .catch((err) => {
     console.log('Could not read OIDC Endpoint: ', OIDC_ENDPOINT);
