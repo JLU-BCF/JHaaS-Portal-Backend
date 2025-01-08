@@ -1,5 +1,5 @@
 import { getSecret } from '../helpers/SecretHelper';
-import RedisStore from 'connect-redis';
+import { RedisStore } from 'connect-redis';
 import { createClient as createRedisClient } from 'redis';
 import { type SessionOptions } from 'express-session';
 
