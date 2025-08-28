@@ -82,7 +82,7 @@ export function getTerraformWorkerJob(jh: JupyterHubRequest, action: string): k8
           containers: [
             {
               name: 'tf-worker',
-              image: k8sConf.K8S_TF_IMAGE,
+              image: jh.workerImage ? jh.workerImage : k8sConf.K8S_TF_IMAGE,
               imagePullPolicy: k8sConf.K8S_TF_IMAGE_PP,
               volumeMounts: [
                 {
@@ -163,6 +163,10 @@ export function getTerraformWorkerJob(jh: JupyterHubRequest, action: string): k8
                 {
                   name: 'JH_CONTACT',
                   value: jh.creator.email
+                },
+                {
+                  name: 'SHARED_VOLUMES_CONF',
+                  value: jh.sharedVolumesConf ? JSON.stringify(jh.sharedVolumesConf) : ''
                 },
                 {
                   name: 'NB_RAM_GUARANTEE',
@@ -288,6 +292,33 @@ export function getTerraformWorkerJob(jh: JupyterHubRequest, action: string): k8
                 {
                   name: 'S3_JH_SPECS_BUCKET',
                   value: S3_JH_SPECS_BUCKET
+                },
+                {
+                  name: 'http_proxy',
+                  valueFrom: {
+                    configMapKeyRef: {
+                      key: 'tf_runner_http_proxy',
+                      name: `env-${RELEASE_NAME}-proxy-settings`
+                    }
+                  }
+                },
+                {
+                  name: 'https_proxy',
+                  valueFrom: {
+                    configMapKeyRef: {
+                      key: 'tf_runner_https_proxy',
+                      name: `env-${RELEASE_NAME}-proxy-settings`
+                    }
+                  }
+                },
+                {
+                  name: 'no_proxy',
+                  valueFrom: {
+                    configMapKeyRef: {
+                      key: 'tf_runner_no_proxy',
+                      name: `env-${RELEASE_NAME}-proxy-settings`
+                    }
+                  }
                 }
               ]
             }

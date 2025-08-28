@@ -45,6 +45,12 @@ export interface JupyterHubRequestUserConf {
   userCount: number;
 }
 
+export interface JupyterHubRequestSharedVolumesConf {
+  mountpoint: string;
+  readonly: boolean;
+  size: string;
+}
+
 // types will be validated by middleware!
 interface JupyterHubBaseRequestObj {
   creator;
@@ -90,6 +96,12 @@ class JupyterHubBase {
 
   @Column('jsonb')
   userConf: JupyterHubRequestUserConf;
+
+  @Column('jsonb', { nullable: true })
+  sharedVolumesConf: Record<string, JupyterHubRequestSharedVolumesConf>;
+
+  @Column({ nullable: true })
+  workerImage: string;
 
   @Column()
   containerImage: string;
