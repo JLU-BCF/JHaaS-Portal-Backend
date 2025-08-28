@@ -8,6 +8,10 @@ ARG NODE_TAG_PROD="22-alpine"
 
 FROM node:${NODE_TAG} AS build
 
+ARG http_proxy
+ARG https_proxy
+ARG no_proxy
+
 ARG APPDIR=/jhaas-app
 WORKDIR ${APPDIR}
 
@@ -17,6 +21,10 @@ COPY . .
 RUN npm run build
 
 FROM node:${NODE_TAG_PROD} AS production
+
+ARG http_proxy
+ARG https_proxy
+ARG no_proxy
 
 # pull in latest security patches for base
 RUN apk upgrade --no-cache --purge
